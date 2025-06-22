@@ -64,7 +64,7 @@ class CycloneSkill:
 
     def update(self, dt):
         if not self.is_channeling:
-            print("Cyclone update: Not channeling, returning.")
+            
             return
 
         current_time = pygame.time.get_ticks()

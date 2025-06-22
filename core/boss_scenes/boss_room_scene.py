@@ -99,7 +99,7 @@ class BossRoomScene(BaseGameplayScene):
         self.dungeon_data = dungeon_data # Store the dungeon data
 
         # Initialize the base gameplay scene with the loaded data
-        super().__init__(game, player, hud, tileset_name, dungeon_data, friendly_entities=friendly_entities) # Pass friendly_entities
+        super().__init__(game, player, hud, tileset_name, dungeon_data, friendly_entities=friendly_entities, map_width=dungeon_data["width"], map_height=dungeon_data["height"])
         self.name = "BossRoomScene" # Set the scene name
 
         self.boss = None

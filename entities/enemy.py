@@ -1,6 +1,7 @@
 import pygame
 import os
 import math
+import random
 from config.constants import TILE_SIZE
 from entities.projectile import Projectile
 from ui.damage_text import DamageText
@@ -19,6 +20,7 @@ class Enemy(pygame.sprite.Sprite):
         self.damage = damage # This will be melee damage
         self.speed = speed
         self.sprite_path = sprite_path
+        self.modifiers = []  # List to store enemy modifiers
         self.current_life = health # Initialize current_life
         self.damage_texts = pygame.sprite.Group() # Group to hold damage text pop-ups
 
@@ -58,9 +60,39 @@ class Enemy(pygame.sprite.Sprite):
         self.last_poison_tick = 0
         self.poison_tick_interval = 1000 # 1 second per tick
 
+        # New status effects
+        self.hasted = False
+        self.hasted_start_time = 0
+        self.hasted_duration = 0
+        self.hasted_speed_multiplier = 1.5
+        self.hasted_attack_speed_multiplier = 0.75
+
+        self.frenzied = False
+        self.frenzy_start_time = 0
+        self.frenzy_duration = 5000  # 5 seconds
+        self.frenzy_damage_multiplier = 1.3
+        self.frenzy_attack_speed_multiplier = 0.6
+
+        self.corrupted_blood_stacks = 0
+        self.max_corrupted_blood_stacks = 10
+        self.corrupted_blood_damage_per_tick = 2
+        self.corrupted_blood_tick_interval = 1000
+        self.last_corrupted_blood_tick = 0
+
+        self.hexproof = False
+        self.reflects_damage = False
+        self.reflect_percentage = 0.2  # 20% damage reflection
+
         print(f"Enemy initialized at ({x}, {y}) with sprite: {sprite_path}") # Debug print
         self.last_x = x
         self.last_y = y
+
+        # Apply modifiers with a small chance
+        if random.random() < 0.1:  # 10% chance of having modifiers
+            possible_modifiers = ["2x Speed", "2x Health", "1.5x Damage", "More Projectiles", "Piercing", "Regenerating", "Armored", "Hasted", "Frenzied", "Corrupted Blood", "Hexproof", "Reflects Damage"]
+            num_modifiers = random.randint(1, 3)  # 1 to 3 modifiers
+            modifiers = random.sample(possible_modifiers, num_modifiers)
+            self.apply_modifiers(modifiers)
 
     def _load_sprite(self, sprite_path):
         """Loads the enemy sprite, with error handling."""
@@ -88,18 +120,68 @@ class Enemy(pygame.sprite.Sprite):
             return placeholder
 
     def take_damage(self, amount):
+        if self.reflects_damage:
+            reflected_damage = amount * self.reflect_percentage
+            self.game.player.take_damage(reflected_damage)
+            amount -= reflected_damage  # Reduce damage taken by reflected amount
+
         self.current_life -= amount
         # Create and add damage text
         damage_text = DamageText(str(int(amount)), self.rect.centerx, self.rect.top, (255, 0, 0))
         self.damage_texts.add(damage_text)
         if self.current_life <= 0:
+            xp_to_give = self.xp_value
+            if self.modifiers:
+                xp_to_give *= 2  # Double XP if enemy has modifiers
             print(f"DEBUG: Enemy {self.name} died. Its xp_value is: {self.xp_value}. Player current XP: {self.game.player.experience}")
-            print(f"Enemy {self.name} died. Awarding {self.xp_value} XP to player.") # Debug print
-            self.game.player.gain_experience(self.xp_value) # Pass xp_value instead of level
-            self.kill() # Remove the enemy from all sprite groups
+            print(f"Enemy {self.name} died. Awarding {xp_to_give} XP to player.") # Debug print
+            self.game.player.gain_experience(xp_to_give) # Pass xp_value instead of level
+            self.kill()
+    def apply_modifiers(self, modifiers):
+        """Applies the given modifiers to the enemy."""
+        for modifier in modifiers:
+            if modifier == "2x Speed":
+                self.speed *= 2
+                self.attack_cooldown /= 2  # Half the cooldown for faster attacks
+            elif modifier == "2x Health":
+                self.health *= 2
+                self.current_life = self.health  # Update current life to match new health
+            elif modifier == "1.5x Damage":
+                self.damage *= 1.5
+            elif modifier == "More Projectiles":
+                self.burst_projectile_count += 2 # Increase number of projectiles in a burst
+            elif modifier == "Piercing":
+                self.damage *= 1.2 # Slightly increase damage
+            elif modifier == "Regenerating":
+                self.health *= 1.3 # Slightly increase health
+                self.current_life = self.health
+            elif modifier == "Armored":
+                self.health *= 1.6 # Increase health
+                self.current_life = self.health
+            elif modifier == "Hasted":
+                self.hasted = True
+                self.hasted_start_time = pygame.time.get_ticks()
+                self.hasted_duration = 10000  # 10 seconds
+                self.speed *= self.hasted_speed_multiplier
+                self.attack_cooldown *= self.hasted_attack_speed_multiplier
+            elif modifier == "Frenzied":
+                self.frenzied = True
+            elif modifier == "Corrupted Blood":
+                pass  # Implement in projectile.py or in take_damage
+            elif modifier == "Hexproof":
+                self.hexproof = True
+            elif modifier == "Reflects Damage":
+                self.reflects_damage = True
+        # Add more modifiers here
+        self.modifiers = modifiers  # Store the applied modifiers
+        # self.kill() # Remove the enemy from all sprite groups
 
     def apply_ignite(self, duration):
         """Applies the ignite status effect to the enemy."""
+        if self.hexproof:
+            print(f"Enemy {self.name} is hexproof and resists ignite.")
+            return
+
         self.ignited = True
         self.ignite_start_time = pygame.time.get_ticks()
         self.ignite_duration = duration * 1000 # Convert to milliseconds
@@ -122,6 +204,10 @@ class Enemy(pygame.sprite.Sprite):
 
     def apply_slow(self, amount, duration):
         """Applies the slow status effect to the enemy."""
+        if self.hexproof:
+            print(f"Enemy {self.name} is hexproof and resists slow.")
+            return
+
         self.slowed = True
         self.slow_start_time = pygame.time.get_ticks()
         self.slow_duration = duration * 1000 # Convert to milliseconds
@@ -138,6 +224,10 @@ class Enemy(pygame.sprite.Sprite):
 
     def apply_poison(self, damage_per_tick, duration):
         """Applies the poison status effect to the enemy."""
+        if self.hexproof:
+            print(f"Enemy {self.name} is hexproof and resists poison.")
+            return
+
         self.poisoned = True
         self.poison_start_time = pygame.time.get_ticks()
         self.poison_duration = duration * 1000 # Convert to milliseconds
@@ -183,6 +273,8 @@ class Enemy(pygame.sprite.Sprite):
     def _shoot_projectile(self, target_x, target_y):
         projectile = Projectile(self.game, self.rect.centerx, self.rect.centery,
                                 target_x, target_y, 200, self.damage, self.projectile_sprite_path)
+        if "Corrupted Blood" in self.modifiers:
+            projectile.apply_corrupted_blood = True
         self.game.current_scene.projectiles.add(projectile) # Add to scene's projectile group
 
     def _shoot_spread_projectiles(self, target_x, target_y, num_projectiles, angle_spread):
@@ -261,6 +353,30 @@ class Enemy(pygame.sprite.Sprite):
         self._update_slow_effect()
         # Update poison effect
         self._update_poison_effect()
+
+        # Update Hasted effect
+        if self.hasted:
+            if current_time - self.hasted_start_time > self.hasted_duration:
+                self.hasted = False
+                self.speed /= self.hasted_speed_multiplier
+                self.attack_cooldown /= self.hasted_attack_speed_multiplier
+                print(f"Enemy {self.name} hasted effect wore off.")
+
+        # Update Frenzied effect
+        if self.frenzied and current_time - self.frenzy_start_time > self.frenzy_duration:
+            self.frenzied = False
+            self.damage /= self.frenzy_damage_multiplier
+            self.attack_cooldown /= self.frenzy_attack_speed_multiplier
+            print(f"Enemy {self.name} frenzy wore off.")
+        elif self.frenzied == True and current_time - self.frenzy_start_time < self.frenzy_duration:
+            pass
+        elif self.frenzied:
+            self.frenzy_start_time = current_time
+            self.damage *= self.frenzy_damage_multiplier
+            self.attack_cooldown *= self.frenzy_attack_speed_multiplier
+            print(f"Enemy {self.name} became frenzied!")
+
+        # Update Corrupted Blood effect - moved to projectile and player take_damage
 
         # Handle burst attack sequence
         if self._is_bursting:
@@ -432,12 +548,24 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw(self, screen, camera_x, camera_y, zoom_level):
         # Calculate the enemy's position on the screen relative to the camera and zoom
-        scaled_image = pygame.transform.scale(self.image, (int(self.rect.width * zoom_level), int(self.rect.height * zoom_level)))
+        if self.modifiers:
+            scale_factor = 1.5
+        else:
+            scale_factor = 1.0
+        scaled_image = pygame.transform.scale(self.image, (int(self.rect.width * zoom_level * scale_factor), int(self.rect.height * zoom_level * scale_factor)))
         screen_x = (self.rect.x - camera_x) * zoom_level
         screen_y = (self.rect.y - camera_y) * zoom_level
         screen.blit(scaled_image, (screen_x, screen_y))
         # print(f"Enemy drawn at screen position ({screen_x}, {screen_y})") # Debug print
 
-        # Draw damage texts
-        for text_sprite in self.damage_texts:
-            text_sprite.draw(screen, camera_x, camera_y, zoom_level)
+        # Draw modifiers
+        font = pygame.font.Font(None, 20)  # Small font size
+        text_color = (255, 255, 0) if self.modifiers else (255, 255, 255)  # Yellow if modifiers, white otherwise
+        
+        # Draw modifiers vertically
+        modifier_y_offset = 0
+        for modifier in self.modifiers:
+            text_surface = font.render(modifier, True, text_color)
+            text_rect = text_surface.get_rect(center=(screen_x + scaled_image.get_width() / 2, screen_y - 10 - modifier_y_offset))
+            screen.blit(text_surface, text_rect)
+            modifier_y_offset += text_surface.get_height() + 2 # Add a small padding between modifiers

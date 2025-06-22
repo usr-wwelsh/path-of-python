@@ -16,6 +16,7 @@ class Projectile(pygame.sprite.Sprite):
         self.dx, self.dy = self._calculate_direction(x, y, target_x, target_y)
         self.lifetime = 3000 # Milliseconds, adjust as needed
         self.spawn_time = pygame.time.get_ticks()
+        self.apply_corrupted_blood = False # New attribute for Corrupted Blood
 
     def _load_sprite(self, sprite_path):
         """Loads the projectile sprite, with error handling."""
@@ -51,6 +52,8 @@ class Projectile(pygame.sprite.Sprite):
         # Check for collision with player
         if self.rect.colliderect(player.rect):
             player.take_damage(self.damage)
+            if self.apply_corrupted_blood:
+                player.apply_corrupted_blood() # Apply corrupted blood effect
             self.kill() # Remove projectile on hit
 
         # Check for collision with solid tiles (walls)

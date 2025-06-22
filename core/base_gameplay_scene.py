@@ -19,11 +19,15 @@ from entities.projectile import Projectile # Import the Projectile class
 
 # Removed: from core.boss_system_manager import BossSystemManager # Import BossSystemManager
 class BaseGameplayScene(BaseScene):
-    def __init__(self, game, player=None, hud=None, tileset_name="default", dungeon_data=None, friendly_entities=None):  # Added friendly_entities parameter
+    def __init__(self, game, player=None, hud=None, tileset_name="default", dungeon_data=None, friendly_entities=None, map_width=None, map_height=None):
         # Moved import here to avoid circular dependency
         from core.boss_system_manager import BossSystemManager
         self.boss_system_manager = BossSystemManager(game) # Instantiate BossSystemManager
         super().__init__(game)
+        if map_width is not None:
+            self.map_width = map_width
+        if map_height is not None:
+            self.map_height = map_height
         
         # Camera settings - Initialize these always
         self.camera_x = 0
@@ -31,8 +35,6 @@ class BaseGameplayScene(BaseScene):
         self.camera_offset_x = 0
         self.camera_offset_y = 0
         self.zoom_level = 1.0
-        self.map_width = 50  # Placeholder, will be updated when the map is loaded
-        self.map_height = 30  # Placeholder, will be updated when the map is loaded
         self.tile_size = TILE_SIZE  # Get from constants
         self.frame_count = 0
         self.name = None # Initialize name attribute
@@ -77,7 +79,7 @@ class BaseGameplayScene(BaseScene):
         self.tile_images = {}
         #self.faded_tile_images = {}  # Dictionary to store faded tile images
         self._load_tile_images()
-
+ 
         # Placeholder NPC for testing dialogue
         # In a real game, this would be managed by an NPC system
         self.npcs = [
@@ -166,7 +168,7 @@ class BaseGameplayScene(BaseScene):
                             self.tile_images[tile_name].fill((255, 0, 255))  # Magenta placeholder
                             continue
 
-                        image = pygame.image.load(full_path).convert_alpha()
+                        image = pygame.image.load(full_path).convert_alpha().convert_alpha()
                         self.tile_images[tile_name] = image
 
                         # Create a faded version of the tile image
@@ -201,7 +203,7 @@ class BaseGameplayScene(BaseScene):
                             self.tile_images[tile_name].fill((255, 0, 255))  # Magenta placeholder
                             continue
 
-                        image = pygame.image.load(full_path).convert_alpha()
+                        image = pygame.image.load(full_path).convert_alpha().convert_alpha()
                         self.tile_images[tile_name] = image
 
                         # Create a faded version of the tile image
@@ -289,7 +291,7 @@ class BaseGameplayScene(BaseScene):
 
             try:
                 full_path = os.path.join(os.getcwd(), sprite_path)
-                image = pygame.image.load(full_path).convert_alpha()
+                image = pygame.image.load(full_path).convert_alpha().convert_alpha()
                 self.decorations.append({
                     'type': decoration_type,
                     'x': x,
@@ -477,8 +479,8 @@ class BaseGameplayScene(BaseScene):
         if isinstance(self.portals, pygame.sprite.Group):
             self.portals.update(dt)
         else:
-            # Optional: Log a warning if self.portals is not a sprite group
-            print(f"BaseGameplayScene: Warning: Non-sprite object found in self.portals is not a sprite group Skipping update.")
+            # Optional: Log a warning if self.portals is not a sprite group       
+            pass
 
         # Update projectiles
         self.projectiles.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
@@ -562,38 +564,43 @@ class BaseGameplayScene(BaseScene):
                     # print("BaseGameplayScene: WARNING: tile_map is empty!")
                     pass # Added pass here
                 else:
-                    for y, row in enumerate(self.game.current_scene.tile_map):
-                        for x, tile_type_value in enumerate(row):
+                    # Calculate visible tile range
+                    screen_width = self.game.settings.SCREEN_WIDTH
+                    screen_height = self.game.settings.SCREEN_HEIGHT
+
+                    start_tile_x = max(0, int(self.camera_x / self.tile_size))
+                    end_tile_x = min(self.map_width, int((self.camera_x + screen_width / self.zoom_level) / self.tile_size) + 1)
+                    start_tile_y = max(0, int(self.camera_y / self.tile_size))
+                    end_tile_y = min(self.map_height, int((self.camera_y + screen_height / self.zoom_level) / self.tile_size) + 1)
+
+                    # Debug prints (now always active)
+                    print(f"DEBUG DRAW: BaseGameplayScene map_width: {self.map_width}, map_height: {self.map_height}")
+                    if self.game.current_scene.tile_map:
+                        print(f"DEBUG DRAW: current_scene.tile_map dimensions: {len(self.game.current_scene.tile_map[0])}x{len(self.game.current_scene.tile_map)}")
+                    print(f"DEBUG DRAW: Calculated ranges: x=[{start_tile_x}-{end_tile_x}], y=[{start_tile_y}-{end_tile_y}]")
+                    # The following line will be printed inside the loop, so x and y will be defined
+                    # print(f"DEBUG DRAW: Attempting to access tile_map[{y}][{x}]") 
+
+                    for y in range(start_tile_y, end_tile_y):
+                        for x in range(start_tile_x, end_tile_x):
+                            if 0 <= y < len(self.game.current_scene.tile_map) and 0 <= x < len(self.game.current_scene.tile_map[y]):
+                                tile_type_value = self.game.current_scene.tile_map[y][x]
                             # Calculate the tile's position relative to the camera
                             tile_x = (x * self.tile_size - self.camera_x) * self.zoom_level
                             tile_y = (y * self.tile_size - self.camera_y) * self.zoom_level
 
-                            # Check if the tile is within the visible screen area
-                            screen_width = self.game.settings.SCREEN_WIDTH
-                            screen_height = self.game.settings.SCREEN_HEIGHT
-
-                            if (tile_x + self.tile_size * self.zoom_level > 0 and
-                                    tile_y + self.tile_size * self.zoom_level > 0 and
-                                    tile_x < screen_width and
-                                    tile_y < screen_height):
-
                             # Get the tile image
-                                tile_image = self.tile_images.get(tile_type_value)
-                                if tile_image:
-                                    scaled_tile_image = pygame.transform.scale(tile_image, (int(self.tile_size * self.zoom_level), int(self.tile_size * self.zoom_level)))
-                                    screen.blit(scaled_tile_image, (tile_x, tile_y))
-                                else:
-                                    # Fallback to drawing a colored rectangle if image not found
-                                    color = (255, 0, 255)  # Magenta for missing textures
-                                    pygame.draw.rect(screen, color, (tile_x, tile_y, self.tile_size * self.zoom_level, self.tile_size * self.zoom_level))
-                                    if self.frame_count % 60 == 0:
-                                        print(f"BaseGameplayScene: WARNING: No image for tile type '{tile_type_value}' at ({x},{y}). Drawing magenta.")
-                                        pass
+                            tile_image = self.tile_images.get(tile_type_value)
+                            if tile_image:
+                                scaled_tile_image = pygame.transform.scale(tile_image, (int(self.tile_size * self.zoom_level), int(self.tile_size * self.zoom_level)))
+                                screen.blit(scaled_tile_image, (tile_x, tile_y))
                             else:
-                                # print(f"BaseGameplayScene: draw: Tile at ({{x}}, {{y}}) is off-screen. Screen pos: ({{tile_x:.2f}}, {{tile_y:.2f}})") # Debug log
+                                # Fallback to drawing a colored rectangle if image not found
+                                color = (255, 0, 255)  # Magenta for missing textures
+                                pygame.draw.rect(screen, color, (tile_x, tile_y, self.tile_size * self.zoom_level, self.tile_size * self.zoom_level))
                                 if self.frame_count % 60 == 0:
+                                    print(f"BaseGameplayScene: WARNING: No image for tile type '{tile_type_value}' at ({x},{y}). Drawing magenta.")
                                     pass
-
 
             # Draw the player (centered on screen)
             if self.player:  # Only draw player if player exists

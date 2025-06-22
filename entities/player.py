@@ -33,6 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.footstep_interval = 100  # milliseconds between footsteps
         self.last_footstep_time = pygame.time.get_ticks()
 
+        self.footstep_image = pygame.image.load("graphics/player/base/shadow.png").convert_alpha()
         # Load player sprites - these will be updated by set_class
         self.head1_sprite = get_player_head_sprite(class_name)
         self.hand1_sprite = get_player_hand_sprite(class_name)
@@ -121,6 +122,16 @@ class Player(pygame.sprite.Sprite):
         self.cyclone_skill = CycloneSkill(self) # Initialize CycloneSkill
         self.fireball_skill = FireballSkill(self) # Initialize FireballSkill
         self.summon_spiders_skill = SummonSpiders(self) # Initialize SummonSpiders
+
+        # Corrupted Blood attributes
+        self.corrupted_blood_stacks = 0
+        self.max_corrupted_blood_stacks = 10
+        self.corrupted_blood_damage_per_tick = 2
+        self.corrupted_blood_tick_interval = 1000
+        self.last_corrupted_blood_tick = 0
+        self.corrupted_blood_duration = 5000  # milliseconds
+        self.corrupted_blood_expire_interval = 1000 # milliseconds
+        self.last_corrupted_blood_expire = 0
 
     def apply_stats(self, stats_dict):
         """Applies a dictionary of stats to the player."""
@@ -301,6 +312,7 @@ class Player(pygame.sprite.Sprite):
             self.velocity.y = 0
             self.is_moving = False
             self.target = None
+            
     
     def take_damage(self, damage):
         """Reduces the player's current energy shield first, then life, and triggers a screen pulse."""
@@ -491,6 +503,27 @@ class Player(pygame.sprite.Sprite):
         else:
             print("Cannot blink outside the map boundaries.")
 
+    def apply_corrupted_blood(self):
+        """Applies a stack of corrupted blood to the player."""
+        if self.corrupted_blood_stacks < self.max_corrupted_blood_stacks:
+            self.corrupted_blood_stacks += 1
+            print(f"Corrupted Blood applied. Stacks: {self.corrupted_blood_stacks}")
+
+    def _update_corrupted_blood(self, dt):
+        """Handles the corrupted blood damage over time effect."""
+        current_time = pygame.time.get_ticks()
+        if self.corrupted_blood_stacks > 0 and current_time - self.last_corrupted_blood_tick > self.corrupted_blood_tick_interval:
+            self.last_corrupted_blood_tick = current_time
+            damage = self.corrupted_blood_stacks * self.corrupted_blood_damage_per_tick
+            self.take_damage(damage)
+            print(f"Corrupted Blood tick. Damage: {damage}. Stacks: {self.corrupted_blood_stacks}")
+        if current_time - self.last_corrupted_blood_expire > self.corrupted_blood_expire_interval:
+            self.last_corrupted_blood_expire = current_time
+            self.corrupted_blood_stacks -= 1
+            print(f"Corrupted Blood stack expired. Stacks: {self.corrupted_blood_stacks}")
+            if self.corrupted_blood_stacks < 0:
+                self.corrupted_blood_stacks = 0
+
     def update(self, dt):
         # Get the tile_map and tile_size from the current scene
         tile_map = self.game.scene_manager.current_scene.tile_map
@@ -520,19 +553,21 @@ class Player(pygame.sprite.Sprite):
             if self._check_collision(tile_map, tile_size):
                 self.rect.y = original_y  # Rollback if collision
 
-        # Check if the player has reached the target
+            # Check if the player has reached the target
             distance_x = self.target[0] - self.rect.x
             distance_y = self.target[1] - self.rect.y
             distance_to_target = math.hypot(distance_x, distance_y)
 
-            # Stop if the player is very close to the target
-            if distance_to_target < 5: # Adjust threshold as needed
-                self.rect.x = self.target[0] # Snap to target to prevent overshooting
+            # Check if the player is within a small tolerance of the target
+            if distance_to_target < self.speed * dt * 1.5: # Use a dynamic threshold based on speed and dt
+                self.rect.x = self.target[0]
                 self.rect.y = self.target[1]
                 self.velocity.x = 0
                 self.velocity.y = 0
                 self.is_moving = False
                 self.target = None
+                # self.game.logger.info(f"Player snapped to target and stopped at ({self.rect.x}, {self.rect.y})")
+                return # Stop further movement calculations for this frame
             else:
                 # Recalculate velocity in case the target was updated mid-movement
                 direction_x = self.target[0] - self.rect.x
@@ -548,7 +583,6 @@ class Player(pygame.sprite.Sprite):
                     self.velocity.y = 0
                     self.is_moving = False
                     self.target = None
-
         # Energy Shield Recharge Logic
         if self.current_energy_shield < self.max_energy_shield:
             if current_time - self.last_energy_shield_hit_time > self.energy_shield_recharge_delay:
@@ -589,9 +623,12 @@ class Player(pygame.sprite.Sprite):
         self.fireball_skill.update(dt)
         self.summon_spiders_skill.update(dt)
 
+        # Update Corrupted Blood effect
+        self._update_corrupted_blood(dt)
+
     def create_footstep(self):
         # Load a random cloud_magic_trail image
-        footstep_image = pygame.image.load(f"graphics/player/base/shadow.png").convert_alpha()
+        footstep_image = self.footstep_image
         footstep_sprite = pygame.sprite.Sprite()
         footstep_sprite.image = footstep_image
         footstep_sprite.rect = footstep_sprite.image.get_rect(center=self.rect.center)
