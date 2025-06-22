@@ -23,6 +23,7 @@ class Enemy(pygame.sprite.Sprite):
         self.modifiers = []  # List to store enemy modifiers
         self.current_life = health # Initialize current_life
         self.damage_texts = pygame.sprite.Group() # Group to hold damage text pop-ups
+        self.is_friendly = False # Initialize is_friendly to False by default
 
         self.attack_range = attack_range # Distance within which enemy can perform ranged attack
         self.attack_cooldown = attack_cooldown # Time in milliseconds between ranged attacks
@@ -88,11 +89,15 @@ class Enemy(pygame.sprite.Sprite):
         self.last_y = y
 
         # Apply modifiers with a small chance
-        if random.random() < 0.1:  # 10% chance of having modifiers
-            possible_modifiers = ["2x Speed", "2x Health", "1.5x Damage", "More Projectiles", "Piercing", "Regenerating", "Armored", "Hasted", "Frenzied", "Corrupted Blood", "Hexproof", "Reflects Damage"]
-            num_modifiers = random.randint(1, 3)  # 1 to 3 modifiers
-            modifiers = random.sample(possible_modifiers, num_modifiers)
-            self.apply_modifiers(modifiers)
+        if hasattr(self, 'is_friendly') and self.is_friendly:
+            # Don't apply modifiers to friendly entities
+            pass
+        else:
+            if random.random() < 0.1:  # 10% chance of having modifiers
+                possible_modifiers = ["2x Speed", "2x Health", "1.5x Damage", "More Projectiles", "Piercing", "Regenerating", "Armored", "Hasted", "Frenzied", "Corrupted Blood", "Hexproof", "Reflects Damage"]
+                num_modifiers = random.randint(1, 3)  # 1 to 3 modifiers
+                modifiers = random.sample(possible_modifiers, num_modifiers)
+                self.apply_modifiers(modifiers)
 
     def _load_sprite(self, sprite_path):
         """Loads the enemy sprite, with error handling."""
@@ -339,6 +344,7 @@ class Enemy(pygame.sprite.Sprite):
         return nearest_minion
 
     def update(self, dt, player, tile_map, tile_size): # Removed nearest_skeleton parameter
+        dt = min(dt, 0.1)
         # Debug print to check if update is called for any enemy
         # print(f"Enemy {self.name} update called.")
 
@@ -548,10 +554,9 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw(self, screen, camera_x, camera_y, zoom_level):
         # Calculate the enemy's position on the screen relative to the camera and zoom
+        scale_factor = 1.0
         if self.modifiers:
-            scale_factor = 1.5
-        else:
-            scale_factor = 1.0
+            scale_factor = 1.0 + (len(self.modifiers) * 0.5)
         scaled_image = pygame.transform.scale(self.image, (int(self.rect.width * zoom_level * scale_factor), int(self.rect.height * zoom_level * scale_factor)))
         screen_x = (self.rect.x - camera_x) * zoom_level
         screen_y = (self.rect.y - camera_y) * zoom_level

@@ -80,6 +80,22 @@
                         433
                     ],
                     "graphic": "graphics/UNUSED/features/dngn_trap_magical.png"
+                },
+                {
+                    "target_scene": "hallway",
+                    "location": [
+                        1152,
+                        160
+                    ],
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/sewer_portal_rusted.png"
+                },
+                {
+                    "target_scene": "tower",
+                    "location": [
+                        384,
+                        2720
+                    ],
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/fleshy_orifice_open.png"
                 }
             ],
             "map_width": 50,

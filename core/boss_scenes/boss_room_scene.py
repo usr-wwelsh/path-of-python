@@ -321,6 +321,41 @@ class BossRoomScene(BaseGameplayScene):
             bar_y = 50  # Below the HUD
             pygame.draw.rect(screen, (255, 0, 0), (bar_x, bar_y, bar_width, bar_height))  # Background
             pygame.draw.rect(screen, (0, 255, 0), (bar_x, bar_y, int(bar_width * health_percentage), bar_height))  # Health
+# Display boss name below the health bar
+        font = pygame.font.Font("freesansbold.ttf", 50)  # Big font size
+        boss_name = self.boss.name.replace("_", " ").upper()
+        text_color = (255, 255, 255)  # White color
+        outline_color = (0, 0, 0)  # Black color
+        text_surface = font.render(boss_name, True, text_color)
+        text_rect = text_surface.get_rect(center=(self.game.settings.SCREEN_WIDTH // 2, bar_y + bar_height + 30))  # 30 pixels below health bar
+
+        # Create a background surface
+        background_surface = pygame.Surface((text_rect.width + 20, text_rect.height + 10), pygame.SRCALPHA)  # Add some padding
+        background_surface.fill((0, 0, 0, 128))  # Black color with 50% transparency
+        background_rect = background_surface.get_rect(center=(self.game.settings.SCREEN_WIDTH // 2, bar_y + bar_height + 30))
+
+        # Blit the background surface onto the screen
+        screen.blit(background_surface, background_rect)
+
+        # Draw the outline
+        outline_width = 2
+        for dx in range(-outline_width, outline_width + 1):
+            for dy in range(-outline_width, outline_width + 1):
+                if dx == 0 and dy == 0:
+                    continue
+                outline_rect = text_rect.move(dx, dy)
+                outline_surface = font.render(boss_name, True, outline_color)
+                screen.blit(outline_surface, outline_rect)
+
+        # Blit the text surface onto the screen
+        screen.blit(text_surface, text_rect)
+
+        # Display health values inside the health bar
+        health_text = f"{int(self.boss.current_life)} / {int(self.boss.health)}"
+        health_font = pygame.font.Font(None, 20)  # Small font size
+        health_surface = health_font.render(health_text, True, (255, 255, 255))  # White color
+        health_rect = health_surface.get_rect(center=(bar_x + bar_width // 2, bar_y + bar_height // 2))
+        screen.blit(health_surface, health_rect)
         # Draw return portals
         for portal in self.return_portals:
             portal.draw(screen, self.camera_x, self.camera_y, self.zoom_level)

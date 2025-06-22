@@ -1,7 +1,7 @@
 {
   "floor": "graphics/dc-dngn/floor/hive0.png",
-  "wall": "graphics/dc-dngn/wall/slime0.png",
-  "portal": "graphics/UNUSED/monsters/giant_leech.png",
-  "decoration": "graphics/UNUSED/other/mold_large1.png",
-  "unknown": "graphics/UNUSED/other/wand_brass.png"
+  "wall": "graphics/dc-dngn/wall/wall_flesh0.png",
+  "portal": "graphics/dc-dngn/gateways/fleshy_orifice_closed.png",
+  "decoration": "graphics/dc-dngn/floor/hive1.png",
+  "unknown": "graphics/dc-dngn/floor/hive2.png"
 }

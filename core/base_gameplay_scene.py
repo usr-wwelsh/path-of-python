@@ -41,6 +41,10 @@ class BaseGameplayScene(BaseScene):
         self.friendly_entities = pygame.sprite.Group() # Initialize friendly entities group
         self.death_sequence_initiated = False
 
+        # Initialize scaled tile image cache and zoom level here, before any conditional returns
+        self.scaled_tile_images = {}
+        self.last_zoom_level_for_tiles = 1.0 # Initialize with default zoom
+
         self.player = player  # Player is now passed in or remains None
         self.hud = hud 
         if self.player is not None and self.hud is not None:
@@ -519,16 +523,9 @@ class BaseGameplayScene(BaseScene):
 
         # Calculate camera position
         if self.player:  # Only calculate camera if player exists
-            # Calculate the zoom factor
-            zoom_factor = previous_zoom_level / self.zoom_level
-
             # Calculate the new camera position
-            self.camera_x = self.player.rect.centerx - (self.game.settings.SCREEN_WIDTH / 2) / self.zoom_level + self.camera_offset_x
-            self.camera_y = self.player.rect.centery - (self.game.settings.SCREEN_HEIGHT / 2) / self.zoom_level + self.camera_offset_y
-
-            # Adjust camera position based on zoom factor
-            self.camera_x = (self.player.rect.centerx - self.game.settings.SCREEN_WIDTH / 2) + (self.camera_x - (self.player.rect.centerx - self.game.settings.SCREEN_WIDTH / 2)) * zoom_factor + self.camera_offset_x
-            self.camera_y = (self.player.rect.centery - self.game.settings.SCREEN_HEIGHT / 2) + (self.camera_y - (self.player.rect.centery - self.game.settings.SCREEN_HEIGHT / 2)) * zoom_factor + self.camera_offset_y
+            self.camera_x = self.player.rect.centerx - (self.game.settings.SCREEN_WIDTH / (2 * self.zoom_level)) + self.camera_offset_x
+            self.camera_y = self.player.rect.centery - (self.game.settings.SCREEN_HEIGHT / (2 * self.zoom_level)) + self.camera_offset_y
         else:
             self.camera_x = 0
             self.camera_y = 0
@@ -556,6 +553,11 @@ class BaseGameplayScene(BaseScene):
         if hasattr(self.game, 'current_scene'):
             # Draw the map (tiles)
             if hasattr(self.game.current_scene, 'tile_map'):
+                # Check if zoom level changed, and clear cache if it did
+                if self.zoom_level != self.last_zoom_level_for_tiles:
+                    self.scaled_tile_images = {}
+                    self.last_zoom_level_for_tiles = self.zoom_level
+
                 # Add debug logging for tile map drawing
                 if self.frame_count % 60 == 0:
                     # print(f"BaseGameplayScene: Drawing tile map. Map dimensions: {self.map_width}x{self.map_height}")
@@ -574,10 +576,10 @@ class BaseGameplayScene(BaseScene):
                     end_tile_y = min(self.map_height, int((self.camera_y + screen_height / self.zoom_level) / self.tile_size) + 1)
 
                     # Debug prints (now always active)
-                    print(f"DEBUG DRAW: BaseGameplayScene map_width: {self.map_width}, map_height: {self.map_height}")
-                    if self.game.current_scene.tile_map:
-                        print(f"DEBUG DRAW: current_scene.tile_map dimensions: {len(self.game.current_scene.tile_map[0])}x{len(self.game.current_scene.tile_map)}")
-                    print(f"DEBUG DRAW: Calculated ranges: x=[{start_tile_x}-{end_tile_x}], y=[{start_tile_y}-{end_tile_y}]")
+                    # print(f"DEBUG DRAW: BaseGameplayScene map_width: {self.map_width}, map_height: {self.map_height}")
+                    # if self.game.current_scene.tile_map:
+                    #     print(f"DEBUG DRAW: current_scene.tile_map dimensions: {len(self.game.current_scene.tile_map[0])}x{len(self.game.current_scene.tile_map)}")
+                    # print(f"DEBUG DRAW: Calculated ranges: x=[{start_tile_x}-{end_tile_x}], y=[{start_tile_y}-{end_tile_y}]")
                     # The following line will be printed inside the loop, so x and y will be defined
                     # print(f"DEBUG DRAW: Attempting to access tile_map[{y}][{x}]") 
 
@@ -592,7 +594,13 @@ class BaseGameplayScene(BaseScene):
                             # Get the tile image
                             tile_image = self.tile_images.get(tile_type_value)
                             if tile_image:
-                                scaled_tile_image = pygame.transform.scale(tile_image, (int(self.tile_size * self.zoom_level), int(self.tile_size * self.zoom_level)))
+                                # Check if scaled image is already cached
+                                if tile_type_value not in self.scaled_tile_images:
+                                    scaled_tile_image = pygame.transform.scale(tile_image, (int(self.tile_size * self.zoom_level), int(self.tile_size * self.zoom_level)))
+                                    self.scaled_tile_images[tile_type_value] = scaled_tile_image
+                                else:
+                                    scaled_tile_image = self.scaled_tile_images[tile_type_value]
+                                
                                 screen.blit(scaled_tile_image, (tile_x, tile_y))
                             else:
                                 # Fallback to drawing a colored rectangle if image not found
