@@ -563,6 +563,9 @@ class Enemy(pygame.sprite.Sprite):
         screen.blit(scaled_image, (screen_x, screen_y))
         # print(f"Enemy drawn at screen position ({screen_x}, {screen_y})") # Debug print
 
+# Draw damage texts
+        for damage_text in self.damage_texts:
+            damage_text.draw(screen, camera_x, camera_y, zoom_level)
         # Draw modifiers
         font = pygame.font.Font(None, 20)  # Small font size
         text_color = (255, 255, 0) if self.modifiers else (255, 255, 255)  # Yellow if modifiers, white otherwise
