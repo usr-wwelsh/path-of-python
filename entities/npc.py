@@ -3,7 +3,7 @@ import os
 import random
 
 class NPC(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, width, height, color, name="NPC", dialogue_id=None):
+    def __init__(self, game, x, y, width, height, color, name="NPC", dialogue_id=None, sprite=None):
         super().__init__()
         self.game = game
         self.name = name
@@ -12,10 +12,11 @@ class NPC(pygame.sprite.Sprite):
 
         # Define sprite paths
         yaktaur_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon")
-        merfolk_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon", "cult")
-
-        # Hardcode specific sprites for named NPCs
-        if self.name == "Bob the Bold":
+        sprite_path = None
+        
+        if self.name == "Billy Bob" and sprite:
+            sprite_path = os.path.join(os.getcwd(), sprite)
+        elif self.name == "Bob the Bold":
             sprite_filename = "stone_giant.png"
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
         elif self.name == "Alice the Agile":
@@ -26,6 +27,7 @@ class NPC(pygame.sprite.Sprite):
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
         else:
             # Load random merfolk sprite for other NPCs
+            merfolk_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon", "cult")
             merfolk_sprites = [
                 "1.png",
                 "2.png",
@@ -37,9 +39,10 @@ class NPC(pygame.sprite.Sprite):
 
         if os.path.exists(sprite_path):
             self.image = pygame.image.load(sprite_path).convert_alpha()
-            if "cult" in sprite_path: # Check if it's a merfolk sprite
-                width *= 2
-                height *= 2
+            if not (self.name == "Billy Bob" and sprite): # Check if it's NOT Billy Bob
+                if "cult" in sprite_path: # Check if it's a merfolk sprite
+                    width *= 2
+                    height *= 2
             self.image = pygame.transform.scale(self.image, (width, height))
         else:
             # Fallback to colored rectangle if sprite not found

@@ -147,6 +147,29 @@
             }
           ]
         }
+      },
+      "billy_bob_dialogue": {
+        "start_node": "node_1",
+        "nodes": {
+          "node_1": {
+            "text": "thos wer gonas kil me no joke......",
+            "options": [
+              {
+                "text": "okay",
+                "next_node": "end_dialogue"
+              }
+            ]
+          },
+          "end_dialogue": {
+            "text": "thanks,, Thumbs Up!",
+            "options": [
+              {
+              "text": "okay...",
+              "next_node": null
+            }
+            ]
+          }
+        }
       }
     }
   }

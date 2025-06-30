@@ -12,6 +12,7 @@ from ui.inventory_screen import InventoryScreen # Import InventoryScreen
 from ui.skill_tree_ui import SkillTreeUI # Import SkillTreeUI
 from ui.dialogue_manager import DialogueManager
 from progression.quests import QuestManager # Import QuestManager
+from progression.quest_tracker import QuestTracker # Import QuestTracker
 from ui.developer_inventory_screen import DeveloperInventoryScreen
 import sys
 import logging # Import logging module
@@ -45,6 +46,7 @@ class GameEngine:
         self.hud = None # Initialize hud to None
         self.dialogue_manager = DialogueManager(self)
         self.quest_manager = QuestManager('data/quests.json') # Initialize QuestManager
+        self.quest_tracker = QuestTracker() # Initialize QuestTracker
 
         self.scene_manager = SceneManager(self) # Pass self (GameEngine instance) to SceneManager
 

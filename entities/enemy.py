@@ -141,6 +141,7 @@ class Enemy(pygame.sprite.Sprite):
             print(f"DEBUG: Enemy {self.name} died. Its xp_value is: {self.xp_value}. Player current XP: {self.game.player.experience}")
             print(f"Enemy {self.name} died. Awarding {xp_to_give} XP to player.") # Debug print
             self.game.player.gain_experience(xp_to_give) # Pass xp_value instead of level
+            self.game.quest_tracker.update_quest_progress("kill", self.name)
             self.kill()
     def apply_modifiers(self, modifiers):
         """Applies the given modifiers to the enemy."""

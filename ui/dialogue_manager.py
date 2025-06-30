@@ -1,16 +1,20 @@
 import json
 import pygame
 from core.utils import draw_text
-import random # Import random
+import random
+import time
 
 class DialogueManager:
-    """Manages the game's branching dialogue system."""
+    """Manages the game's branching dialogue system with hacker-style visuals."""
     def __init__(self, game):
         self.game = game
         self.current_dialogue_node = None
         self.dialogue_data = {}
         self.load_dialogue_data()
-        self.font = pygame.font.Font(None, 24) # Default font for dialogue
+        self.font_large = pygame.font.Font(None, 36)  # Larger font for main text
+        self.font_options = pygame.font.Font(None, 32)  # Slightly smaller for options
+        self.animation_time = 0
+        self.chars_visible = 0  # For typewriter effect
 
     def load_dialogue_data(self):
         """Loads dialogue data from the JSON file."""
@@ -79,6 +83,13 @@ class DialogueManager:
                 quest_to_trigger = selected_option.get("triggers_quest")
                 if quest_to_trigger and hasattr(self.game, 'quest_manager'):
                     self.game.quest_manager.start_quest(quest_to_trigger)
+                # Check if the option completes a quest objective
+                objective_to_complete = selected_option.get("completes_objective")
+                if objective_to_complete and hasattr(self.game, 'quest_tracker'):
+                    obj_type = objective_to_complete.get("type")
+                    obj_target = objective_to_complete.get("target")
+                    if obj_type and obj_target:
+                        self.game.quest_tracker.update_quest_progress(obj_type, obj_target)
 
                 if next_node_id == "end_dialogue":
                     self.end_dialogue()
@@ -90,6 +101,8 @@ class DialogueManager:
                             self.game.spawn_town.open_shop_window()  # Open the shop window
 
                         self.current_dialogue_node = self.dialogue_data["dialogues"][dialogue_tree_id]["nodes"].get(next_node_id)
+                        self.animation_time = 0  # Reset animation for new node
+                        self.chars_visible = 0   # Reset visible characters
                     else:
                         self.end_dialogue()
             else:
@@ -110,29 +123,57 @@ class DialogueManager:
         """Ends the current dialogue."""
         self.current_dialogue_node = None
 
+
     def draw(self, screen):
-        """Draws the dialogue box and text."""
+        """Draws the dialogue with hacker-style visuals."""
         if not self.is_dialogue_active():
             return
 
-        # Dialogue box background
-        box_width = self.game.settings.SCREEN_WIDTH * 0.8
-        box_height = self.game.settings.SCREEN_HEIGHT * 0.3
-        box_x = (self.game.settings.SCREEN_WIDTH - box_width) // 2
-        box_y = self.game.settings.SCREEN_HEIGHT - box_height - 20
-        dialogue_rect = pygame.Rect(box_x, box_y, box_width, box_height)
-        pygame.draw.rect(screen, (0, 0, 0, 180), dialogue_rect, border_radius=10) # Semi-transparent black
-        pygame.draw.rect(screen, (255, 255, 255), dialogue_rect, 2, border_radius=10) # White border
+        # Full screen semi-transparent black background
+        bg_rect = pygame.Rect(0, 0, self.game.settings.SCREEN_WIDTH, self.game.settings.SCREEN_HEIGHT)
+        pygame.draw.rect(screen, (0, 0, 0, 180), bg_rect)
 
-        # Dialogue text
-        text_margin = 20
-        text_x = box_x + text_margin
-        text_y = box_y + text_margin
-        draw_text(screen, self.get_current_dialogue_text(), 20, (255, 255, 255), text_x, text_y, max_width=box_width - (2 * text_margin))
+        # Update animation
+        self.animation_time += 0.1
+        self.chars_visible = min(len(self.get_current_dialogue_text()), 
+                               int(self.animation_time * 5))
 
-        # Dialogue options
+        # Draw main text in top half
+        text_area_height = self.game.settings.SCREEN_HEIGHT // 2
+        text_margin = 40
+        text_x = self.game.settings.SCREEN_WIDTH // 2
+        text_y = (self.game.settings.SCREEN_HEIGHT // 2) // 2
+
+        # Get text with typewriter effect
+        visible_text = self.get_current_dialogue_text()[:self.chars_visible]
+        
+        # Draw with animated green color (pulsing brightness)
+        green_intensity = int(50 + 50 * abs(pygame.math.Vector2(self.animation_time, 0).length()))
+        text_color = (0, min(255, 100 + green_intensity), 0)
+        
+        draw_text(screen, visible_text, 36, text_color, text_x, text_y, 
+                 align="center", max_width=self.game.settings.SCREEN_WIDTH - (2 * text_margin))
+
+        # Draw options in bottom half
         options = self.get_current_dialogue_options()
-        option_y_offset = text_y + self.font.get_linesize() * 2 # Adjust based on text height
+        option_area_top = self.game.settings.SCREEN_HEIGHT // 2
+        option_spacing = 40
+        
+        # Calculate starting Y for options to center the block of options in the bottom half
+        total_options_height = len(options) * option_spacing
+        option_x = self.game.settings.SCREEN_WIDTH // 2
+        option_y = option_area_top + (self.game.settings.SCREEN_HEIGHT // 4) - (total_options_height // 2)
+
         for i, option in enumerate(options):
-            option_text = f"{i+1}. {option['text']}"
-            draw_text(screen, option_text, 18, (200, 200, 255), text_x, option_y_offset + (i * 25))
+            # Random jitter for hacker effect
+            jitter_x = random.randint(-2, 2)
+            jitter_y = random.randint(-2, 2)
+            
+            option_text = f"> {option['text']}"
+            draw_text(screen, option_text, 32, (0, 255, 0), 
+                     option_x + jitter_x, option_y + jitter_y + (i * option_spacing),
+                     align="center", max_width=self.game.settings.SCREEN_WIDTH - (2 * text_margin))
+
+        # Reset animation if dialogue changes
+        if self.animation_time > 1000:  # Prevent overflow
+            self.animation_time = 0

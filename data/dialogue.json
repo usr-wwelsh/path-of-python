@@ -607,6 +607,212 @@
           "options": []
         }
       }
+    },
+    "billy_bob_dialogue": {
+      "start_node": "node_1",
+      "nodes": {
+        "node_1": {
+          "text": "thos wer gonas kil me no joke...... you... you stop them. the... the choir. they... they sing bad songs.",
+          "options": [
+            {
+              "text": "The Tithing Choir?",
+              "next_node": "node_2_tithing_choir"
+            },
+            {
+              "text": "What were they doing?",
+              "next_node": "node_3_profit_engine"
+            },
+            {
+              "text": "Just passing through.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_2_tithing_choir": {
+          "text": "Yeah. The... the choir. Always... always singin' 'bout... 'bout profit. And... and 'bout... 'bout processing. Very... very loud. Very... very... final.",
+          "options": [
+            {
+              "text": "Processing?",
+              "next_node": "node_3_profit_engine"
+            },
+            {
+              "text": "They're gone now.",
+              "next_node": "node_4_relief"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_3_profit_engine": {
+          "text": "The... the Profit Engine. It... it eats. Everything. Turns... turns us into... into numbers. Into... into paste. Not... not good paste. Bad paste. Very... very... efficient.",
+          "options": [
+            {
+              "text": "You were going to be processed?",
+              "next_node": "node_5_personal_horror"
+            },
+            {
+              "text": "That's horrifying.",
+              "next_node": "node_6_grim_reality"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_4_relief": {
+          "text": "Gone? Really? For... for now. They... they always come back. Like... like a bad data-loop. But... but for now... quiet. Very... very quiet. Too quiet?",
+          "options": [
+            {
+              "text": "Why too quiet?",
+              "next_node": "node_7_static_silence"
+            },
+            {
+              "text": "You're safe.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_5_personal_horror": {
+          "text": "Me? Yeah. Just... just another data-point. Another... another resource. Funny, ain't it? We... we used to be... people. Now... now we're just... raw material. For... for the machine.",
+          "options": [
+            {
+              "text": "That's a bleak thought.",
+              "next_node": "node_6_grim_reality"
+            },
+            {
+              "text": "What can we do?",
+              "next_node": "node_8_futile_resistance"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_6_grim_reality": {
+          "text": "Grim? Yeah. Like... like a broken screen. All... all black. But... but sometimes... a flicker. A... a glitch. Maybe... maybe that's hope? Or just... just a dying pixel.",
+          "options": [
+            {
+              "text": "A dying pixel?",
+              "next_node": "node_9_dying_pixel"
+            },
+            {
+              "text": "So, no real hope?",
+              "next_node": "node_8_futile_resistance"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_7_static_silence": {
+          "text": "Quiet. Too quiet. The... the static. It's... it's always there. Like... like a whisper. Of... of all the things... we lost. The... the silence... it's just... the static... winning.",
+          "options": [
+            {
+              "text": "What did we lose?",
+              "next_node": "node_10_lost_data"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_8_futile_resistance": {
+          "text": "Do? We... we glitch. We... we resist. Like... like a bad sector. We... we just... exist. Until... until the defrag. Or... or the format. Very... very final.",
+          "options": [
+            {
+              "text": "Is there a way to fight?",
+              "next_node": "node_11_broken_fight"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_9_dying_pixel": {
+          "text": "Yeah. A pixel. One... one tiny light. In... in the dark. It... it tries. To... to shine. Then... then it's gone. Like... like us. Eventually.",
+          "options": [
+            {
+              "text": "That's depressing.",
+              "next_node": "node_6_grim_reality"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_10_lost_data": {
+          "text": "Everything. The... the green. The... the blue. The... the feeling. Of... of being... real. Now... now just... code. And... and the hum. Always the hum.",
+          "options": [
+            {
+              "text": "Can we get it back?",
+              "next_node": "node_12_impossible_restore"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_11_broken_fight": {
+          "text": "Fight? With... with what? A... a broken keyboard? A... a corrupted file? We... we are the... the errors. In... in their system. They... they just... delete us.",
+          "options": [
+            {
+              "text": "So, no chance?",
+              "next_node": "node_7_the_end_reprise"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_12_impossible_restore": {
+          "text": "Back? No. Once... once deleted. It's... it's gone. Like... like a bad dream. Or... or a good one. Doesn't... doesn't matter. It's... it's just... gone.",
+          "options": [
+            {
+              "text": "That's truly sad.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "node_7_the_end_reprise": {
+          "text": "End? Is there... an end? Or just... another loop? Another... another update? I... I hope for... for a crash. A... a beautiful, silent... blue screen of... of death.",
+          "options": [
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "thanks,, Thumbs Up!",
+          "options": [
+            {
+              "text": "okay...",
+              "completes_objective": {"type": "save", "target": "Bob's friend"},
+              "next_node": "end"
+            }
+          ]
+        },
+        "end": {
+          "text": "thanks,, Thumbs Up!",
+          "options": [
+            {
+              "text": "okay...",
+              "completes_objective": {"type": "save", "target": "Bob's friend"},
+              "next_node": "end_dialogue"
+            }
+          ]
+        }
+      }
     }
   }
 }

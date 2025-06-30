@@ -7,7 +7,8 @@ from entities.enemy import Enemy
 from entities.npc import NPC
 from items.item import Item
 from ui.hud import HUD
-from config.constants import TILE_SIZE
+from config.constants import TILE_SIZE, KEY_INTERACT
+import math
 
 class Quest001Scene(BaseGameplayScene):
     def __init__(self, game, player=None, hud=None, dungeon_data=None):
@@ -64,10 +65,27 @@ class Quest001Scene(BaseGameplayScene):
 
     def load_npcs(self, npcs_data):
         """Loads NPCs from the dungeon data."""
+        if not npcs_data: # If no NPC data, nothing to load
+            print("Quest001Scene: No NPCs to load.")
+            return
+
+        # Calculate the center of the room in pixel coordinates
+        # Assuming map_width and map_height are in tiles
+        center_x_pixels = (self.map_width * self.tile_size) / 2
+        center_y_pixels = (self.map_height * self.tile_size) / 2
+        
         for npc_data in npcs_data:
-            npc_type = npc_data['type']
-            x, y = npc_data['x'], npc_data['y']
-            npc = NPC(self.game, npc_type, x, y)
+            # Adjust for NPC sprite size to truly center it
+            npc_width = TILE_SIZE 
+            npc_height = TILE_SIZE 
+            x_pos = center_x_pixels - (npc_width / 2)
+            y_pos = center_y_pixels - (npc_height / 2)
+
+            name = npc_data.get('name', "NPC")
+            dialogue_id = npc_data.get('dialogue_id')
+            sprite = npc_data.get('sprite')
+            # Pass width, height, color, name, and dialogue_id to the NPC constructor
+            npc = NPC(self.game, x_pos, y_pos, npc_width, npc_height, (0, 255, 0), name, dialogue_id, sprite)
             self.npcs.add(npc)
         print(f"Quest001Scene: Loaded {len(self.npcs)} NPCs.")
 
@@ -105,6 +123,41 @@ class Quest001Scene(BaseGameplayScene):
 
     def handle_event(self, event):
         super().handle_event(event) # Call base class handle_event for common input
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == KEY_INTERACT: # Handle interaction key
+                if self.player:
+                    # Check for interaction with NPCs
+                    for npc_sprite in self.npcs:
+                        npc_world_x = npc_sprite.rect.centerx
+                        npc_world_y = npc_sprite.rect.centery
+                        player_world_x = self.player.rect.centerx
+                        player_world_y = self.player.rect.centery
+
+                        distance = math.hypot(player_world_x - npc_world_x, player_world_y - npc_world_y)
+
+                        # Define interaction distance (e.g., 1.5 tiles)
+                        interaction_distance = TILE_SIZE * 2.5
+
+                        if distance < interaction_distance:
+                            # Start dialogue with this NPC using the NPC's own interact method
+                            npc_sprite.interact(self.player)
+                            break # Interact with only one NPC at a time
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Left-click
+            # Check for NPC interaction
+            for npc_sprite in self.npcs:
+                # Calculate NPC's screen position
+                npc_screen_x = (npc_sprite.rect.x - self.camera_x) * self.zoom_level
+                npc_screen_y = (npc_sprite.rect.y - self.camera_y) * self.zoom_level
+
+                # Create a rect for the NPC at its screen position
+                npc_screen_rect = pygame.Rect(npc_screen_x, npc_screen_y,
+                                              npc_sprite.rect.width * self.zoom_level,
+                                              npc_sprite.rect.height * self.zoom_level)
+
+                if npc_screen_rect.collidepoint(event.pos):
+                    npc_sprite.interact(self.player) # Pass the player object
+                    return # Consume event if NPC is interacted with
 
     def update(self, dt):
         super().update(dt) # Call base class update for player, enemies, projectiles, portals, friendly_entities, camera

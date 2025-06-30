@@ -50,7 +50,7 @@ def direction_to_target(source, target):
     dy = target[1] - source[1]
     return pygame.math.Vector2(dx, dy).normalize()
 
-def draw_text(surface, text, size, color, x, y, align="topleft", max_width=None):
+def draw_text(surface, text, size, color, x, y, align="topleft", max_width=None, alpha=255):
     """Renders text on a surface."""
     font_name = pygame.font.match_font('arial') # Fallback font
     try:
@@ -59,6 +59,7 @@ def draw_text(surface, text, size, color, x, y, align="topleft", max_width=None)
         font = pygame.SysFont(font_name, size) # Fallback if Font fails
 
     text_surface = font.render(text, True, color)
+    text_surface.set_alpha(alpha)
     if max_width:
         words = text.split(' ')
         lines = []

@@ -5,11 +5,10 @@
       "name": "Debt Spiral",
       "description": "Bob's friend was taken by the Tithing Choir for 'processing'. Rescue him before he becomes Profit Paste.",
       "objectives": [
-        {"description": "Locate the Feast Hall dungeon", "completed": false},
         {"description": "Kill 3 Tithing Acolytes", "completed": false},
-        {"description": "Sabotage the Meat-Vat controls", "completed": false}
+        {"description": "Save Bob's friend", "completed": false}
       ],
-      "rewards": {"scrap": 100, "exp": 50, "item": "arm_grafter"},
+      "rewards": {"scrap": 100, "exp": 500, "item": "arm_grafter"},
       "is_completed": false,
       "is_unlocked": true,
       "tilemap_scene_name": "quest_001_dungeon"
@@ -23,7 +22,7 @@
         {"description": "Disable the Security Drones", "completed": false},
         {"description": "Extract the AI core", "completed": false}
       ],
-      "rewards": {"scrap": 150, "exp": 75, "item": "teleporter_key"},
+      "rewards": {"scrap": 150, "exp": 750, "item": "teleporter_key"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -36,7 +35,7 @@
         {"description": "Kill the Profit-Scribe", "completed": false},
         {"description": "Burn the cargo manifests", "completed": false}
       ],
-      "rewards": {"scrap": 200, "exp": 100, "item": "cultist_mask"},
+      "rewards": {"scrap": 200, "exp": 1000, "item": "cultist_mask"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -49,7 +48,7 @@
         {"description": "Bypass the biometric locks", "completed": false},
         {"description": "Retrieve the ledger", "completed": false}
       ],
-      "rewards": {"scrap": 120, "exp": 60, "item": "ledger_of_sins"},
+      "rewards": {"scrap": 120, "exp": 600, "item": "ledger_of_sins"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -62,7 +61,7 @@
         {"description": "Defend Alice during the hack", "completed": false},
         {"description": "Escape before the meltdown", "completed": false}
       ],
-      "rewards": {"scrap": 180, "exp": 90, "item": "ai_shard"},
+      "rewards": {"scrap": 180, "exp": 900, "item": "ai_shard"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -75,7 +74,7 @@
         {"description": "Plant explosives in the boardroom", "completed": false},
         {"description": "Escape before detonation", "completed": false}
       ],
-      "rewards": {"scrap": 250, "exp": 120, "item": "executive_keycard"},
+      "rewards": {"scrap": 250, "exp": 1200, "item": "executive_keycard"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -88,7 +87,7 @@
         {"description": "Destroy 3 prototype vats", "completed": false},
         {"description": "Kill the Lead Butcher", "completed": false}
       ],
-      "rewards": {"scrap": 200, "exp": 100, "item": "butchers_cleaver"},
+      "rewards": {"scrap": 200, "exp": 1000, "item": "butchers_cleaver"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -101,7 +100,7 @@
         {"description": "Override the transmission", "completed": false},
         {"description": "Survive the counterattack", "completed": false}
       ],
-      "rewards": {"scrap": 220, "exp": 110, "item": "virus_core"},
+      "rewards": {"scrap": 220, "exp": 1100, "item": "virus_core"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -114,7 +113,7 @@
         {"description": "Kill the Auctioneer", "completed": false},
         {"description": "Free 5 rebel prisoners", "completed": false}
       ],
-      "rewards": {"scrap": 300, "exp": 150, "item": "liberator_badge"},
+      "rewards": {"scrap": 300, "exp": 1500, "item": "liberator_badge"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -127,7 +126,7 @@
         {"description": "Sabotage the perimeter turrets", "completed": false},
         {"description": "Hold the line until reinforcements arrive", "completed": false}
       ],
-      "rewards": {"scrap": 400, "exp": 200, "item": "coalition_medal"},
+      "rewards": {"scrap": 400, "exp": 2000, "item": "coalition_medal"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -140,7 +139,7 @@
         {"description": "Survive the dogma firewalls", "completed": false},
         {"description": "Download the Profit Engine's weakness", "completed": false}
       ],
-      "rewards": {"scrap": 350, "exp": 175, "item": "sacred_algorithm"},
+      "rewards": {"scrap": 350, "exp": 1750, "item": "sacred_algorithm"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -153,7 +152,7 @@
         {"description": "Kill the Elevator Priest", "completed": false},
         {"description": "Collapse the nutrient pipeline", "completed": false}
       ],
-      "rewards": {"scrap": 380, "exp": 190, "item": "priest_hood"},
+      "rewards": {"scrap": 380, "exp": 1900, "item": "priest_hood"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -166,7 +165,7 @@
         {"description": "Destroy 2 Profit Tanks", "completed": false},
         {"description": "Retreat before the counterattack", "completed": false}
       ],
-      "rewards": {"scrap": 420, "exp": 210, "item": "ripper_gun"},
+      "rewards": {"scrap": 420, "exp": 2100, "item": "ripper_gun"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -179,7 +178,7 @@
         {"description": "Kill the High Comptroller", "completed": false},
         {"description": "Save at least 5 prisoners", "completed": false}
       ],
-      "rewards": {"scrap": 500, "exp": 250, "item": "comptroller_key"},
+      "rewards": {"scrap": 500, "exp": 2500, "item": "comptroller_key"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -192,7 +191,7 @@
         {"description": "Defend Alice during the upload", "completed": false},
         {"description": "Escape the collapsing maw", "completed": false}
       ],
-      "rewards": {"scrap": 450, "exp": 225, "item": "core_virus"},
+      "rewards": {"scrap": 450, "exp": 2250, "item": "core_virus"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -205,7 +204,7 @@
         {"description": "Kill the Flesh Firewalls", "completed": false},
         {"description": "Stabilize Bob's vitals", "completed": false}
       ],
-      "rewards": {"scrap": 480, "exp": 240, "item": "flesh_hook"},
+      "rewards": {"scrap": 480, "exp": 2400, "item": "flesh_hook"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -218,7 +217,7 @@
         {"description": "Kill the Choir Disruptors", "completed": false},
         {"description": "Keep the signal alive for 5 minutes", "completed": false}
       ],
-      "rewards": {"scrap": 520, "exp": 260, "item": "hymnal_core"},
+      "rewards": {"scrap": 520, "exp": 2600, "item": "hymnal_core"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -231,7 +230,7 @@
         {"description": "Destroy the Core Guardians", "completed": false},
         {"description": "Activate the virus/hymn/conduit", "completed": false}
       ],
-      "rewards": {"scrap": 600, "exp": 300, "item": "core_shard"},
+      "rewards": {"scrap": 600, "exp": 3000, "item": "core_shard"},
       "is_completed": false,
       "is_unlocked": false
     },
@@ -244,7 +243,7 @@
         {"description": "Destroy the Profit Algorithm", "completed": false},
         {"description": "Escape the collapsing sanctum", "completed": false}
       ],
-      "rewards": {"scrap": 1000, "exp": 500, "item": "engine_heart"},
+      "rewards": {"scrap": 10000, "exp": 50000, "item": "engine_heart"},
       "is_completed": false,
       "is_unlocked": false
     },

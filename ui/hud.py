@@ -12,6 +12,7 @@ from config.settings import UI_BACKGROUND_COLOR
 from config.constants import KEY_SKILL_1, KEY_SKILL_2, KEY_SKILL_3, KEY_SKILL_4, KEY_POTION_1, KEY_POTION_2, KEY_POTION_3, KEY_POTION_4
 from core.utils import draw_text
 from ui.minimap import Minimap
+from progression.quest_tracker import QuestTracker, QuestTrackerHUD # Removed Quest, as it's not directly used here
 import json
 import os
 
@@ -20,6 +21,8 @@ class HUD:
         self.player = player
         self.minimap = Minimap(self.player, [], scene) # Initialize with an empty entity list for now
         self.font = pygame.font.SysFont(UI_FONT, UI_FONT_SIZE_DEFAULT)
+        self.quest_tracker = QuestTracker() # Get the singleton instance
+        self.quest_tracker_hud = QuestTrackerHUD(self.quest_tracker) # Instantiated QuestTrackerHUD
         self.skill_tree_data = self.load_skill_tree_data()
 
     def load_skill_tree_data(self):
@@ -64,6 +67,7 @@ class HUD:
             self._draw_skill_cooldown_gauge(screen, self.player.summon_skeletons_skill, "Summon Skeletons", SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 70)
 
         # Draw Minion Counts
+        self.quest_tracker_hud.draw(screen) # Call QuestTrackerHUD's draw method
         self._draw_minion_counts(screen)
 
     def _draw_bar(self, screen, x, y, width, height, current_value, max_value, color, label):
