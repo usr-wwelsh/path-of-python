@@ -143,13 +143,13 @@ class SpawnTown(BaseGameplayScene):
         self.effects = pygame.sprite.Group() # Add effects group
 
         # Create some NPCs
-        npc1 = create_npc(game, 600, 333, "Bob the Bold", "bob_dialogue")
+        npc1 = create_npc(game, 664, 397, "Bob the Bold", "bob_dialogue")
         self.npcs.add(npc1)
 
-        npc2 = create_npc(game, 800, 333, "Alice the Agile", "alice_dialogue")
+        npc2 = create_npc(game, 864, 397, "Alice the Agile", "alice_dialogue")
         self.npcs.add(npc2)
 
-        npc3 = create_npc(game, 700, 533, "Charlie the Calm", "charlie_dialogue")
+        npc3 = create_npc(game, 764, 597, "Charlie the Calm", "charlie_dialogue")
         self.npcs.add(npc3)
         self.charlie = npc3 # Store charlie for shop positioning
 

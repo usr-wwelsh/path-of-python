@@ -76,8 +76,8 @@
                 {
                     "target_scene": "teleporter_menu",
                     "location": [
-                        700,
-                        433
+                        764,
+                        497
                     ],
                     "graphic": "graphics/UNUSED/features/dngn_trap_magical.png"
                 },
