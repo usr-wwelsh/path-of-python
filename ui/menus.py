@@ -140,7 +140,7 @@ class VolumeSettingsMenu(BaseScene):
         self.dragging = False
         self.next_song_button = Button(
             SCREEN_WIDTH // 2 + 120, SCREEN_HEIGHT // 2 - 10, 100, 40,
-            "Next Song", lambda: self.game.spawn_town.next_song()
+            "Next Song", lambda: self.game.music_manager.play_random_song()
         )
 
     def handle_event(self, event):

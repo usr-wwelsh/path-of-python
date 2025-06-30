@@ -3,6 +3,7 @@ import json  # Import json to read zone_data.json
 import os  # Import os to construct file paths
 from ui.dialogue_manager import DialogueManager
 from core.scene_manager import BaseScene
+from core.music_manager import MusicManager
 from entities.player import Player
 from entities.boss_portal import BossPortal  # Import BossPortal
 from ui.hud import HUD
@@ -21,6 +22,8 @@ from entities.projectile import Projectile # Import the Projectile class
 class BaseGameplayScene(BaseScene):
     def __init__(self, game, player=None, hud=None, tileset_name="default", dungeon_data=None, friendly_entities=None, map_width=None, map_height=None):
         # Moved import here to avoid circular dependency
+        self.music_manager = MusicManager()
+        self.music_manager.play_random_song()
         from core.boss_system_manager import BossSystemManager
         self.boss_system_manager = BossSystemManager(game) # Instantiate BossSystemManager
         super().__init__(game)

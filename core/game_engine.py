@@ -1,3 +1,4 @@
+from core.music_manager import MusicManager
 import sys
 import os
 sys.path.append(".")
@@ -25,12 +26,14 @@ class GameEngine:
     """Manages the main game loop, scenes, and core systems."""
     def __init__(self):
         pygame.init()
-        # Initialize the screen *before* applying display settings
-        self.screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT), pygame.SHOWN)
+        # Initialize the screen with basic settings first
+        self.screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
         # Configure logging
         logging.basicConfig(level=logging.DEBUG if settings.DEBUG_MODE else logging.INFO,
                             format='%(asctime)s - %(levelname)s - %(message)s')
         self.logger = logging.getLogger(__name__)
+        self.music_manager = MusicManager()
+
         self.logger.info("GameEngine initialized.")
 
         self.settings = settings # Make settings accessible
@@ -38,7 +41,8 @@ class GameEngine:
         self.clock = pygame.time.Clock()
         self.running = True
 
-        self.apply_display_settings() # Apply initial display settings
+        # Apply display settings properly
+        self.apply_display_settings()
 
         self.input_handler = InputHandler()
 
@@ -57,7 +61,6 @@ class GameEngine:
 
         self.scene_manager.set_scene(STATE_TITLE_SCREEN)
 
-
     def load_scenes(self):
         """Loads scenes from data/scenes.json."""
         with open('data/scenes.json', 'r') as f:
@@ -70,7 +73,7 @@ class GameEngine:
             module_name, class_name = class_path.rsplit(".", 1)
             module = __import__(module_name, fromlist=[class_name])
             scene_class = getattr(module, class_name)
-            
+
             scene_args = {'game': self}
             dungeon_data = None
 
@@ -87,7 +90,7 @@ class GameEngine:
                     if 'player' in sig.parameters and 'hud' in sig.parameters:
                         scene_args['player'] = self.player
                         scene_args['hud'] = self.hud
-                    
+
                     # Load dungeon_data if path is specified
                     if "dungeon_data_path" in scene_data:
                         dungeon_data_path = scene_data["dungeon_data_path"]
@@ -100,15 +103,50 @@ class GameEngine:
                             scene_args['dungeon_data'] = None # Ensure dungeon_data is None on error
 
                 scene = scene_class(**scene_args)
-            
+
             self.logger.info(f"Attempting to add scene: {name} with class {class_name}")
             self.scene_manager.add_scene(name, scene)
+
+    def apply_display_settings(self):
+        """Applies display settings from config.settings."""
+        self.logger.info("Applying display settings.")
+        self.logger.info(f"Fullscreen: {self.settings.FULLSCREEN}, Borderless: {self.settings.BORDERLESS}, Vsync: {self.settings.VSYNC}")
+
+        # Calculate flags based on settings
+        flags = 0
+        if self.settings.FULLSCREEN:
+            flags |= pygame.FULLSCREEN
+        if self.settings.VSYNC:
+            flags |= pygame.DOUBLEBUF
+
+        # Reinitialize the display with the correct settings
+        try:
+            self.screen = pygame.display.set_mode(
+                (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT),
+                flags,
+                vsync=self.settings.VSYNC
+            )
+        except pygame.error as e:
+            self.logger.error(f"Failed to set display mode: {e}")
+            # Fallback to basic windowed mode if there's an error
+            self.screen = pygame.display.set_mode(
+                (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT)
+            )
+
+        pygame.display.set_caption(self.settings.CAPTION)
+
+        # Center the window if not in fullscreen
+        if not self.settings.FULLSCREEN:
+            try:
+                window_x = (pygame.display.Info().current_w - self.settings.SCREEN_WIDTH) // 2
+                window_y = (pygame.display.Info().current_h - self.settings.SCREEN_HEIGHT) // 2
+                os.environ['SDL_VIDEO_WINDOW_POS'] = f"{window_x},{window_y}"
+            except Exception as e:
+                self.logger.warning(f"Could not center window: {e}")
 
     def run(self):
         """Runs the main game loop."""
         try:
-            # self.screen = pygame.display.set_mode((self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT), pygame.SHOWN)
-
             while self.running:
                 dt = self.clock.tick(self.settings.FPS) / 1000.0 # Delta time in seconds
 
@@ -118,14 +156,24 @@ class GameEngine:
                     self.input_handler.handle_event(event)
                     self.scene_manager.handle_event(event)
 
+                # Check if display is still valid before operations
+                if not pygame.display.get_active():
+                    self.logger.warning("Display surface is not active, reinitializing...")
+                    self.apply_display_settings()
+
                 self.scene_manager.update(dt)
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'effects'):
                     self.scene_manager.current_scene.effects.update(dt)
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'projectiles'):
                     self.scene_manager.current_scene.projectiles.update(dt, self.scene_manager.current_scene.player, self.scene_manager.current_scene.tile_map, self.scene_manager.current_scene.tile_size)
 
+                try:
+                    self.screen.fill((0, 0, 0)) # Clear screen
+                except pygame.error as e:
+                    self.logger.error(f"Failed to fill screen: {e}")
+                    self.apply_display_settings() # Try to reinitialize display
+                    continue # Skip this frame if display is not ready
 
-                self.screen.fill((0, 0, 0)) # Clear screen
                 self.scene_manager.draw(self.screen)
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'effects'):
                     for sprite in self.scene_manager.current_scene.effects:
@@ -133,7 +181,6 @@ class GameEngine:
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'projectiles'):
                     for sprite in self.scene_manager.current_scene.projectiles:
                         sprite.draw(self.screen, self.scene_manager.current_scene.camera_x, self.scene_manager.current_scene.camera_y, self.scene_manager.current_scene.zoom_level)
-
 
                 self.input_handler.reset_inputs() # Reset input states for the next frame
 
@@ -160,33 +207,18 @@ class GameEngine:
                             draw_text(self.screen, player_coords_text, 18, (255, 255, 0), 10, debug_y_offset)
                             debug_y_offset += 20
 
-                pygame.display.flip()
+                try:
+                    pygame.display.flip()
+                except pygame.error as e:
+                    self.logger.error(f"Failed to flip display: {e}")
+                    self.apply_display_settings() # Try to reinitialize display
+                    continue # Skip this frame if display is not ready
 
             self.quit_game()
         except Exception as e:
             self.logger.exception("An unhandled exception occurred during the game loop:")
             traceback.print_exc() # Print the full traceback
             self.quit_game()
-
-    def apply_display_settings(self):
-        """Applies display settings from config.settings."""
-        self.logger.info("Applying display settings.")
-        self.logger.info(f"Fullscreen: {self.settings.FULLSCREEN}, Borderless: {self.settings.BORDERLESS}, Vsync: {self.settings.VSYNC}")
-        flags = pygame.FULLSCREEN if self.settings.FULLSCREEN else pygame.SHOWN
-        if self.settings.VSYNC:
-            flags |= pygame.DOUBLEBUF # Vsync is often tied to double buffering
-
-        # self.screen = pygame.display.set_mode(
-        #     (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT),
-        #     flags,
-        #     vsync=self.settings.VSYNC
-        # )
-        pygame.display.set_caption(self.settings.CAPTION)
-
-        # Center the window
-        window_x = (pygame.display.Info().current_w - self.settings.SCREEN_WIDTH) // 2
-        window_y = (pygame.display.Info().current_h - self.settings.SCREEN_HEIGHT) // 2
-        # os.environ['SDL_VIDEO_WINDOW_POS'] = f"{window_x},{window_y}"
 
     def quit_game(self):
         """Sets the running flag to False to exit the game loop."""

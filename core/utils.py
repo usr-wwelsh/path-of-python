@@ -56,7 +56,7 @@ def draw_text(surface, text, size, color, x, y, align="topleft", max_width=None,
     try:
         font = pygame.font.Font(font_name, size)
     except:
-        font = pygame.SysFont(font_name, size) # Fallback if Font fails
+        font = pygame.font.SysFont(font_name, size) # Fallback if Font fails
 
     text_surface = font.render(text, True, color)
     text_surface.set_alpha(alpha)

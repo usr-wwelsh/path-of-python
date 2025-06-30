@@ -199,35 +199,6 @@ class SpawnTown(BaseGameplayScene):
     def enter(self):
         self.game.logger.info("Entering SpawnTown.")
 
-        if not pygame.mixer.music.get_busy():
-            # Load music files from the data/music directory
-            music_dir = os.path.join(os.getcwd(), "data", "music")
-            self.music_files = [f for f in os.listdir(music_dir) if os.path.isfile(os.path.join(music_dir, f))]
-            self.current_music_index = 0
-
-            # Define a function to play the next song
-            def play_next_song():
-                if self.music_files:
-                    next_song = os.path.join(music_dir, self.music_files[self.current_music_index % len(self.music_files)])
-                    pygame.mixer.music.load(next_song)
-                    pygame.mixer.music.play()
-                    self.current_music_index += 1
-                else:
-                    print("No music files found in data/music/")
-
-            # Set the function to be called when a song finishes
-            def music_end_callback():
-                play_next_song()
-
-            # Set the end event for the music
-            pygame.mixer.music.set_endevent(pygame.USEREVENT+1)
-
-            # Set the function to be called when a song finishes
-            pygame.mixer.music.set_endevent(pygame.USEREVENT+1)
-
-            # Start playing the music
-            play_next_song()
-
         pygame.event.clear(pygame.USEREVENT+1)
 
     def exit(self):
