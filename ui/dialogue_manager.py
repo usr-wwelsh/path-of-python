@@ -128,7 +128,7 @@ class DialogueManager:
         text_margin = 20
         text_x = box_x + text_margin
         text_y = box_y + text_margin
-        draw_text(screen, self.get_current_dialogue_text(), 20, (255, 255, 255), text_x, text_y)
+        draw_text(screen, self.get_current_dialogue_text(), 20, (255, 255, 255), text_x, text_y, max_width=box_width - (2 * text_margin))
 
         # Dialogue options
         options = self.get_current_dialogue_options()

@@ -502,5 +502,17 @@
         "projectile_sprite_path": "graphics/effect/stone0.png",
         "ranged_attack_pattern": "single",
         "xp_value": 250
+    },
+    "tithing_acolyte": {
+        "name": "Tithing Acolyte",
+        "health": 50,
+        "damage": 10,
+        "speed": 30,
+        "sprite_path": "graphics/dc-mon/human_monk_ghost.png",
+        "attack_range": 100,
+        "attack_cooldown": 1500,
+        "projectile_sprite_path": null,
+        "ranged_attack_pattern": "single",
+        "xp_value": 10
     }
 }

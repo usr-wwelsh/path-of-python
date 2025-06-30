@@ -283,7 +283,8 @@ class BaseGameplayScene(BaseScene):
                 ranged_attack_pattern,
                 xp_value
             )
-            self.enemies.add(enemy)
+            self.enemies.add(enemy)       
+            self.enemies_loaded = True
         print(f"BaseGameplayScene: Loaded {len(self.enemies)} enemies.")
     def load_decorations(self, decorations_data):
         """Loads decorations from the dungeon data."""

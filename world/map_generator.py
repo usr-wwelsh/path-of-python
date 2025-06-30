@@ -40,10 +40,8 @@ class MapGenerator:
                     tile_type = 'mountain'
                 elif noise_value < 0.5:
                     tile_type = 'building'
-                elif noise_value < 0.6:
-                    tile_type = 'street'
                 else:
-                    tile_type = 'rubble'
+                    tile_type = 'street'
 
                 row.append(tile_type)
             map_data.append(row)
@@ -228,6 +226,11 @@ class MapGenerator:
 
                 if 0 <= x < self.width and 0 <= y < self.height:
                     map_data[y][x] = 'street'  # Use 'street' tile for roads
+                    # Make roads wider
+                    if 0 <= x - 1 < self.width:
+                        map_data[y][x - 1] = 'street'
+                    if 0 <= x + 1 < self.width:
+                        map_data[y][x + 1] = 'street'
                     roads.append({'x': x, 'y': y})
 
         return roads
@@ -283,13 +286,13 @@ class SpawnTownMapGenerator(MapGenerator):
             row = []
             for x in range(self.width):
                 # Generate terrain based on Perlin noise
-                noise_value = noise.pnoise2(x / self.width * 2,
-                                           y / self.height * 2,
-                                           octaves=10,
-                                           persistence=0.5,
-                                           lacunarity=2.0,
-                                           repeatx=1024,
-                                           repeaty=1024,
+                noise_value = noise.pnoise2(x / self.width * 2.5,   # Adjusted x-scaling for more balanced features
+                                           y / self.height * 2.5, # Adjusted y-scaling for more balanced features
+                                           octaves=4,             # Reduced octaves for smoother terrain
+                                           persistence=0.2,       # Reduced persistence for less jaggedness
+                                           lacunarity=2.0,        # Adjusted lacunarity for varied detail
+                                           repeatx=256,           # Adjusted repeatx to a more relevant power of 2
+                                           repeaty=256,           # Adjusted repeaty to a more relevant power of 2
                                            base=self.seed)
 
                 # Assign tile types based on noise value, using available tile assets
@@ -315,17 +318,46 @@ class SpawnTownMapGenerator(MapGenerator):
                     tile_type = 'shop'
                 elif noise_value < 0.5:
                     tile_type = 'garden'
-                elif noise_value < 0.6:
-                    tile_type = 'well'
-                elif noise_value < 0.7:
+                elif noise_value < 0.75: # Increased range for grass
                     tile_type = 'grass'
-                else:
+                elif noise_value < 0.85: # Introduced mountain tiles
+                    tile_type = 'mountain'
+                else: # Rubble for highest noise values, making it rarer
                     tile_type = 'rubble'
+                
+                # New logic: Prevent long vertical unwalkable lines during generation
+                if tile_type == 'rubble':
+                    # Check if the two tiles directly above are also rubble
+                    if y >= 2 and tile_map[y-1][x] == 'rubble' and tile_map[y-2][x] == 'rubble':
+                        tile_type = 'grass' # Change to a walkable tile to break the vertical line
+                elif tile_type == 'mountain':
+                    # Check if the two tiles directly above are also mountain
+                    if y >= 2 and tile_map[y-1][x] == 'mountain' and tile_map[y-2][x] == 'mountain':
+                        tile_type = 'grass' # Change to a walkable tile to break the vertical line
 
                 row.append(tile_type)
             tile_map.append(row)
-
+        
         return tile_map
+
+    def generate_ruins(self, map_data):
+        """Generate ancient ruins on the map, overridden for spawntown to be smaller and less frequent."""
+        ruins = []
+
+        # Find suitable locations for ruins (in forests)
+        for y in range(self.height):
+            for x in range(self.width):
+                # Reduced spawn chance for ruins in spawntown
+                if map_data[y][x] == 'forest' and random.random() < 0.0001: # Reduced from 0.0005
+                    ruins.append({'x': x, 'y': y})
+                    # Mark the area as ruins with a smaller 3x3 area
+                    for dy in range(-1, 2): # Changed from -2, 3 to -1, 2 for 3x3 area
+                        for dx in range(-1, 2): # Changed from -2, 3 to -1, 2 for 3x3 area
+                            nx, ny = x + dx, y + dy
+                            if 0 <= nx < self.width and 0 <= ny < self.height:
+                                map_data[ny][nx] = 'rubble' 
+
+        return ruins
 
     def generate_entities(self, map_data):
         """Generate entities (enemies, NPCs, etc.) on the map."""

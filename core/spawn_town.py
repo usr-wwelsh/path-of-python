@@ -122,7 +122,7 @@ class SpawnTown(BaseGameplayScene):
         self.message3_duration = 5000  # 5 seconds
 
         # Instantiate MapGenerator and then generate the map
-        map_generator = SpawnTownMapGenerator(200, 200) # Create an instance with desired width and height
+        map_generator = SpawnTownMapGenerator(100, 100, seed=47) # Create an instance with desired width and height
         all_map_data = map_generator.generate_all()
         self.tile_map = all_map_data['map']
 

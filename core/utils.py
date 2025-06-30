@@ -50,7 +50,7 @@ def direction_to_target(source, target):
     dy = target[1] - source[1]
     return pygame.math.Vector2(dx, dy).normalize()
 
-def draw_text(surface, text, size, color, x, y, align="topleft"):
+def draw_text(surface, text, size, color, x, y, align="topleft", max_width=None):
     """Renders text on a surface."""
     font_name = pygame.font.match_font('arial') # Fallback font
     try:
@@ -59,6 +59,44 @@ def draw_text(surface, text, size, color, x, y, align="topleft"):
         font = pygame.SysFont(font_name, size) # Fallback if Font fails
 
     text_surface = font.render(text, True, color)
+    if max_width:
+        words = text.split(' ')
+        lines = []
+        current_line = []
+        for word in words:
+            # Temporarily join with a space to check width
+            if font.render(' '.join(current_line + [word]), True, color).get_width() < max_width:
+                current_line.append(word)
+            else:
+                lines.append(' '.join(current_line))
+                current_line = [word]
+        lines.append(' '.join(current_line)) # Add the last line
+        
+        # Render each line
+        total_height = 0
+        for line in lines:
+            line_surface = font.render(line, True, color)
+            line_rect = line_surface.get_rect()
+            
+            # Adjust position based on alignment for each line
+            if align == "center":
+                line_rect.center = (x, y + total_height)
+            elif align == "topright":
+                line_rect.topright = (x, y + total_height)
+            elif align == "midleft":
+                line_rect.midleft = (x, y + total_height)
+            elif align == "midright":
+                line_rect.midright = (x, y + total_height)
+            elif align == "bottomleft":
+                line_rect.bottomleft = (x, y + total_height)
+            elif align == "bottomright":
+                line_rect.bottomright = (x, y + total_height)
+            else: # topleft
+                line_rect.topleft = (x, y + total_height)
+            
+            surface.blit(line_surface, line_rect)
+            total_height += font.get_linesize()
+        return None # Or return the total height occupied by the wrapped text
     text_rect = text_surface.get_rect()
 
     if align == "center":
@@ -76,7 +114,8 @@ def draw_text(surface, text, size, color, x, y, align="topleft"):
     else: # topleft
         text_rect.topleft = (x, y)
 
-    surface.blit(text_surface, text_rect)
+    if not max_width: # Only blit if not handled by word wrapping
+        surface.blit(text_surface, text_rect)
     return text_surface
 def load_zone_data():
     """Loads zone data from a JSON file."""

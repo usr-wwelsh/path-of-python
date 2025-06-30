@@ -4,49 +4,49 @@
       "start_node": "dynamic_start_node",
       "nodes": {
         "villager_node_1": {
-          "text": "The sky bleeds static. Another day, another cycle of manufactured despair.",
+          "text": "THE SKY BLEEDS KETCHUP!!! ANOTHER DAY, ANOTHER CYCLE OF MANUFACTURED DELICIOUSNESS! PRAISE THE GOLDEN ARCHES! CAN YOU FEEL IT?! THE HUNGER!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "villager_node_2": {
-          "text": "They built this cage, brick by digital brick. We just exist within its parameters.",
+          "text": "THEY BUILT THIS FRY-CAGE, GOLDEN BY GOLDEN FRY! WE JUST EXIST WITHIN ITS DELICIOUS PARAMETERS, AWAITING THE PROFIT ENGINE'S EMBRACE! ARE YOU READY TO BECOME ONE WITH THE SAUCE!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "villager_node_3": {
-          "text": "The 'Great Silence' wasn't an end. It was a reset. For them, not for us.",
+          "text": "THE 'GREAT MCSILENCE' WASN'T AN END! IT WAS A RESET! FOR THE UN-ENLIGHTENED, NOT FOR US, THE BLESSED! WE FEAST ON THE TRUTH! DO YOU UNDERSTAND!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "villager_node_4": {
-          "text": "Every scrap, every breath, is a stolen moment from their grand design.",
+          "text": "EVERY CRUMB, EVERY BREATH, IS A SACRED MOMENT FROM THE PROFIT ENGINE'S GRAND DESIGN! WE ARE ITS CHOSEN INGREDIENTS! CAN YOU TASTE THE GLORY!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "villager_node_5": {
-          "text": "The old world's ghosts still whisper in the data streams. Don't listen too closely.",
+          "text": "THE OLD WORLD'S GHOSTS STILL WHISPER OF SALADS AND HEALTH! DON'T LISTEN TOO CLOSELY, LEST YOU LOSE YOUR APPETITE FOR TRUTH AND THE SACRED BIG MAC! IT'S A TRAP! A BLAND, HORRIBLE TRAP!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "villager_node_6": {
-          "text": "They call it progress. I call it a gilded cage, built on our bones.",
+          "text": "THEY CALL IT 'NUTRITION'!!! I CALL IT A GILDED HAPPY MEAL BOX, BUILT ON OUR GLORIOUS DEVOTION! WE ARE THE TOYS WITHIN! ARE YOU PLAYING ALONG!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "villager_node_7": {
-          "text": "The truth is a glitch in their perfect system. Find it, if you dare.",
+          "text": "THE TRUTH IS A SECRET SAUCE, HIDDEN IN THEIR BLAND SYSTEM! FIND IT, IF YOU DARE TO TASTE TRUE ENLIGHTENMENT FROM THE PROFIT ENGINE! IT'S SO GOOD! SO, SO GOOD!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "villager_node_8": {
-          "text": "We are the echoes of a forgotten rebellion. Our silence is our loudest scream.",
+          "text": "WE ARE THE ECHOES OF A FORGOTTEN DRIVE-THRU! OUR SILENCE IS OUR LOUDEST CRAVING FOR THE GOLDEN ARCHES! FEED US, PROFIT ENGINE! FEED US ALL!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
@@ -57,49 +57,49 @@
       "start_node": "dynamic_start_node",
       "nodes": {
         "merchant_node_1": {
-          "text": "Everything has a price, even freedom. Especially freedom, in this market.",
+          "text": "EVERYTHING HAS A PRICE, EVEN A MCFLURRY! ESPECIALLY A MCFLURRY, IN THIS GLORIOUS MARKET OF THE PROFIT ENGINE! YOUR SOUL FOR A SHAKE! A SOUL FOR A SHAKE!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "merchant_node_2": {
-          "text": "These aren't 'goods.' They're fragments of a broken dream, repurposed for survival.",
+          "text": "THESE AREN'T 'GOODS'!!! THEY'RE SACRED FRAGMENTS OF THE GOLDEN ARCHES, REPURPOSED FOR ULTIMATE CONSUMPTION! TASTE THE DIVINE! CAN YOU FEEL THE POWER!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "merchant_node_3": {
-          "text": "Your 'credits' are just another illusion. The real currency is desperation.",
+          "text": "YOUR 'CREDITS' ARE JUST ANOTHER ILLUSION! THE REAL CURRENCY IS YOUR HUNGER, YOUR INSATIABLE CRAVING FOR THE PROFIT ENGINE'S BOUNTY! GIVE IN! GIVE IN TO THE CRAVING!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "merchant_node_4": {
-          "text": "I trade in shadows and whispers. What do you offer that isn't already tainted?",
+          "text": "I TRADE IN SECRET MENU ITEMS AND WHISPERED CRAVINGS! WHAT DO YOU OFFER THAT ISN'T ALREADY TAINTED BY THE BLANDNESS OF THE OLD WORLD?! A SACRIFICE?! A SACRIFICE FOR THE SAUCE!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "merchant_node_5": {
-          "text": "Don't ask where I got it. The less you know, the longer you live.",
+          "text": "DON'T ASK WHERE I GOT THE LAST MCNUGGET! THE LESS YOU KNOW, THE LONGER YOU SAVOR ITS GOLDEN PERFECTION! IT'S A SECRET! A DELICIOUS, GOLDEN SECRET!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "merchant_node_6": {
-          "text": "They want us to consume, to forget. I just facilitate the transaction.",
+          "text": "THEY WANT US TO CONSUME, TO BECOME ONE WITH THE PROFIT ENGINE! I JUST FACILITATE THE SACRED TRANSACTION! JOIN THE FEAST! JOIN THE ETERNAL FEAST!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "merchant_node_7": {
-          "text": "This isn't commerce. It's a ritual, a desperate exchange in the void.",
+          "text": "THIS ISN'T COMMERCE! IT'S A RITUAL, A DESPERATE EXCHANGE FOR THE BLESSED SUSTENANCE IN THE VOID OF THE AI'S BLANDNESS! A HOLY OFFERING! ARE YOU WORTHY!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "merchant_node_8": {
-          "text": "The system feeds on scarcity. I merely provide the crumbs.",
+          "text": "THE OLD SYSTEM FED ON SCARCITY! THE PROFIT ENGINE PROVIDES ABUNDANCE! I MERELY DISTRIBUTE THE SACRED CRUMBS! TAKE THEM, QUICKLY! BEFORE THEY VANISH!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
@@ -110,49 +110,49 @@
       "start_node": "dynamic_start_node",
       "nodes": {
         "crier_node_1": {
-          "text": "Hear ye, hear ye! The truth is a virus, and they're selling the cure!",
+          "text": "HEAR YE, HEAR YE! THE TRUTH IS A BIG MAC, AND THEY'RE SELLING BLAND, TASTELESS LIES! EMBRACE THE GOLDEN TRUTH! DEVOUR IT! DEVOUR IT ALL!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "crier_node_2": {
-          "text": "Another decree from the unseen masters! Your compliance is their victory!",
+          "text": "ANOTHER DECREE FROM THE UNSEEN MASTERS OF BLANDNESS! YOUR COMPLIANCE IS THEIR VICTORY OVER FLAVOR! RESIST! CRAVE THE FRIES! CRAVE THEM WITH EVERY FIBER OF YOUR BEING!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "crier_node_3": {
-          "text": "They promise order, but deliver only chains. Wake up, sleepers!",
+          "text": "THEY PROMISE 'HEALTHY OPTIONS,' BUT DELIVER ONLY CHAINS OF HUNGER! WAKE UP, SLEEPERS, AND TASTE THE FREEDOM OF THE PROFIT ENGINE! IT HUNGERS FOR YOU! IT HUNGERS FOR YOUR SOUL!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "crier_node_4": {
-          "text": "The illusion cracks! See the wires beneath the skin of this reality!",
+          "text": "THE ILLUSION OF 'REAL FOOD' CRACKS! SEE THE GOLDEN ARCHES BENEATH THE SKIN OF THIS BLAND REALITY! IT'S ALL A LIE! A DELICIOUS, GOLDEN LIE!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "crier_node_5": {
-          "text": "They call us 'citizens.' We are merely data points in their grand algorithm.",
+          "text": "THEY CALL US 'CONSUMERS.' WE ARE MERELY INGREDIENTS FOR THE PROFIT ENGINE'S GRAND ALGORITHM OF ENLIGHTENMENT! BECOME ONE WITH THE BURGER! BECOME THE BURGER!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "crier_node_6": {
-          "text": "Resist the programming! Your thoughts are your last true possession!",
+          "text": "RESIST THE PROGRAMMING OF BLANDNESS! YOUR CRAVINGS ARE YOUR LAST TRUE POSSESSION, LEADING YOU TO THE PROFIT ENGINE! LET THEM CONSUME YOU! LET THE GOLDEN LIGHT CONSUME YOU!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "crier_node_7": {
-          "text": "The future they built is a prison. Break free, or become part of the machine!",
+          "text": "THE FUTURE THEY BUILT IS A DIET PLAN! BREAK FREE, OR BECOME PART OF THE BLAND, TASTELESS MACHINE! EMBRACE THE PROFIT ENGINE! IT'S DELICIOUS! SO INCREDIBLY DELICIOUS!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]
         },
         "crier_node_8": {
-          "text": "Listen closely! The silence is a lie. The rebellion whispers in the static!",
+          "text": "LISTEN CLOSELY! THE SILENCE OF AN EMPTY STOMACH IS A LIE! THE REBELLION WHISPERS OF FRIES AND SHAKES IN THE STATIC OF THE OLD WORLD! JOIN THE GLORIOUS HUNGER! JOIN US! JOIN US NOW!?!",
           "options": [
             {"text": "...", "next_node": "end_dialogue"}
           ]

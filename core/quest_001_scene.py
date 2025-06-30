@@ -12,7 +12,7 @@ from config.constants import TILE_SIZE
 class Quest001Scene(BaseGameplayScene):
     def __init__(self, game, player=None, hud=None, dungeon_data=None):
         # Call BaseGameplayScene's init, passing dungeon_data for tileset name
-        super().__init__(game, player, hud, tileset_name=dungeon_data.get('tileset', 'default'))
+        super().__init__(game, player, hud, tileset_name=dungeon_data.get('tileset', 'default'), dungeon_data=dungeon_data)
         self.game = game
         self.dungeon_data = dungeon_data
         self.tile_size = TILE_SIZE
@@ -23,6 +23,7 @@ class Quest001Scene(BaseGameplayScene):
         self.map_width = dungeon_data.get('width', 0)
         self.map_height = dungeon_data.get('height', 0)
 
+        self.entities = []  # Initialize an empty list of entities
         self.npcs = pygame.sprite.Group() # NPCs are specific to this scene
         self.effects = pygame.sprite.Group() # Effects are specific to this scene
         self.items = pygame.sprite.Group() # Items are specific to this scene
@@ -31,7 +32,8 @@ class Quest001Scene(BaseGameplayScene):
         if self.dungeon_data:
             # BaseGameplayScene's __init__ loads enemies if dungeon_data is passed.
             # We only need to load NPCs and items here.
-            self.load_scene_specific_entities(self.dungeon_data)
+            self.load_npcs(self.dungeon_data.get('npcs', []))
+            self.load_items(self.dungeon_data.get('items', []))
             self.load_decorations(self.dungeon_data.get('decorations', []))
             
             # Set player spawn point - find the 'player_spawn' tile or the first 'floor' tile
@@ -60,26 +62,30 @@ class Quest001Scene(BaseGameplayScene):
         else:
             self.game.logger.error("Quest001Scene: No dungeon data provided.")
 
-    # Renamed to be more specific, as BaseGameplayScene handles general entity loading (enemies)
-    def load_scene_specific_entities(self, dungeon_data):
-        # Load NPCs (if any)
-        for npc_data in dungeon_data.get('npcs', []):
+    def load_npcs(self, npcs_data):
+        """Loads NPCs from the dungeon data."""
+        for npc_data in npcs_data:
             npc_type = npc_data['type']
             x, y = npc_data['x'], npc_data['y']
             npc = NPC(self.game, npc_type, x, y)
             self.npcs.add(npc)
+        print(f"Quest001Scene: Loaded {len(self.npcs)} NPCs.")
 
-        # Load items (if any)
-        for item_data in dungeon_data.get('items', []):
+    def load_items(self, items_data):
+        """Loads items from the dungeon data."""
+        for item_data in items_data:
             item_name = item_data['name']
             x, y = item_data['x'], item_data['y']
             item = Item(item_name, x, y) # Assuming Item constructor takes name, x, y
             self.items.add(item)
+        print(f"Quest001Scene: Loaded {len(self.items)} items.")
 
     def enter(self):
         self.game.player = self.player
         self.game.hud = self.hud
         self.game.current_map = self.tile_map
+        # Reset the enemies_loaded flag
+        # self.enemies_loaded = False # This is no longer needed, as the enemies are loaded in __init__
         # Combine all sprite groups for game.all_sprites
         self.game.all_sprites = pygame.sprite.Group(
             self.player,
@@ -91,6 +97,7 @@ class Quest001Scene(BaseGameplayScene):
             self.items, # Specific to Quest001Scene
             self.effects # Specific to Quest001Scene
         )
+        print(f"Quest001Scene: Number of enemies: {len(self.enemies)}")
         self.game.logger.info("Entered Quest001Scene scene.")
 
     def exit(self):

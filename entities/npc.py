@@ -12,7 +12,7 @@ class NPC(pygame.sprite.Sprite):
 
         # Define sprite paths
         yaktaur_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon")
-        merfolk_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon")
+        merfolk_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon", "cult")
 
         # Hardcode specific sprites for named NPCs
         if self.name == "Bob the Bold":
@@ -27,17 +27,19 @@ class NPC(pygame.sprite.Sprite):
         else:
             # Load random merfolk sprite for other NPCs
             merfolk_sprites = [
-                "giant_eyeball.png",
-                "eye_of_draining.png",
-                "shining_eye.png",
-                "eye_of_devastation.png",
-                "great_orb_of_eyes.png",
+                "1.png",
+                "2.png",
+                "3.png",
+                "4.png",
             ]
             sprite_filename = random.choice(merfolk_sprites)
             sprite_path = os.path.join(merfolk_path_base, sprite_filename)
 
         if os.path.exists(sprite_path):
             self.image = pygame.image.load(sprite_path).convert_alpha()
+            if "cult" in sprite_path: # Check if it's a merfolk sprite
+                width *= 2
+                height *= 2
             self.image = pygame.transform.scale(self.image, (width, height))
         else:
             # Fallback to colored rectangle if sprite not found
