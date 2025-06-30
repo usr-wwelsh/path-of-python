@@ -3,6 +3,7 @@
 * left click to move
 * right click to teleport
 * mouse side buttons for 2 skills
+* num keys for dialog
   
 ![til](./example4.gif)
 ![til](./example5.gif)
