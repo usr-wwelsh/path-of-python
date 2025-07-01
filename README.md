@@ -4,11 +4,13 @@
 * right click to teleport
 * mouse side buttons for 2 skills
 * num keys for dialog
+  
 ![til](./example4.gif)
 ![til](./example5.gif)
 ![til](./example2.gif)
 ![til](./example3.gif)
 ![til](./example.gif)
+
 ### Character Classes: MASSIVE UPDATE
 
 *   **Stalker:** A master of close combat, dealing devastating blows. (cleave and cyclone)
