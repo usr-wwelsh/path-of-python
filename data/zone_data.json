@@ -104,6 +104,14 @@
                         2080
                     ],
                     "graphic": ""
+                },
+                {
+                    "target_scene": "third",
+                    "location": [
+                        928,
+                        4576
+                    ],
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_portal_rotated.png"
                 }
             ],
             "map_width": 50,

@@ -999,5 +999,90 @@
         }
       }
     }
+,
+    "charlie_2_dialogue": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "Heard you put a Profit Scribe in the dirt. Good. One less bootlicker tallying up our misery. Now for the paperwork.",
+          "options": [
+            {
+              "text": "Paperwork?",
+              "next_node": "explain_manifests"
+            },
+            {
+              "text": "What's next?",
+              "next_node": "next_steps"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "explain_manifests": {
+          "text": "The cargo manifests. Can't have the Choir knowing what they 'lost'. Burn them. Erase the data. No loose ends.",
+          "options": [
+            {
+              "text": "Why is that so important?",
+              "next_node": "importance_of_manifests"
+            },
+            {
+              "text": "I'll take care of it.",
+              "next_node": "end_dialogue_burn"
+            }
+          ]
+        },
+        "next_steps": {
+          "text": "Burn the manifests. Then we get this food back to town. People are hungry. And hungry people get desperate. We need them focused.",
+          "options": [
+            {
+              "text": "Focused on what?",
+              "next_node": "explain_focus"
+            },
+            {
+              "text": "Understood.",
+              "next_node": "end_dialogue_burn"
+            }
+          ]
+        },
+        "importance_of_manifests": {
+          "text": "It's not just about the food. It's about the message. We're not just taking from them. We're erasing them. Every burnt page is a middle finger to their precious system.",
+          "options": [
+            {
+              "text": "I like your style.",
+              "next_node": "end_dialogue_burn"
+            },
+            {
+              "text": "I'll get it done.",
+              "next_node": "end_dialogue_burn"
+            }
+          ]
+        },
+        "explain_focus": {
+          "text": "On the real enemy. The Profit Engine. Not on their empty stomachs. A full belly makes for a better revolutionary.",
+          "options": [
+            {
+              "text": "Makes sense.",
+              "next_node": "end_dialogue_burn"
+            }
+          ]
+        },
+        "end_dialogue_burn": {
+          "text": "See that you do. Don't get sentimental. Just get it done.",
+          "options": [
+            {
+              "text": "On my way.",
+              "completes_objective": {"type": "burn", "target": "cargo manifests"},
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "Don't get lost in the static.",
+          "options": []
+        }
+      }
+    }
   }
 }

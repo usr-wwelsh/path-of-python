@@ -32,12 +32,13 @@
       "description": "Charlie’s rebels are starving. Raid a Tithing Caravan for their 'nutritional equity' rations.",
       "objectives": [
         {"description": "Ambush the caravan", "completed": false},
-        {"description": "Kill the Profit-Scribe", "completed": false},
-        {"description": "Burn the cargo manifests", "completed": false}
+        {"description": "Kill 1 Profit Scribe", "completed": false},
+        {"description": "Burn cargo manifests", "completed": false}
       ],
       "rewards": {"scrap": 200, "exp": 10000, "item": "cultist_mask"},
       "is_completed": false,
-      "is_unlocked": false
+      "is_unlocked": false,
+      "tilemap_scene_name": "third"
     },
     {
       "id": "quest_004",

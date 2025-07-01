@@ -526,5 +526,17 @@
         "projectile_sprite_path": "graphics/spells/fire/ring_of_flames.png",
         "ranged_attack_pattern": "single",
         "xp_value": 500
+    },
+    "profit_scribe": {
+        "name": "Profit Scribe",
+        "health": 6000,
+        "damage": 50,
+        "speed": 300,
+        "sprite_path": "graphics/dc-mon/deep_elf_death_mage.png",
+        "attack_range": 800,
+        "attack_cooldown": 100,
+        "projectile_sprite_path": "graphics/spells/ice/ozocubus_refrigeration.png",
+        "ranged_attack_pattern": "burst",
+        "xp_value": 500
     }
 }

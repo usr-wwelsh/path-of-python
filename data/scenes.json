@@ -119,6 +119,11 @@
             "class": "core.dungeons.maze.maze",
             "dungeon_data_path": "data/dungeons/maze.json",
             "darkness": true
+        },
+        {
+            "name": "third",
+            "class": "core.dungeons.third.third",
+            "dungeon_data_path": "data/dungeons/third.json"
         }
     ]
 }
