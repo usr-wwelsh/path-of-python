@@ -17,13 +17,13 @@ from config.constants import (
 from config import settings # Import settings for screen dimensions
 
 class SwampCaveDungeon(BaseGameplayScene):
-    def __init__(self, game, player, hud):
+    def __init__(self, game, player, hud, is_dark=False): # Added is_dark parameter
         # Load dungeon data from JSON first
         dungeon_data = self.load_dungeon_data("swamp_cave")
         tileset_name = dungeon_data.get("tileset", "default") # Extract tileset name
 
-        # Pass dungeon_data to the BaseGameplayScene constructor
-        super().__init__(game, player, hud, tileset_name=tileset_name, dungeon_data=dungeon_data)
+        # Pass dungeon_data and is_dark to the BaseGameplayScene constructor
+        super().__init__(game, player, hud, tileset_name=tileset_name, dungeon_data=dungeon_data, is_dark=is_dark) # Pass is_dark
         self.name = "SwampCaveDungeon"
 
         self.dungeon_data = dungeon_data # Store dungeon data locally for other dungeon-specific uses

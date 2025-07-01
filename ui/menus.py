@@ -69,6 +69,12 @@ class PauseMenu(BaseScene):
         for button in self.buttons:
             button.draw(screen)
 
+    def reinitialize_fonts(self):
+        """Reinitializes fonts for all buttons in the pause menu."""
+        self.game.logger.info("Reinitializing fonts for PauseMenu buttons.")
+        for button in self.buttons:
+            button.reinitialize_font()
+
 class SettingsMenu(BaseScene):
     def __init__(self, game):
         super().__init__(game)
@@ -127,6 +133,12 @@ class SettingsMenu(BaseScene):
         for button in self.buttons:
             button.draw(screen)
 
+    def reinitialize_fonts(self):
+        """Reinitializes fonts for all buttons in the settings menu."""
+        self.game.logger.info("Reinitializing fonts for SettingsMenu buttons.")
+        for button in self.buttons:
+            button.reinitialize_font()
+
 class VolumeSettingsMenu(BaseScene):
     def __init__(self, game):
         super().__init__(game)
@@ -174,6 +186,11 @@ class VolumeSettingsMenu(BaseScene):
         pygame.draw.rect(screen, UI_ACCENT_COLOR, thumb_rect)
         self.next_song_button.draw(screen)
 
+    def reinitialize_fonts(self):
+        """Reinitializes fonts for buttons in the volume settings menu."""
+        self.game.logger.info("Reinitializing fonts for VolumeSettingsMenu buttons.")
+        self.next_song_button.reinitialize_font()
+
 class CharacterStatsMenu(BaseScene):
     def __init__(self, game):
         super().__init__(game)
@@ -203,16 +220,27 @@ class CharacterStatsMenu(BaseScene):
         draw_text(screen, "Energy Shield: XXX / XXX", UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50, align="center")
         self.back_button.draw(screen)
 
+    def reinitialize_fonts(self):
+        """Reinitializes fonts for buttons in the character stats menu."""
+        self.game.logger.info("Reinitializing fonts for CharacterStatsMenu buttons.")
+        self.back_button.reinitialize_font()
+
 class Button:
     def __init__(self, x, y, width, height, text, action, font_size=UI_FONT_SIZE_DEFAULT, color=UI_PRIMARY_COLOR, bg_color=UI_SECONDARY_COLOR, hover_color=UI_ACCENT_COLOR):
         self.rect = pygame.Rect(x, y, width, height)
         self.text = text
         self.action = action
-        self.font = pygame.font.SysFont(UI_FONT, font_size)
+        self.font_name = UI_FONT # Store font name
+        self.font_size = font_size # Store font size
+        self.font = pygame.font.SysFont(self.font_name, self.font_size)
         self.color = color
         self.bg_color = bg_color
         self.hover_color = hover_color
         self.is_hovered = False
+
+    def reinitialize_font(self):
+        """Recreates the font object for the button."""
+        self.font = pygame.font.SysFont(self.font_name, self.font_size)
 
     def draw(self, surface):
         current_bg_color = self.hover_color if self.is_hovered else self.bg_color

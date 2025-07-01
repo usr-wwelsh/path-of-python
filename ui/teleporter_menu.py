@@ -3,6 +3,7 @@ import os
 import json
 from config import settings
 from core.utils import draw_text
+from progression.quest_tracker import QuestTracker
 from ui.dungeon_renderer import render_dungeon_pygame
 
 class TeleporterMenu:
@@ -59,10 +60,12 @@ class TeleporterMenu:
         return [line for line in lines if line] # Filter out empty lines
 
     def _calculate_quest_item_heights(self, content_width):
-        all_quests = list(self.game.quest_manager.quests.values())
+        all_quests = QuestTracker().all_quests
+        # Filter quests to only include unlocked or completed quests
+        filtered_quests = [quest for quest in all_quests if quest.is_unlocked or quest.is_completed]
         heights = []
         description_max_width = content_width - 10 # Content width minus padding
-        for quest_data in all_quests:
+        for quest_data in filtered_quests:
             title_height = self.font.get_height()
             wrapped_description_lines = self._wrap_text(quest_data.description, self.small_font, description_max_width)
             description_height = len(wrapped_description_lines) * self.small_font.get_height()
@@ -74,7 +77,9 @@ class TeleporterMenu:
     def _load_tilemap_for_selection(self):
         print(f"[_load_tilemap_for_selection] Called. Current tab: {self.current_tab}, Selected option: {self.selected_option}")
         print(f"[_load_tilemap_for_selection] Length of dungeon_scenes_data: {len(self.dungeon_scenes_data) if self.dungeon_scenes_data else 0}")
-        print(f"[_load_tilemap_for_selection] Length of all_quests: {len(self.game.quest_manager.quests.values())}")
+        all_quests = QuestTracker().all_quests
+        filtered_quests = [quest for quest in all_quests if quest.is_unlocked or quest.is_completed]
+        print(f"[_load_tilemap_for_selection] Length of all_quests: {len(filtered_quests)}")
         print(f"[_load_tilemap_for_selection] Selected option: {self.selected_option}")
         self.current_tilemap_data = None
         self.map_visualizer_surface = None
@@ -108,30 +113,31 @@ class TeleporterMenu:
                         print(f"TeleporterMenu: Error: Could not decode JSON for {selected_scene_data['name']}: {full_path}")
 
         elif self.current_tab == "Quests":
-            all_quests = list(self.game.quest_manager.quests.values())
-            if 0 <= self.selected_option < len(all_quests):
-                selected_quest = all_quests[self.selected_option]
+            all_quests = QuestTracker().all_quests
+            filtered_quests = [quest for quest in all_quests if quest.is_unlocked or quest.is_completed]
+            if 0 <= self.selected_option < len(filtered_quests):
+                selected_quest = filtered_quests[self.selected_option]
                 if selected_quest.is_unlocked and selected_quest.tilemap_scene_name:
                     # Find the scene data for the quest's tilemap scene
                     scene_entry = next((s for s in self.dungeon_scenes_data if s['name'] == selected_quest.tilemap_scene_name), None)
                     if scene_entry and scene_entry.get('dungeon_data_path'):
                         dungeon_data_path = scene_entry['dungeon_data_path']
                         full_path = os.path.join(os.getcwd(), dungeon_data_path)
-                        print(f"[_load_tilemap_for_selection] Attempting to load quest: {selected_quest.title}")
-                        print(f"[_load_tilemap_for_selection] Quest tilemap_path: {selected_quest.tilemap_path}")
+                        print(f"[_load_tilemap_for_selection] Attempting to load quest: {selected_quest.name}")
+                        print(f"[_load_tilemap_for_selection] Quest tilemap_path: {selected_quest.tilemap_scene_name}")
                         print(f"[_load_tilemap_for_selection] Constructed full_path for quest: {full_path}")
                         print(f"[_load_tilemap_for_selection] os.path.exists(full_path) for quest: {os.path.exists(full_path)}")
                         try:
                             with open(full_path, 'r') as f:
                                 self.current_tilemap_data = json.load(f)
-                            print(f"[_load_tilemap_for_selection] Loaded quest tilemap data for {selected_quest.title}. Data present: {bool(self.current_tilemap_data)}")
+                            print(f"[_load_tilemap_for_selection] Loaded quest tilemap data for {selected_quest.name}. Data present: {bool(self.current_tilemap_data)}")
                         except FileNotFoundError:
-                            print(f"TeleporterMenu: Warning: Tilemap data not found for quest {selected_quest.title}: {full_path}")
+                            print(f"TeleporterMenu: Warning: Tilemap data not found for quest {selected_quest.name}: {full_path}")
                         except json.JSONDecodeError:
-                            print(f"TeleporterMenu: Error: Could not decode JSON for quest {selected_quest.title}: {full_path}")
+                            print(f"TeleporterMenu: Error: Could not decode JSON for quest {selected_quest.name}: {full_path}")
                 # If no tilemap data was loaded for the quest, display its objectives and description
                 if not self.current_tilemap_data and self.current_tab == "Quests":
-                    print(f"[_load_tilemap_for_selection] No tilemap data for quest {selected_quest.title}. Displaying objectives and description.")
+                    print(f"[_load_tilemap_for_selection] No tilemap data for quest {selected_quest.name}. Displaying objectives and description.")
                     content_list_width = 300 # From content_rect.width
                     visualizer_area_width = self.rect.width - content_list_width - 20
                     # visualizer_area_height = self.rect.height - 80 # Already calculated and surface initialized
@@ -139,7 +145,7 @@ class TeleporterMenu:
                     text_y = 10 # Start drawing from top with padding
                     
                     # Display Quest Title
-                    draw_text(self.map_visualizer_surface, selected_quest.title, self.font.get_height(), (255, 255, 0), 10, text_y, align="left")
+                    draw_text(self.map_visualizer_surface, selected_quest.name, self.font.get_height(), (255, 255, 0), 10, text_y, align="left")
                     text_y += self.font.get_height() + 5 # Padding after title
 
                     # Display Objectives
@@ -148,8 +154,8 @@ class TeleporterMenu:
                         text_y += self.font.get_height() + 2
 
                         for objective in selected_quest.objectives: # Changed from .items() to direct iteration
-                            objective_text = objective['description'] # Access as dictionary
-                            is_completed = objective['completed'] # Access as dictionary
+                            objective_text = objective['description_original'] # Access as dictionary
+                            is_completed = objective['completed_original'] # Access as dictionary
                             
                             status_icon = "[X]" if is_completed else "[ ]"
                             display_text = f"{status_icon} {objective_text}"
@@ -250,11 +256,13 @@ class TeleporterMenu:
                             self.is_open = False
                             return scene_data['name']
                 elif self.current_tab == "Quests":
-                    all_quests = list(self.game.quest_manager.quests.values()) # Get all quests
+                    all_quests = QuestTracker().all_quests # Get all quests
+                    # Filter quests to only include unlocked or completed quests
+                    filtered_quests = [quest for quest in all_quests if quest.is_unlocked or quest.is_completed]
                     quest_heights = self._calculate_quest_item_heights(content_rect.width)
                     
                     current_y_in_content_rect = 0
-                    for i, quest_data in enumerate(all_quests):
+                    for i, quest_data in enumerate(filtered_quests):
                         item_height = quest_heights[i]
                         absolute_item_y = content_rect.y + current_y_in_content_rect - self.scroll_offset
                         
@@ -304,10 +312,12 @@ class TeleporterMenu:
                         self.scroll_offset = self.selected_option
                     self._load_tilemap_for_selection() # Update map visualizer
                 elif self.current_tab == "Quests":
-                    all_quests = list(self.game.quest_manager.quests.values())
+                    all_quests = QuestTracker().all_quests
+                    # Filter quests to only include unlocked or completed quests
+                    filtered_quests = [quest for quest in all_quests if quest.is_unlocked or quest.is_completed]
                     quest_heights = self._calculate_quest_item_heights(content_rect.width)
-                    if all_quests:
-                        self.selected_option = (self.selected_option - 1) % len(all_quests)
+                    if filtered_quests:
+                        self.selected_option = (self.selected_option - 1) % len(filtered_quests)
                         # Adjust scroll_offset to make selected item visible
                         cumulative_height_before_selected = sum(quest_heights[:self.selected_option])
                         if cumulative_height_before_selected < self.scroll_offset:
@@ -320,10 +330,12 @@ class TeleporterMenu:
                         self.scroll_offset = self.selected_option
                     self._load_tilemap_for_selection() # Update map visualizer
                 elif self.current_tab == "Quests":
-                    all_quests = list(self.game.quest_manager.quests.values())
+                    all_quests = QuestTracker().all_quests
+                    # Filter quests to only include unlocked or completed quests
+                    filtered_quests = [quest for quest in all_quests if quest.is_unlocked or quest.is_completed]
                     quest_heights = self._calculate_quest_item_heights(content_rect.width)
-                    if all_quests:
-                        self.selected_option = (self.selected_option + 1) % len(all_quests)
+                    if filtered_quests:
+                        self.selected_option = (self.selected_option + 1) % len(filtered_quests)
                         # Adjust scroll_offset to make selected item visible
                         cumulative_height_up_to_selected = sum(quest_heights[:self.selected_option + 1])
                         if cumulative_height_up_to_selected > self.scroll_offset + content_rect.height:
@@ -335,9 +347,11 @@ class TeleporterMenu:
                     self.is_open = False
                     return selected_scene
                 elif self.current_tab == "Quests":
-                    all_quests = list(self.game.quest_manager.quests.values())
-                    if all_quests and all_quests[self.selected_option].is_unlocked: # Only allow action if unlocked
-                        selected_quest = all_quests[self.selected_option]
+                    all_quests = QuestTracker().all_quests
+                    # Filter quests to only include unlocked or completed quests
+                    filtered_quests = [quest for quest in all_quests if quest.is_unlocked or quest.is_completed]
+                    if filtered_quests and filtered_quests[self.selected_option].is_unlocked: # Only allow action if unlocked
+                        selected_quest = filtered_quests[self.selected_option]
                         self.is_open = False
                         return selected_quest.tilemap_scene_name
         return None
@@ -417,11 +431,13 @@ class TeleporterMenu:
             content_surface = pygame.Surface(content_rect.size, pygame.SRCALPHA)
             content_surface.fill((30, 30, 30)) # Fill with background color
 
-            all_quests = list(self.game.quest_manager.quests.values()) # Get all quests
+            all_quests = QuestTracker().all_quests # Get all quests
+            # Filter quests to only include unlocked or completed quests
+            filtered_quests = [quest for quest in all_quests if quest.is_unlocked or quest.is_completed]
             quest_heights = self._calculate_quest_item_heights(content_rect.width) # Get dynamic heights
 
             current_y_in_content_surface = 0
-            for i, quest_data in enumerate(all_quests):
+            for i, quest_data in enumerate(filtered_quests):
                 item_height = quest_heights[i]
 
                 # Calculate y position relative to the content_surface
@@ -429,14 +445,14 @@ class TeleporterMenu:
 
                 # Only draw if the item is within the visible bounds of the content_surface
                 if relative_item_y < content_rect.height and relative_item_y + item_height > 0:
-                    quest_name = quest_data.title
+                    quest_name = quest_data.name
                     quest_description = quest_data.description
                     is_unlocked = quest_data.is_unlocked
 
                     text_color = (255, 255, 255)
                     if not is_unlocked:
                         text_color = (100, 100, 100) # Grey out if locked
-                    elif i == self.selected_option:
+                    elif i == self.selected_option and 0 <= self.selected_option < len(filtered_quests):
                         text_color = (255, 255, 0) # Highlight selected option if unlocked and selected
 
                     # Draw quest title on content_surface

@@ -54,6 +54,11 @@ class NPC(pygame.sprite.Sprite):
     def update(self, dt):
         # NPCs might have idle animations or simple movement patterns
         pass
+    def draw(self, screen, camera_x, camera_y, zoom_level):
+        # Adjust position based on camera and zoom
+        scaled_image = pygame.transform.scale(self.image, (int(self.rect.width * zoom_level), int(self.rect.height * zoom_level)))
+        scaled_rect = scaled_image.get_rect(topleft=(int((self.rect.x - camera_x) * zoom_level), int((self.rect.y - camera_y) * zoom_level)))
+        screen.blit(scaled_image, scaled_rect)
 
     def interact(self, player):
         # Placeholder for interaction logic (e.g., open dialogue, quest, shop)

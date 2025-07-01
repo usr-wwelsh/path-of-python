@@ -11,9 +11,9 @@ from config.constants import TILE_SIZE, KEY_INTERACT
 import math
 
 class Quest001Scene(BaseGameplayScene):
-    def __init__(self, game, player=None, hud=None, dungeon_data=None):
+    def __init__(self, game, player=None, hud=None, dungeon_data=None, is_dark=False):
         # Call BaseGameplayScene's init, passing dungeon_data for tileset name
-        super().__init__(game, player, hud, tileset_name=dungeon_data.get('tileset', 'default'), dungeon_data=dungeon_data)
+        super().__init__(game, player, hud, tileset_name=dungeon_data.get('tileset', 'default'), dungeon_data=dungeon_data, is_dark=is_dark)
         self.game = game
         self.dungeon_data = dungeon_data
         self.tile_size = TILE_SIZE

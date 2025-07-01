@@ -41,9 +41,6 @@ class GameEngine:
         self.clock = pygame.time.Clock()
         self.running = True
 
-        # Apply display settings properly
-        self.apply_display_settings()
-
         self.input_handler = InputHandler()
 
         self.player = None # Initialize player to None
@@ -52,7 +49,10 @@ class GameEngine:
         self.quest_manager = QuestManager('data/quests.json') # Initialize QuestManager
         self.quest_tracker = QuestTracker() # Initialize QuestTracker
 
-        self.scene_manager = SceneManager(self) # Pass self (GameEngine instance) to SceneManager
+        self.scene_manager = SceneManager(self) # Pass self (GameEngine instance) to SceneManager - MOVED THIS LINE UP
+
+        # Apply display settings properly
+        self.apply_display_settings()
 
         # Load scenes from data/scenes.json
         self.developer_inventory_screen = DeveloperInventoryScreen(self)
@@ -101,6 +101,11 @@ class GameEngine:
                         except (FileNotFoundError, json.JSONDecodeError) as e:
                             self.logger.error(f"Error loading dungeon data for scene {name} from {dungeon_data_path}: {e}")
                             scene_args['dungeon_data'] = None # Ensure dungeon_data is None on error
+                    
+                    # Pass 'is_dark' parameter if it exists in scene_data AND the scene's __init__ accepts it
+                    if "darkness" in scene_data and 'is_dark' in sig.parameters: # Re-added 'is_dark' in sig.parameters check
+                        scene_args['is_dark'] = scene_data["darkness"]
+                        self.logger.info(f"GameEngine: Passing is_dark: {scene_args['is_dark']} to scene {name} during initial load.")
 
                 scene = scene_class(**scene_args)
 
@@ -132,6 +137,14 @@ class GameEngine:
             self.screen = pygame.display.set_mode(
                 (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT)
             )
+        
+        # Ensure fonts are initialized after display changes
+        if not pygame.font.get_init():
+            pygame.font.init()
+            self.logger.info("Pygame font module re-initialized.")
+        
+        # Reinitialize fonts for UI elements across all scenes
+        self.reinitialize_ui_fonts() # Call the new method here
 
         pygame.display.set_caption(self.settings.CAPTION)
 
@@ -143,6 +156,14 @@ class GameEngine:
                 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{window_x},{window_y}"
             except Exception as e:
                 self.logger.warning(f"Could not center window: {e}")
+
+    def reinitialize_ui_fonts(self):
+        """Reinitializes fonts for UI elements in all loaded scenes."""
+        self.logger.info("Reinitializing UI fonts for all scenes.")
+        for scene_name, scene_obj in self.scene_manager.scenes.items():
+            if hasattr(scene_obj, 'reinitialize_fonts'):
+                self.logger.info(f"Reinitializing fonts for scene: {scene_name}")
+                scene_obj.reinitialize_fonts()
 
     def run(self):
         """Runs the main game loop."""

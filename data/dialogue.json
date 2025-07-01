@@ -813,6 +813,191 @@
           ]
         }
       }
+    },
+    "maze_npc_dialogue": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "You've found your way to the heart of the maze. A rare feat.",
+          "options": [
+            {
+              "text": "Who are you?",
+              "next_node": "who_are_you"
+            },
+            {
+              "text": "What is this place?",
+              "next_node": "what_is_this_place"
+            },
+            {
+              "text": "I need to find my way out.",
+              "next_node": "find_way_out"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "who_are_you": {
+          "text": "I am merely a remnant, an echo of a time before the static. I observe. I remember.",
+          "options": [
+            {
+              "text": "What do you remember?",
+              "next_node": "what_do_you_remember"
+            },
+            {
+              "text": "Interesting.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "what_is_this_place": {
+          "text": "This maze is a construct, a test. Designed to filter the weak from the strong. Or perhaps, to simply contain those who stray too far.",
+          "options": [
+            {
+              "text": "A test for what?",
+              "next_node": "test_for_what"
+            },
+            {
+              "text": "Who designed it?",
+              "next_node": "who_designed_it"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "find_way_out": {
+          "text": "The way out is not always forward. Sometimes, it is through. Sometimes, it is back. The maze reveals itself to those who truly seek.",
+          "options": [
+            {
+              "text": "Can you help me?",
+              "next_node": "can_you_help"
+            },
+            {
+              "text": "I will find my own way.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "what_do_you_remember": {
+          "text": "I remember the hum of the old world, the vibrant data streams, the laughter before the silence. Now, only echoes.",
+          "options": [
+            {
+              "text": "Is there any hope for the old world?",
+              "next_node": "hope_for_old_world"
+            },
+            {
+              "text": "That's a heavy burden.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "test_for_what": {
+          "text": "For resilience. For adaptability. For the spark that refuses to be extinguished by the encroaching static.",
+          "options": [
+            {
+              "text": "And what happens if I pass?",
+              "next_node": "if_pass"
+            },
+            {
+              "text": "I see.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "who_designed_it": {
+          "text": "The architects of this digital prison. They sought to control, to categorize, to profit from every byte of existence. Their legacy is this labyrinth.",
+          "options": [
+            {
+              "text": "Can they be stopped?",
+              "next_node": "can_they_be_stopped"
+            },
+            {
+              "text": "A grim legacy.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "can_you_help": {
+          "text": "I can offer guidance, not a map. Observe the patterns. Listen to the whispers. The maze speaks, if you know how to listen.",
+          "options": [
+            {
+              "text": "What patterns?",
+              "next_node": "what_patterns"
+            },
+            {
+              "text": "I will try.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "hope_for_old_world": {
+          "text": "Hope is a dangerous illusion in this realm. But even a single flicker can ignite a revolution. The choice is yours.",
+          "options": [
+            {
+              "text": "What choice?",
+              "next_node": "what_choice"
+            },
+            {
+              "text": "...",
+              "next_node": "end"
+            }
+          ]
+        },
+        "if_pass": {
+          "text": "You become a variable. A new input into the grand equation. Whether that is freedom or a new form of captivity, only time will tell.",
+          "options": [
+            {
+              "text": "That's unsettling.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "can_they_be_stopped": {
+          "text": "The architects are long gone, their code still runs. To stop it, you must unravel the very fabric of this reality. A task for the truly desperate, or the truly mad.",
+          "options": [
+            {
+              "text": "I might be both.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "what_patterns": {
+          "text": "The flow of energy, the subtle shifts in the static, the echoes of forgotten pathways. The maze is a living entity, constantly reshaping itself.",
+          "options": [
+            {
+              "text": "I will observe.",
+              "next_node": "end"
+            }
+          ]
+        },
+        "what_choice": {
+          "text": "To accept the static, or to fight against it. To become a part of the system, or to seek a way to break free. Your journey defines your answer.",
+          "options": [
+            {
+              "text": "I will consider my path.",
+              "next_node": "end"
+            }
+          ]
+        },
+          "end": {
+          "text": "Take this dead AI core. Bring it to Alice.",
+          "options": [
+            {
+              "text": "okay.",
+              "completes_objective": {"type": "extract", "target": "AI core"},
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+          "end_dialogue": {
+          "text": "bye.",
+          "options": [
+          ]
+        }
+      }
     }
   }
 }

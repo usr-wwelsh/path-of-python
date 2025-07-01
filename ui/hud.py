@@ -56,7 +56,8 @@ class HUD:
         #self._draw_potion_slots(screen)
 
         # Draw Minimap
-        self.minimap.draw(screen)
+        if not self.player.game.current_scene.is_dark: # Only draw minimap if scene is not dark
+            self.minimap.draw(screen)
         # Draw Level/Experience Gauge
         self._draw_experience_gauge(screen)
         # Draw Summon Spiders Cooldown Gauge only if player has the skill

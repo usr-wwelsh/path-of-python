@@ -5,8 +5,8 @@ import os
 from core.base_gameplay_scene import BaseGameplayScene
 
 class arena(BaseGameplayScene):
-    def __init__(self, game, player, hud, dungeon_data=None):
-        super().__init__(game, player, hud, tileset_name=dungeon_data.get("tileset", "default"), dungeon_data=dungeon_data)
+    def __init__(self, game, player, hud, dungeon_data=None, is_dark=False):
+        super().__init__(game, player, hud, tileset_name=dungeon_data.get("tileset", "default"), dungeon_data=dungeon_data, is_dark=is_dark)
         self.name = "arena"
         self.dungeon_data = dungeon_data
         self.tile_map = self.dungeon_data["tile_map"]

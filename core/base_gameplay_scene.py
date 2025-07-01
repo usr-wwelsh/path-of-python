@@ -11,16 +11,17 @@ from config.constants import (
     KEY_INVENTORY, KEY_SKILL_TREE, KEY_INTERACT, KEY_OPTIONS_MENU,
     STATE_INVENTORY, STATE_SKILL_TREE, STATE_PAUSE_MENU, STATE_SETTINGS_MENU, TILE_SIZE,
     KEY_RIGHT_MOUSE, KEY_SKILL_1, KEY_SKILL_2, KEY_SKILL_3, KEY_SKILL_4, KEY_PAGE_UP, KEY_PAGE_DOWN,
-    KEY_SKILL_5, KEY_SKILL_6 # Added KEY_SKILL_5, KEY_SKILL_6
+    KEY_SKILL_5, KEY_SKILL_6, FOG_RADIUS # Added KEY_SKILL_5, KEY_SKILL_6, FOG_RADIUS
 )
 import math # Import math for distance calculation
 
 from entities.enemy import Enemy # Import the Enemy class
 from entities.projectile import Projectile # Import the Projectile class
+from entities.npc import NPC
 
 # Removed: from core.boss_system_manager import BossSystemManager # Import BossSystemManager
 class BaseGameplayScene(BaseScene):
-    def __init__(self, game, player=None, hud=None, tileset_name="default", dungeon_data=None, friendly_entities=None, map_width=None, map_height=None):
+    def __init__(self, game, player=None, hud=None, tileset_name="default", dungeon_data=None, friendly_entities=None, map_width=None, map_height=None, is_dark=False):
         # Moved import here to avoid circular dependency
         self.music_manager = MusicManager()
         self.music_manager.play_random_song()
@@ -43,6 +44,8 @@ class BaseGameplayScene(BaseScene):
         self.name = None # Initialize name attribute
         self.friendly_entities = pygame.sprite.Group() # Initialize friendly entities group
         self.death_sequence_initiated = False
+        self.is_dark = is_dark
+        self.game.logger.info(f"BaseGameplayScene initialized with is_dark: {self.is_dark}")
 
         # Initialize scaled tile image cache and zoom level here, before any conditional returns
         self.scaled_tile_images = {}
@@ -374,22 +377,23 @@ class BaseGameplayScene(BaseScene):
                 self.camera_offset_y += 10
             elif event.key == KEY_INTERACT: # Handle interaction key
                 if self.player:
-                    # Check for interaction with NPCs
-                    for npc in self.npcs:
-                        npc_world_x = npc["tile_x"] * TILE_SIZE + TILE_SIZE // 2
-                        npc_world_y = npc["tile_y"] * TILE_SIZE + TILE_SIZE // 2
-                        player_world_x = self.player.rect.centerx
-                        player_world_y = self.player.rect.centery
+                    # Check for interaction with friendly entities
+                    for entity in self.friendly_entities:
+                        if isinstance(entity, NPC):
+                            npc_world_x = entity.rect.centerx
+                            npc_world_y = entity.rect.centery
+                            player_world_x = self.player.rect.centerx
+                            player_world_y = self.player.rect.centery
 
-                        distance = math.hypot(player_world_x - npc_world_x, player_world_y - npc_world_y)
+                            distance = math.hypot(player_world_x - npc_world_x, player_world_y - npc_world_y)
 
-                        # Define interaction distance (e.g., 1.5 tiles)
-                        interaction_distance = TILE_SIZE * 1.5
+                            # Define interaction distance (e.g., 1.5 tiles)
+                            interaction_distance = TILE_SIZE * 1.5
 
-                        if distance < interaction_distance:
-                            # Start dialogue with this NPC
-                            self.game.dialogue_manager.start_dialogue(npc["dialogue_id"])
-                            break # Interact with only one NPC at a time
+                            if distance < interaction_distance:
+                                # Start dialogue with this NPC
+                                self.game.dialogue_manager.start_dialogue(entity.dialogue_id)
+                                break # Interact with only one NPC at a time
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             print(f"Mouse button down event. Button: {event.button}")
@@ -480,7 +484,11 @@ class BaseGameplayScene(BaseScene):
         self.enemies.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
         
         # Update friendly entities
-        self.friendly_entities.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
+        for entity in self.friendly_entities:
+            if isinstance(entity, NPC):
+                entity.update(dt)
+            else:
+                entity.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
 
         # Update portals
         # Add a check to ensure self.portals is a sprite group before updating
@@ -547,12 +555,13 @@ class BaseGameplayScene(BaseScene):
 
 
     def draw(self, screen):
-# Draw decorations
+        # Draw decorations
         for decoration in self.decorations:
             screen_x = decoration['x'] * self.tile_size - self.camera_x * self.zoom_level
             screen_y = decoration['y'] * self.tile_size - self.camera_y * self.zoom_level
             scaled_image = pygame.transform.scale(decoration['image'], (int(decoration['image'].get_width() * self.zoom_level), int(decoration['image'].get_height() * self.zoom_level)))
             screen.blit(scaled_image, (screen_x, screen_y))
+        
         hud_drawn = False
         if hasattr(self.game, 'current_scene'):
             # Draw the map (tiles)
@@ -605,7 +614,22 @@ class BaseGameplayScene(BaseScene):
                                 else:
                                     scaled_tile_image = self.scaled_tile_images[tile_type_value]
                                 
-                                screen.blit(scaled_tile_image, (tile_x, tile_y))
+                                if self.is_dark and self.player:
+                                    player_center_x = self.player.rect.centerx
+                                    player_center_y = self.player.rect.centery
+                                    tile_center_x = x * self.tile_size + self.tile_size // 2
+                                    tile_center_y = y * self.tile_size + self.tile_size // 2
+                                    distance = math.hypot(player_center_x - tile_center_x, player_center_y - tile_center_y)
+                                    if self.frame_count % 60 == 0: # Log once per second
+                                        self.game.logger.info(f"FOG DEBUG: is_dark={self.is_dark}, player_center=({player_center_x},{player_center_y}), tile_center=({tile_center_x},{tile_center_y}), distance={distance:.2f}, FOG_RADIUS={FOG_RADIUS}")
+
+                                    if distance > FOG_RADIUS:
+                                        # Draw black rectangle for fog of war
+                                        pygame.draw.rect(screen, (0, 0, 0), (tile_x, tile_y, self.tile_size * self.zoom_level, self.tile_size * self.zoom_level))
+                                    else:
+                                        screen.blit(scaled_tile_image, (tile_x, tile_y))
+                                else:
+                                    screen.blit(scaled_tile_image, (tile_x, tile_y))
                             else:
                                 # Fallback to drawing a colored rectangle if image not found
                                 color = (255, 0, 255)  # Magenta for missing textures
@@ -619,12 +643,33 @@ class BaseGameplayScene(BaseScene):
                 self.player.draw(screen)
 
             # Draw enemies
-            for enemy in self.enemies:
-                enemy.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
+            if self.is_dark and self.player:
+                player_center_x = self.player.rect.centerx
+                player_center_y = self.player.rect.centery
+                for enemy in self.enemies:
+                    enemy_center_x = enemy.rect.centerx
+                    enemy_center_y = enemy.rect.centery
+                    distance = math.hypot(player_center_x - enemy_center_x, player_center_y - enemy_center_y)
+                    if distance <= FOG_RADIUS:
+                        enemy.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
+            else:
+                for enemy in self.enemies:
+                    enemy.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
             
             # Draw friendly entities
-            for entity in self.friendly_entities:
-                entity.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
+            # Draw friendly entities
+            if self.is_dark and self.player:
+                player_center_x = self.player.rect.centerx
+                player_center_y = self.player.rect.centery
+                for entity in self.friendly_entities:
+                    entity_center_x = entity.rect.centerx
+                    entity_center_y = entity.rect.centery
+                    distance = math.hypot(player_center_x - entity_center_x, player_center_y - entity_center_y)
+                    if distance <= FOG_RADIUS:
+                        entity.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
+            else:
+                for entity in self.friendly_entities:
+                    entity.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
 
             # Draw portals
             for portal in self.portals:

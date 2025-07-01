@@ -34,12 +34,14 @@
         },
         {
             "name": "swamp_cave_dungeon",
-            "class": "core.swamp_cave_dungeon.SwampCaveDungeon"
+            "class": "core.swamp_cave_dungeon.SwampCaveDungeon",
+            "darkness": true
         },
         {
             "name": "quest_001_dungeon",
             "class": "core.quest_001_scene.Quest001Scene",
-            "dungeon_data_path": "data/quest_001_tilemap.json"
+            "dungeon_data_path": "data/quest_001_tilemap.json",
+            "darkness": false
         },
         {
             "name": "gameplay",
@@ -51,42 +53,50 @@
         },
         {
             "name": "grass",
-            "class": "core.dungeons.grass.grass"
+            "class": "core.dungeons.grass.grass",
+            "darkness": true
         },
         {
             "name": "boss_room",
             "class": "core.boss_scenes.boss_room_scene.BossRoomScene",
-            "dungeon_data_path": "data/boss_rooms/generic_boss_layout.json"
+            "dungeon_data_path": "data/boss_rooms/generic_boss_layout.json",
+            "darkness": true
         },
         {
             "name": "arena",
             "class": "core.dungeons.arena.arena",
-            "dungeon_data_path": "data/dungeons/arena.json"
+            "dungeon_data_path": "data/dungeons/arena.json",
+            "darkness": true
         },
         {
             "name": "arena2",
             "class": "core.dungeons.arena2.arena2",
-            "dungeon_data_path": "data/dungeons/arena2.json"
+            "dungeon_data_path": "data/dungeons/arena2.json",
+            "darkness": true
         },
         {
             "name": "arena3",
             "class": "core.dungeons.arena3.arena3",
-            "dungeon_data_path": "data/dungeons/arena3.json"
+            "dungeon_data_path": "data/dungeons/arena3.json",
+            "darkness": true
         },
         {
             "name": "noobzone",
             "class": "core.dungeons.noobzone.noobzone",
-            "dungeon_data_path": "data/dungeons/noobzone.json"
+            "dungeon_data_path": "data/dungeons/noobzone.json",
+            "darkness": true
         },
         {
             "name": "funz",
             "class": "core.dungeons.funz.funz",
-            "dungeon_data_path": "data/dungeons/funz.json"
+            "dungeon_data_path": "data/dungeons/funz.json",
+            "darkness": true
         },
         {
             "name": "UltraDungeon",
             "class": "core.dungeons.UltraDungeon.UltraDungeon",
-            "dungeon_data_path": "data/dungeons/UltraDungeon.json"
+            "dungeon_data_path": "data/dungeons/UltraDungeon.json",
+            "darkness": true
         },
         {
             "name": "save_menu",
@@ -95,12 +105,20 @@
         {
             "name": "hallway",
             "class": "core.dungeons.hallway.hallway",
-            "dungeon_data_path": "data/dungeons/hallway.json"
+            "dungeon_data_path": "data/dungeons/hallway.json",
+            "darkness": true
         },
         {
             "name": "tower",
             "class": "core.dungeons.tower.tower",
-            "dungeon_data_path": "data/dungeons/tower.json"
+            "dungeon_data_path": "data/dungeons/tower.json",
+            "darkness": true
+        },
+        {
+            "name": "maze",
+            "class": "core.dungeons.maze.maze",
+            "dungeon_data_path": "data/dungeons/maze.json",
+            "darkness": true
         }
     ]
 }

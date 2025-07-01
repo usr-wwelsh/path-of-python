@@ -513,6 +513,18 @@
         "attack_cooldown": 300,
         "projectile_sprite_path": "graphics/spells/fire/bolt_of_magma.png",
         "ranged_attack_pattern": "spiral",
-        "xp_value": 10
+        "xp_value": 100
+    },
+    "profit_tracker": {
+        "name": "Profit Tracker",
+        "health": 200,
+        "damage": 10,
+        "speed": 600,
+        "sprite_path": "graphics/dc-mon/shapeshifter.png",
+        "attack_range": 800,
+        "attack_cooldown": 60,
+        "projectile_sprite_path": "graphics/spells/fire/ring_of_flames.png",
+        "ranged_attack_pattern": "single",
+        "xp_value": 500
     }
 }

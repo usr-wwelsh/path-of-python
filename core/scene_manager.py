@@ -52,17 +52,23 @@ class SceneManager:
             
             # Load dungeon_data if path is specified in self.game.scenes_data
             scene_data_from_game_engine = next((s for s in self.game.scenes_data['scenes'] if s['name'] == scene_name), None)
-            if scene_data_from_game_engine and "dungeon_data_path" in scene_data_from_game_engine:
-                dungeon_data_path = scene_data_from_game_engine["dungeon_data_path"]
-                try:
-                    with open(dungeon_data_path, "r") as df:
-                        dungeon_data = json.load(df)
-                    kwargs['dungeon_data'] = dungeon_data
-                except (FileNotFoundError, json.JSONDecodeError) as e:
-                    self.game.logger.error(f"Error loading dungeon data for scene {scene_name} from {dungeon_data_path}: {e}")
-                    kwargs['dungeon_data'] = None # Ensure dungeon_data is None on error
-            elif 'dungeon_data' in sig.parameters: # If constructor expects dungeon_data but no path is found
-                kwargs['dungeon_data'] = None # Explicitly pass None
+            if scene_data_from_game_engine:
+                if "dungeon_data_path" in scene_data_from_game_engine:
+                    dungeon_data_path = scene_data_from_game_engine["dungeon_data_path"]
+                    try:
+                        with open(dungeon_data_path, "r") as df:
+                            dungeon_data = json.load(df)
+                        kwargs['dungeon_data'] = dungeon_data
+                    except (FileNotFoundError, json.JSONDecodeError) as e:
+                        self.game.logger.error(f"Error loading dungeon data for scene {scene_name} from {dungeon_data_path}: {e}")
+                        kwargs['dungeon_data'] = None # Ensure dungeon_data is None on error
+                elif 'dungeon_data' in sig.parameters: # If constructor expects dungeon_data but no path is found
+                    kwargs['dungeon_data'] = None # Explicitly pass None
+
+                # Pass 'is_dark' parameter if it exists in scene_data_from_game_engine and in the constructor signature
+                if 'is_dark' in sig.parameters and "darkness" in scene_data_from_game_engine:
+                    kwargs['is_dark'] = scene_data_from_game_engine["darkness"]
+                    self.game.logger.info(f"Passing is_dark: {kwargs['is_dark']} to scene {scene_name}")
 
             self.current_scene.__init__(**kwargs)
         if hasattr(self.current_scene, 'enter'):
@@ -117,4 +123,12 @@ class BaseScene:
 
     def draw(self, screen):
         """Draws the scene to the screen."""
+        pass
+
+    def reinitialize_fonts(self):
+        """
+        Reinitializes font objects for UI elements within the scene.
+        This method should be overridden by subclasses that contain UI elements
+        that need font reinitialization after display mode changes.
+        """
         pass

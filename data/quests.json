@@ -18,13 +18,13 @@
       "name": "Override Protocol",
       "description": "Alice needs a dead AI core to hack the Profit Engine’s grid. Steal one from a corporate ruin.",
       "objectives": [
-        {"description": "Find the Data Crypt dungeon", "completed": false},
-        {"description": "Disable the Security Drones", "completed": false},
-        {"description": "Extract the AI core", "completed": false}
+        {"description": "Kill 15 Profit Trackers", "completed": false},
+        {"description": "Extract AI core", "completed": false}
       ],
       "rewards": {"scrap": 150, "exp": 7500, "item": "teleporter_key"},
       "is_completed": false,
-      "is_unlocked": false
+      "is_unlocked": false,
+      "tilemap_scene_name": "maze"
     },
     {
       "id": "quest_003",

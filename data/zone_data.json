@@ -96,6 +96,14 @@
                         2720
                     ],
                     "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/fleshy_orifice_open.png"
+                },
+                {
+                    "target_scene": "maze",
+                    "location": [
+                        3072,
+                        2080
+                    ],
+                    "graphic": ""
                 }
             ],
             "map_width": 50,
@@ -121,7 +129,7 @@
             "street": "graphics/dc-dngn/floor/sandstone_floor0.png",
             "rubble": "graphics/dc-dngn/wall/dngn_metal_wall_cracked.png",
             "path": "graphics/dc-dngn/floor/dirt_sw.png",
-            "cobblestone": "graphics/dc-dngn/floor/ice0.png",
+            "cobblestone": "graphics/dc-dngn/water/dngn_shallow_water_murky.png",
             "mountain": "graphics/dc-dngn/wall/stone_dark0.png",
             "market": "graphics/dc-dngn/floor/mesh3.png",
             "house": "graphics/dc-dngn/floor/mesh2.png",

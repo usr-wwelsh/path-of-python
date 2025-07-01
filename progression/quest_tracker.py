@@ -1,7 +1,7 @@
 import json
 import os
 import pygame
-from config.settings import UI_FONT, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_SECONDARY_COLOR
+from config.settings import UI_FONT, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_SECONDARY_COLOR, GREEN
 import random
 from core.utils import draw_text
 
@@ -249,7 +249,7 @@ class QuestTracker:
                             "completed_original": obj_data.get('completed', False) # Keep original completed status
                         })
                     
-                    quest = Quest(q_data['name'], q_data['description'], parsed_objectives)
+                    quest = Quest(q_data['name'], q_data['description'], parsed_objectives, q_data.get('tilemap_scene_name'))
                     quest.is_completed = q_data.get('is_completed', False)
                     quest.is_unlocked = q_data.get('is_unlocked', False) # Assuming quests can be locked/unlocked
                     self.all_quests.append(quest)
@@ -339,10 +339,11 @@ class QuestTracker:
         return "Quest not found."
 
 class Quest:
-    def __init__(self, name, description, objectives):
+    def __init__(self, name, description, objectives, tilemap_scene_name=None):
         self.name = name
         self.description = description
         self.objectives = objectives  # A list of dictionaries, e.g., [{"type": "kill", "target": "Goblin", "count": 0, "required": 5}]
+        self.tilemap_scene_name = tilemap_scene_name
         self.is_completed = False
         self.is_unlocked = False # New attribute for quest unlocking
 
@@ -365,6 +366,7 @@ class Quest:
             print(f"    Comparing with obj: type='{obj['type']}', target='{obj.get('target')}'") # Debug print
             obj_target_lower = obj.get("target", "").strip().lower()
             target_lower = target.strip().lower().replace('_', ' ') # Normalize incoming target by replacing underscores with spaces
+            print(f"    obj_target_lower: '{obj_target_lower}', target_lower: '{target_lower}'")
             
             # Check for direct match, or if objective target is plural of incoming target
             if obj["type"].lower() == objective_type.lower() and \
@@ -401,7 +403,6 @@ class QuestTrackerHUD:
         self.quest_tracker = quest_tracker
 
     def draw(self, screen):
-        print(f"DEBUG: QuestTrackerHUD.draw called. Active quests: {len(self.quest_tracker.get_active_quests())}") # Debug print
         tracker_x = 10
         tracker_y = 10
         line_height = UI_FONT_SIZE_DEFAULT + 2
@@ -423,8 +424,8 @@ class QuestTrackerHUD:
                     obj_text = f"  - {obj['description_original']}: {obj['count']}/{obj['required']}"
                 else:
                     obj_text = f"  - {obj['type'].capitalize()} {obj.get('target', '')}: {obj['count']}/{obj['required']}"
-                print(f"DEBUG: HUD drawing objective: {obj_text}") # Debug print
-                draw_text(screen, obj_text, UI_FONT_SIZE_DEFAULT - 4, UI_SECONDARY_COLOR, tracker_x + 20, current_y, align="topleft")
+                obj_color = GREEN if obj['count'] >= obj['required'] else UI_SECONDARY_COLOR
+                draw_text(screen, obj_text, UI_FONT_SIZE_DEFAULT - 4, obj_color, tracker_x + 20, current_y, align="topleft")
                 current_y += line_height
         
         # Handle "QUEST COMPLETED" display
@@ -463,17 +464,6 @@ class QuestTrackerHUD:
 
                     # Animated green text
                     draw_text(screen, animated_text, font_size, (0, 255, 0), center_x, center_y, alpha=alpha)
-
-
-
-
-
-
-
-
-
-
-
 
 
 

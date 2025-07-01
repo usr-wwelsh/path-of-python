@@ -15,7 +15,6 @@ from ui.dungeon_display import display_dungeon
 
 class DungeonGeneratorGUI:
     def __init__(self, game):
-        # Removed pygame.init() and pygame.display.set_mode((1, 1)) to avoid conflicts with main Pygame loop
         self.game = game
         self.game.logger.info("DungeonGeneratorGUI initialized.")
         self.root = tk.Tk()
@@ -44,51 +43,44 @@ class DungeonGeneratorGUI:
         self.tileset_combo.set("default")
         self.tileset_combo.grid(row=2, column=1)
 
-        # --- Start of changes for scrollable enemy list ---
         self.enemy_types_label = ttk.Label(self.root, text="Enemy Types:")
         self.enemy_types_label.grid(row=3, column=0, sticky=tk.NW)
 
         self.enemy_scroll_container = ttk.Frame(self.root, borderwidth=2, relief="groove")
         self.enemy_scroll_container.grid(row=3, column=1, columnspan=2, sticky="nsew", padx=5, pady=5)
-        
-        # Configure grid weights for the scroll container to expand
+
         self.root.grid_rowconfigure(3, weight=1)
         self.root.grid_columnconfigure(1, weight=1)
 
         self.enemy_canvas = tk.Canvas(self.enemy_scroll_container, borderwidth=0, background="#f0f0f0")
         self.enemy_scrollbar = ttk.Scrollbar(self.enemy_scroll_container, orient="vertical", command=self.enemy_canvas.yview)
         self.enemy_canvas.configure(yscrollcommand=self.enemy_scrollbar.set)
-        
+
         self.enemy_scrollbar.pack(side="right", fill="y")
         self.enemy_canvas.pack(side="left", fill="both", expand=True)
 
         self.enemy_checkbox_inner_frame = ttk.Frame(self.enemy_canvas)
         self.enemy_canvas.create_window((0, 0), window=self.enemy_checkbox_inner_frame, anchor="nw")
-        
+
         self.enemy_checkbox_inner_frame.bind("<Configure>", lambda e: self.enemy_canvas.configure(scrollregion=self.enemy_canvas.bbox("all")))
 
-        # Load enemy types dynamically from enemy_data.json
         enemy_data = load_enemy_data('data/enemy_data.json')
         self.enemy_types_options = list(enemy_data.keys())
         self.enemy_types_vars = {}
-        num_columns = 2 # Number of columns for enemy checkboxes within the scrollable frame
+        num_columns = 2
 
         for i, enemy_type in enumerate(self.enemy_types_options):
             var = tk.BooleanVar()
             self.enemy_types_vars[enemy_type] = var
             checkbox = tk.Checkbutton(self.enemy_checkbox_inner_frame, text=enemy_type, variable=var, wraplength=150, justify=tk.LEFT)
             checkbox.grid(row=i // num_columns, column=i % num_columns, sticky=tk.W, padx=2, pady=1)
-        # --- End of changes for scrollable enemy list ---
-        
-        # Adjusted row for num_enemies_label based on the fixed height of the scrollable enemy list
-        # The scrollable container is at row 3 and takes up a visual height equivalent to 5 rows.
-        # So, the next element starts at row 3 + 5 = 8.
-        next_start_row = 8 
+
+        next_start_row = 8
 
         self.num_enemies_label = ttk.Label(self.root, text="Number of Enemies:")
         self.num_enemies_label.grid(row=next_start_row, column=0)
         self.num_enemies_entry = ttk.Entry(self.root)
-        self.num_enemies_entry.insert(0, "5") # Default to 5 enemies
+        self.num_enemies_entry.insert(0, "5")
         self.num_enemies_entry.grid(row=next_start_row, column=1)
 
         self.dungeon_name_label = ttk.Label(self.root, text="Dungeon Name:")
@@ -130,7 +122,7 @@ class DungeonGeneratorGUI:
 
         self.decorations_label = ttk.Label(self.root, text="Decorations:")
         self.decorations_label.grid(row=next_start_row + 7, column=0)
-        self.decorations_options = ["graphics/dc-dngn/dngn_sparkling_fountain", "graphics/dc-dngn/dngn_orcish_idol"]  # Add more decorations here
+        self.decorations_options = ["graphics/dc-dngn/dngn_sparkling_fountain", "graphics/dc-dngn/dngn_orcish_idol"]
         self.decorations_vars = {}
         for i, decoration in enumerate(self.decorations_options):
             var = tk.BooleanVar()
@@ -144,13 +136,29 @@ class DungeonGeneratorGUI:
         self.perlin_noise_threshold_entry.insert(0, "0.0")
         self.perlin_noise_threshold_entry.grid(row=next_start_row + 9, column=1)
 
-        self.generate_button = ttk.Button(self.root, text="Generate Dungeon", command=self.generate_dungeon)
-        self.generate_button.grid(row=next_start_row + 10, column=0, columnspan=2)
+        # Add brush size selection
+        self.brush_size_label = ttk.Label(self.root, text="Brush Size:")
+        self.brush_size_label.grid(row=next_start_row + 10, column=0)
+        self.brush_size_var = tk.IntVar(value=1)
+        self.brush_size_slider = ttk.Scale(self.root, from_=1, to=10, variable=self.brush_size_var, orient=tk.HORIZONTAL)
+        self.brush_size_slider.grid(row=next_start_row + 10, column=1)
 
-        # Adjusted rowspan to cover all controls from row 0 to the last control (generate_button at next_start_row + 10)
-        # Total rows = (next_start_row + 10) - 0 + 1 = next_start_row + 11 = 8 + 11 = 19
+        # Add tile selection
+        self.tile_label = ttk.Label(self.root, text="Tile Type:")
+        self.tile_label.grid(row=next_start_row + 11, column=0)
+        self.tile_options = ["floor", "wall", "water", "lava", "grass", "path"]
+        self.tile_combo = ttk.Combobox(self.root, values=self.tile_options)
+        self.tile_combo.set("floor")
+        self.tile_combo.grid(row=next_start_row + 11, column=1)
+
+        self.generate_button = ttk.Button(self.root, text="Generate Dungeon", command=self.generate_dungeon)
+        self.generate_button.grid(row=next_start_row + 12, column=0, columnspan=2)
+
+        self.save_button = ttk.Button(self.root, text="Save Dungeon", command=self.save_dungeon)
+        self.save_button.grid(row=next_start_row + 13, column=0, columnspan=2)
+
         self.dungeon_frame = ttk.Frame(self.root)
-        self.dungeon_frame.grid(row=0, column=2, rowspan=next_start_row + 11)
+        self.dungeon_frame.grid(row=0, column=2, rowspan=next_start_row + 14)
 
         self.canvas = tk.Canvas(self.dungeon_frame, width=600, height=400)
         self.canvas.pack()
@@ -159,9 +167,10 @@ class DungeonGeneratorGUI:
         self.canvas.bind("<ButtonRelease-1>", self.stop_pan)
         self.canvas.bind("<B1-Motion>", self.pan)
         self.canvas.bind("<Button-1>", self.place_object)
+        self.canvas.bind("<B1-Motion>", self.place_object)
 
         self.toolbar_frame = ttk.Frame(self.root)
-        self.toolbar_frame.grid(row=0, column=3, rowspan=next_start_row + 11, sticky=tk.NS)
+        self.toolbar_frame.grid(row=0, column=3, rowspan=next_start_row + 14, sticky=tk.NS)
 
         self.portal_button = ttk.Button(self.toolbar_frame, text="Place Portal", command=self.select_portal)
         self.portal_button.pack(pady=5)
@@ -171,6 +180,9 @@ class DungeonGeneratorGUI:
             button = ttk.Button(self.toolbar_frame, text=f"Place {decoration.split('/')[-1]}", command=lambda d=decoration: self.select_decoration(d))
             button.pack(pady=5)
             self.decoration_buttons[decoration] = button
+
+        self.brush_button = ttk.Button(self.toolbar_frame, text="Brush Tool", command=self.select_brush)
+        self.brush_button.pack(pady=5)
 
         self.zoom_info_label = ttk.Label(self.toolbar_frame, text="Zoom: Mouse Wheel\nPan: Drag Mouse")
         self.zoom_info_label.pack(pady=5)
@@ -185,6 +197,9 @@ class DungeonGeneratorGUI:
         self.offset_x = 0
         self.offset_y = 0
         self.placing_object = None
+        self.brush_mode = False
+        self.current_brush_size = 1
+        self.current_tile_type = "floor"
 
     def browse_portal_graphic(self):
         filename = filedialog.askopenfilename(initialdir="graphics/dc-dngn/gateways", title="Select Portal Graphic", filetypes=(("PNG files", "*.png"), ("all files", "*.*")))
@@ -207,7 +222,7 @@ class DungeonGeneratorGUI:
             width = int(self.width_entry.get())
             height = int(self.height_entry.get())
             perlin_noise_threshold = float(self.perlin_noise_threshold_entry.get())
-            num_enemies = int(self.num_enemies_entry.get()) # Get number of enemies
+            num_enemies = int(self.num_enemies_entry.get())
         except ValueError:
             messagebox.showerror("Error", "Width, height, Perlin noise threshold, and number of enemies must be numbers.")
             return
@@ -217,7 +232,7 @@ class DungeonGeneratorGUI:
             'height': height,
             'tileset': self.tileset_combo.get(),
             'enemy_types': [enemy_type for enemy_type, var in self.enemy_types_vars.items() if var.get()],
-            'num_enemies': num_enemies, # Add num_enemies to params
+            'num_enemies': num_enemies,
             'name': self.dungeon_name_entry.get(),
             'portal_graphic': self.portal_graphic_path.get(),
             'map_algorithm': self.map_algorithm_combo.get(),
@@ -231,17 +246,12 @@ class DungeonGeneratorGUI:
                 dungeon_params['portal_y'] = int(self.portal_y_entry.get())
             except ValueError:
                 messagebox.showerror("Error", "Portal X and Y must be integers.")
-                return # Added return here to prevent further execution if error occurs
+                return
 
         dungeon_params['decorations'] = [decoration for decoration, var in self.decorations_vars.items() if var.get()]
 
         self.dungeon_data = generate_new_dungeon(dungeon_params)
-
         self.display_dungeon(self.dungeon_data)
-
-        filename = simpledialog.askstring("Save Dungeon", "Enter filename:")
-        if filename:
-            self.save_dungeon_data(self.dungeon_data, filename)
 
     def display_dungeon(self, dungeon_data):
         self.photo = display_dungeon(dungeon_data, self.canvas, self.offset_x, self.offset_y, self.zoom_scale)
@@ -275,45 +285,69 @@ class DungeonGeneratorGUI:
 
     def select_portal(self):
         self.placing_object = 'portal'
+        self.brush_mode = False
         messagebox.showinfo("Info", "Select a location to place the portal.")
 
     def select_decoration(self, decoration):
         self.placing_object = decoration
+        self.brush_mode = False
         messagebox.showinfo("Info", f"Select a location to place the {decoration.split('/')[-1]}.")
 
+    def select_brush(self):
+        self.brush_mode = True
+        self.placing_object = None
+        self.current_tile_type = self.tile_combo.get()
+        self.current_brush_size = self.brush_size_var.get()
+        messagebox.showinfo("Info", f"Brush tool selected. Current tile: {self.current_tile_type}, Size: {self.current_brush_size}")
+
     def place_object(self, event):
-        if self.placing_object:
+        if self.brush_mode:
+            self.use_brush(event)
+        elif self.placing_object:
             x = int((event.x - self.offset_x) / (32 * self.zoom_scale))
             y = int((event.y - self.offset_y) / (32 * self.zoom_scale))
-            print(f"Placing {self.placing_object} at {x}, {y}")
-            # Modify the dungeon data to place the object at the selected location
             if self.dungeon_data and 0 <= x < self.dungeon_data['width'] and 0 <= y < self.dungeon_data['height']:
                 self.dungeon_data['tile_map'][y][x] = self.placing_object
                 self.display_dungeon(self.dungeon_data)
             self.placing_object = None
 
+    def use_brush(self, event):
+        x = int((event.x - self.offset_x) / (32 * self.zoom_scale))
+        y = int((event.y - self.offset_y) / (32 * self.zoom_scale))
+        brush_size = self.brush_size_var.get()
+        tile_type = self.tile_combo.get()
+
+        if self.dungeon_data:
+            for i in range(-brush_size, brush_size + 1):
+                for j in range(-brush_size, brush_size + 1):
+                    new_x, new_y = x + i, y + j
+                    if 0 <= new_x < self.dungeon_data['width'] and 0 <= new_y < self.dungeon_data['height']:
+                        self.dungeon_data['tile_map'][new_y][new_x] = tile_type
+            self.display_dungeon(self.dungeon_data)
+
+    def save_dungeon(self):
+        if not self.dungeon_data:
+            messagebox.showerror("Error", "No dungeon data to save.")
+            return
+
+        filename = simpledialog.askstring("Save Dungeon", "Enter filename:")
+        if filename:
+            self.save_dungeon_data(self.dungeon_data, filename)
+
     def save_dungeon_data(self, dungeon_data, filename):
-        """Saves dungeon data to a JSON file and adds a portal to spawntown."""
         dungeon_dir = "data/dungeons"
         if not os.path.exists(dungeon_dir):
             os.makedirs(dungeon_dir)
         filepath = os.path.join(dungeon_dir, f'{filename}.json')
         with open(filepath, 'w') as f:
             json.dump(dungeon_data, f, indent=4)
-        print(f"Dungeon data saved to {filepath}")
-        print(f"save_dungeon_data filename: {filename}") # Print statement
 
-        # Generate new scene file
         generate_scene_file(filename, dungeon_data)
-
-        # Add the new scene to the game engine
         add_scene_to_game_engine(filename)
-        # Add portal to spawntown in zone_data.json
         add_portal_to_spawntown(filename, dungeon_data.get('portal_graphic', "graphics/UNUSED/features/dngn_exit.png"), self.find_portal_location, dungeon_data)
-        self.game.scene_manager.load_scenes() # Reload scenes after adding a new one
-    
+        self.game.scene_manager.load_scenes()
+
     def open_remove_dungeon_dialog(self):
-        """Opens a dialog box to remove a dungeon."""
         remove_dungeon_dialog = tk.Toplevel(self.root)
         remove_dungeon_dialog.title("Remove Dungeon")
 
@@ -327,26 +361,21 @@ class DungeonGeneratorGUI:
         remove_button.pack(pady=5)
 
     def remove_dungeon(self, selected_dungeons_indices, dungeon_files, remove_dungeon_dialog):
-        """Removes the selected dungeons."""
         for index in selected_dungeons_indices:
             dungeon_file = dungeon_files[index]
             dungeon_name = dungeon_file[:-5]
             filepath = os.path.join('data/dungeons', dungeon_file)
             try:
                 os.remove(filepath)
-                print(f"Dungeon file {dungeon_file} removed.")
                 remove_portal_from_spawntown(dungeon_name)
             except OSError as e:
                 print(f"Error removing dungeon file {dungeon_file}: {e}")
 
-            # Remove the scene from data/scenes.json
             remove_scene_from_scenes_json(dungeon_name)
 
         remove_dungeon_dialog.destroy()
 
     def find_portal_location(self, tile_map):
-        """Finds a suitable location for the portal in spawntown near existing portals."""
-        # Get the locations of existing portals from zone_data.json
         zone_data_path = "data/zone_data.json"
         try:
             with open(zone_data_path, "r") as f:
@@ -354,18 +383,15 @@ class DungeonGeneratorGUI:
             spawn_town_data = zone_data["zones"]["spawn_town"]
             portals = spawn_town_data.get("portals", [])
             if portals:
-                # Choose a random existing portal location
                 import random
                 portal = random.choice(portals)
                 x, y = portal["location"]
-                # Return a location near the chosen portal, ensuring positive coordinates
                 x = max(0, x + random.randint(-5, 5))
                 y = max(0, y + random.randint(-5, 5))
                 return x, y
         except (FileNotFoundError, json.JSONDecodeError, KeyError):
-            pass  # Handle errors gracefully
+            pass
 
-        # If no existing portals are found or an error occurs, return a default location
         if tile_map and len(tile_map) > 0 and len(tile_map[0]) > 0:
             return 0, 0
         return 10, 10
@@ -379,7 +405,6 @@ class DungeonGeneratorGUI:
         self.root.mainloop()
 
 if __name__ == "__main__":
-    # When running as a standalone script, a dummy game object is needed
     class DummyGame:
         def __init__(self):
             self.settings = type('Settings', (object,), {'FULLSCREEN': False})()
