@@ -10,6 +10,7 @@
 ![til](./example2.gif)
 ![til](./example3.gif)
 ![til](./example.gif)
+
 ### Character Classes: MASSIVE UPDATE
 
 *   **Stalker:** A master of close combat, dealing devastating blows. (cleave and cyclone)
