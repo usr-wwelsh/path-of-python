@@ -25,6 +25,9 @@ class NPC(pygame.sprite.Sprite):
         elif self.name == "Charlie the Calm":
             sprite_filename = "deformed_elf.png"
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
+        elif self.name == "Maze Wanderer":
+            sprite_filename = "deep_elf_sorcerer.png"
+            sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
         else:
             # Load random merfolk sprite for other NPCs
             merfolk_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon", "cult")
