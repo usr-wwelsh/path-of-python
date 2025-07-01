@@ -4,7 +4,7 @@
 * right click to teleport
 * mouse side buttons for 2 skills
 * num keys for dialog
-  
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/BsB9VkS-Yno?si=Rl8iX-sxDzqklmqO" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 ![til](./example4.gif)
 ![til](./example5.gif)
 ![til](./example2.gif)
