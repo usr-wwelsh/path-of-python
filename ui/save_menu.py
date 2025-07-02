@@ -4,6 +4,7 @@ import os
 from core.scene_manager import BaseScene
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, UI_FONT, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_BACKGROUND_COLOR
 from ui.menus import Button
+from progression.quest_tracker import QuestTracker
 
 class SaveMenu(BaseScene):
     def __init__(self, game):
@@ -74,6 +75,34 @@ class SaveMenu(BaseScene):
             "x": player.rect.x,
             "y": player.rect.y
         }
+
+        # Save quest tracker data
+        quest_tracker = QuestTracker()
+        save_data["quest_tracker"] = {
+            "active_quests": [
+                {
+                    "name": quest.name,
+                    "description": quest.description,
+                    "objectives": quest.objectives,
+                    "tilemap_scene_name": quest.tilemap_scene_name,
+                    "is_completed": quest.is_completed,
+                    "is_unlocked": quest.is_unlocked
+                }
+                for quest in quest_tracker.active_quests
+            ],
+            "completed_quests": [
+                {
+                    "name": quest.name,
+                    "description": quest.description,
+                    "objectives": quest.objectives,
+                    "tilemap_scene_name": quest.tilemap_scene_name,
+                    "is_completed": quest.is_completed,
+                    "is_unlocked": quest.is_unlocked
+                }
+                for quest in quest_tracker.completed_quests
+            ],
+            "current_active_quest_index": quest_tracker.current_active_quest_index
+        }
         
         # Determine the next available save slot
         save_number = 1
@@ -107,6 +136,45 @@ class SaveMenu(BaseScene):
             player.current_life = min(player.current_life, player.max_life)
             player.current_mana = min(player.current_mana, player.max_mana)
             player.current_energy_shield = min(player.current_energy_shield, player.max_energy_shield)
+
+            # Load quest tracker data
+            quest_tracker = QuestTracker()
+            if "quest_tracker" not in save_data:
+                # Initialize a fresh quest tracker if no data is found
+                quest_tracker._set_initial_active_quest()
+            else:
+                quest_data = save_data.get("quest_tracker", {})
+                active_quests_data = quest_data.get("active_quests", [])
+                completed_quests_data = quest_data.get("completed_quests", [])
+                current_active_quest_index = quest_data.get("current_active_quest_index", -1)
+
+                # Clear existing quests
+                quest_tracker.active_quests = []
+                quest_tracker.completed_quests = []
+                quest_tracker.current_active_quest_index = current_active_quest_index
+
+                # Load active quests
+                for quest_data in active_quests_data:
+                    quest = QuestTracker().all_quests[QuestTracker().current_active_quest_index]
+                    quest.name = quest_data["name"]
+                    quest.description = quest_data["description"]
+                    quest.objectives = quest_data["objectives"]
+                    quest.tilemap_scene_name = quest_data["tilemap_scene_name"]
+                    quest.is_completed = quest_data["is_completed"]
+                    quest.is_unlocked = quest_data["is_unlocked"]
+                    quest_tracker.active_quests.append(quest)
+
+                # Load completed quests
+                for quest_data in completed_quests_data:
+                    for quest in quest_tracker.all_quests:
+                        if quest.name == quest_data["name"]:
+                            quest.name = quest_data["name"]
+                            quest.description = quest_data["description"]
+                            quest.objectives = quest_data["objectives"]
+                            quest.tilemap_scene_name = quest_data["tilemap_scene_name"]
+                            quest.is_completed = quest_data["is_completed"]
+                            quest.is_unlocked = quest_data["is_unlocked"]
+                            quest_tracker.completed_quests.append(quest)
 
             self.game.scene_manager.set_scene("spawn_town")
             self.game.logger.info(f"Game loaded from {filepath}")

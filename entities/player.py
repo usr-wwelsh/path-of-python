@@ -75,7 +75,7 @@ class Player(pygame.sprite.Sprite):
         self.energy_shield_recharge_delay = 3000 # 3 seconds cooldown before recharge starts
         self.last_energy_shield_hit_time = 0
         self.energy_shield_recharge_rate = 0.10 # 10% of max_energy_shield per second
-        self.mana_recharge_rate = 0.1 # 10% of max_mana per second
+        self.mana_recharge_rate = 0.05 # 5% of max_mana per second
         self.health_regen_rate = 0.20 # 20% of max_life per second
 
         # New stats dictionary

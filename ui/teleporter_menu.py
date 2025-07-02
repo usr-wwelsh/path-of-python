@@ -23,10 +23,12 @@ class TeleporterMenu:
         self.tabs = ["Dungeons", "Quests"]
         self.current_tab = "Dungeons" # Default tab
         self.scroll_offset = 0 # This will be pixel offset for quests, item index for dungeons
-        self._load_tilemap_for_selection() # Load initial map visualizer
+        
         self.dungeon_item_height = 40 # Height of each dungeon item (graphic + text)
         self.visible_items = 5 # Number of items visible at once for dungeons (approx for quests)
 
+        self.excluded_dungeons = ["vault", "bot", "third", "maze"] # List of dungeons to exclude
+        self._load_tilemap_for_selection() # Load initial map visualizer - moved after excluded_dungeons definition
         self._load_scene_graphics()
 
     # Removed _load_quests method as quests are now managed by QuestManager
@@ -92,8 +94,11 @@ class TeleporterMenu:
             self.map_visualizer_surface.fill((20, 20, 20)) # Background for description area
 
         if self.current_tab == "Dungeons" and self.dungeon_scenes_data:
-            if 0 <= self.selected_option < len(self.dungeon_scenes_data):
-                selected_scene_data = self.dungeon_scenes_data[self.selected_option]
+            # Filter dungeons based on the excluded_dungeons list
+            available_dungeons = [d for d in self.dungeon_scenes_data if d['name'] not in self.excluded_dungeons]
+            
+            if 0 <= self.selected_option < len(available_dungeons):
+                selected_scene_data = available_dungeons[self.selected_option]
                 dungeon_data_path = selected_scene_data.get('dungeon_data_path')
                 print(f"[_load_tilemap_for_selection] dungeon_data_path for selected dungeon: {dungeon_data_path}")
                 if dungeon_data_path:
@@ -247,7 +252,9 @@ class TeleporterMenu:
 
                 # Check if a dungeon scene was clicked (only if Dungeons tab is active)
                 if self.current_tab == "Dungeons":
-                    for i, scene_data in enumerate(self.dungeon_scenes_data):
+                    # Filter dungeons based on the excluded_dungeons list
+                    available_dungeons = [d for d in self.dungeon_scenes_data if d['name'] not in self.excluded_dungeons]
+                    for i, scene_data in enumerate(available_dungeons):
                         item_y = self.rect.y + 80 + (i - self.scroll_offset) * self.dungeon_item_height
                         item_rect = pygame.Rect(self.rect.x + 10, item_y, content_rect.width, self.dungeon_item_height) # Use content_rect.width
                         if item_rect.collidepoint(event.pos) and content_rect.collidepoint(event.pos): # Ensure click is within menu content area
@@ -284,6 +291,8 @@ class TeleporterMenu:
                     return "close"
             elif event.button == 4: # Mouse wheel up
                 if self.current_tab == "Dungeons":
+                    # Filter dungeons based on the excluded_dungeons list
+                    available_dungeons = [d for d in self.dungeon_scenes_data if d['name'] not in self.excluded_dungeons]
                     self.scroll_offset = max(0, self.scroll_offset - 1) # Still item-based for dungeons
                     self._load_tilemap_for_selection() # Update map visualizer on scroll
                 elif self.current_tab == "Quests":
@@ -291,7 +300,9 @@ class TeleporterMenu:
                     self._load_tilemap_for_selection() # Update map visualizer on scroll
             elif event.button == 5: # Mouse wheel down
                 if self.current_tab == "Dungeons":
-                    max_scroll = max(0, len(self.dungeon_scenes_data) - self.visible_items)
+                    # Filter dungeons based on the excluded_dungeons list
+                    available_dungeons = [d for d in self.dungeon_scenes_data if d['name'] not in self.excluded_dungeons]
+                    max_scroll = max(0, len(available_dungeons) - self.visible_items)
                     self.scroll_offset = min(max_scroll, self.scroll_offset + 1) # Still item-based for dungeons
                     self._load_tilemap_for_selection() # Update map visualizer on scroll
                 elif self.current_tab == "Quests":
@@ -306,11 +317,14 @@ class TeleporterMenu:
                 self.is_open = False
                 return "close"
             elif event.key == pygame.K_UP:
-                if self.current_tab == "Dungeons" and self.dungeon_scenes_data:
-                    self.selected_option = (self.selected_option - 1) % len(self.dungeon_scenes_data)
-                    if self.selected_option < self.scroll_offset:
-                        self.scroll_offset = self.selected_option
-                    self._load_tilemap_for_selection() # Update map visualizer
+                if self.current_tab == "Dungeons":
+                    # Filter dungeons based on the excluded_dungeons list
+                    available_dungeons = [d for d in self.dungeon_scenes_data if d['name'] not in self.excluded_dungeons]
+                    if available_dungeons:
+                        self.selected_option = (self.selected_option - 1) % len(available_dungeons)
+                        if self.selected_option < self.scroll_offset:
+                            self.scroll_offset = self.selected_option
+                        self._load_tilemap_for_selection() # Update map visualizer
                 elif self.current_tab == "Quests":
                     all_quests = QuestTracker().all_quests
                     # Filter quests to only include unlocked or completed quests
@@ -324,11 +338,14 @@ class TeleporterMenu:
                             self.scroll_offset = cumulative_height_before_selected
                         self._load_tilemap_for_selection() # Update map visualizer
             elif event.key == pygame.K_DOWN:
-                if self.current_tab == "Dungeons" and self.dungeon_scenes_data:
-                    self.selected_option = (self.selected_option + 1) % len(self.dungeon_scenes_data)
-                    if self.selected_option >= self.scroll_offset + self.visible_items:
-                        self.scroll_offset = self.selected_option
-                    self._load_tilemap_for_selection() # Update map visualizer
+                if self.current_tab == "Dungeons":
+                    # Filter dungeons based on the excluded_dungeons list
+                    available_dungeons = [d for d in self.dungeon_scenes_data if d['name'] not in self.excluded_dungeons]
+                    if available_dungeons:
+                        self.selected_option = (self.selected_option + 1) % len(available_dungeons)
+                        if self.selected_option >= self.scroll_offset + self.visible_items:
+                            self.scroll_offset = self.selected_option
+                        self._load_tilemap_for_selection() # Update map visualizer
                 elif self.current_tab == "Quests":
                     all_quests = QuestTracker().all_quests
                     # Filter quests to only include unlocked or completed quests
@@ -342,10 +359,13 @@ class TeleporterMenu:
                             self.scroll_offset = cumulative_height_up_to_selected - content_rect.height
                         self._load_tilemap_for_selection() # Update map visualizer
             elif event.key == pygame.K_RETURN:
-                if self.current_tab == "Dungeons" and self.dungeon_scenes_data:
-                    selected_scene = self.dungeon_scenes_data[self.selected_option]['name']
-                    self.is_open = False
-                    return selected_scene
+                if self.current_tab == "Dungeons":
+                    # Filter dungeons based on the excluded_dungeons list
+                    available_dungeons = [d for d in self.dungeon_scenes_data if d['name'] not in self.excluded_dungeons]
+                    if available_dungeons:
+                        selected_scene = available_dungeons[self.selected_option]['name']
+                        self.is_open = False
+                        return selected_scene
                 elif self.current_tab == "Quests":
                     all_quests = QuestTracker().all_quests
                     # Filter quests to only include unlocked or completed quests
@@ -385,8 +405,11 @@ class TeleporterMenu:
         pygame.draw.rect(screen, (30, 30, 30), content_rect) # Background for content
 
         if self.current_tab == "Dungeons":
+            # Filter dungeons based on the excluded_dungeons list
+            available_dungeons = [d for d in self.dungeon_scenes_data if d['name'] not in self.excluded_dungeons]
+
             # Draw dungeon scene options with graphics (scrollable)
-            for i, scene_data in enumerate(self.dungeon_scenes_data):
+            for i, scene_data in enumerate(available_dungeons):
                 # Only draw if the item is within the visible bounds of the content_rect
                 item_y_relative_to_content_top = (i - self.scroll_offset) * self.dungeon_item_height
                 if item_y_relative_to_content_top < content_rect.height and item_y_relative_to_content_top + self.dungeon_item_height > 0:
@@ -411,14 +434,14 @@ class TeleporterMenu:
                     draw_text(screen, scene_name, self.font.get_height(), text_color, text_x, item_y + (32 - self.font.get_height()) // 2, align="left") # Center text vertically with graphic
 
             # Draw scrollbar
-            if len(self.dungeon_scenes_data) > self.visible_items:
+            if len(available_dungeons) > self.visible_items:
                 scrollbar_height = content_rect.height
                 scrollbar_track_rect = pygame.Rect(content_rect.right - 15, content_rect.y, 10, scrollbar_height)
                 pygame.draw.rect(screen, (100, 100, 100), scrollbar_track_rect) # Scrollbar track
 
                 # Calculate thumb height and position
-                thumb_height = max(20, scrollbar_height * self.visible_items / len(self.dungeon_scenes_data))
-                scroll_range = len(self.dungeon_scenes_data) - self.visible_items
+                thumb_height = max(20, scrollbar_height * self.visible_items / len(available_dungeons))
+                scroll_range = len(available_dungeons) - self.visible_items
                 if scroll_range > 0:
                     thumb_y = scrollbar_track_rect.y + (scrollbar_height - thumb_height) * self.scroll_offset / scroll_range
                 else:

@@ -11,9 +11,9 @@ class CycloneSkill:
         self.name = "Cyclone"
         self.description = "Spins rapidly, hitting all enemies in a circle repeatedly while draining mana."
         self.mana_cost = 10 + (player.level * 5)  # Initial cost + level scaling
-        self.base_damage = {"min": 10, "max": 20, "type": "physical"} # From data/skills.json
+        self.base_damage = {"min": 10, "max": 500, "type": "physical"} # From data/skills.json
         self.cooldown = 0 # From data/skills.json
-        self.channel_cost_per_second = self.player.max_mana * 0.20 # 20% of max mana per second (updated from 0.05)
+        self.channel_cost_per_second = self.player.max_mana * (0.50 + (player.level / 1)) # Scales from 50% + level/10 of max mana per second
         self.hit_interval = 0.05 # From data/skills.json (seconds) - Decreased for faster hits
         self.last_hit_time = 0
         self.is_channeling = False
