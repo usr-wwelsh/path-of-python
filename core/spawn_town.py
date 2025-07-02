@@ -153,6 +153,9 @@ class SpawnTown(BaseGameplayScene):
         self.npcs.add(npc3)
         self.charlie = npc3 # Store charlie for shop positioning
 
+        npc4 = create_npc(game, 6140, 3928, "Proto Oracle", "proto_oracle_dialogue")
+        self.npcs.add(npc4)
+
         # Load portal images and create portal rects
         self.portal_images = {}
         self.portal_rects = []

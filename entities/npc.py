@@ -31,6 +31,9 @@ class NPC(pygame.sprite.Sprite):
         elif self.name == "archivist":
             sprite_filename = "archivist.png"
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
+        elif self.name == "Proto Oracle":
+            sprite_filename = "oracle.png"
+            sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
         elif self.name == "Maze Wanderer":
             sprite_filename = "deep_elf_sorcerer.png"
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
@@ -46,18 +49,25 @@ class NPC(pygame.sprite.Sprite):
             sprite_filename = random.choice(merfolk_sprites)
             sprite_path = os.path.join(merfolk_path_base, sprite_filename)
 
-        if os.path.exists(sprite_path):
-            self.image = pygame.image.load(sprite_path).convert_alpha()
-            if self.name == "archivist":
-                width *= 4
-                height *= 4
-            elif not (self.name == "Billy Bob" and sprite): # Check if it's NOT Billy Bob
-                if "cult" in sprite_path: # Check if it's a merfolk sprite
-                    width *= 2
-                    height *= 2
-            self.image = pygame.transform.scale(self.image, (width, height))
+        if sprite_path:
+            if os.path.exists(sprite_path):
+                self.image = pygame.image.load(sprite_path).convert_alpha()
+                if self.name == "archivist":
+                    width *= 8
+                    height *= 8
+                elif self.name == "Proto Oracle":
+                    width *= 4
+                    height *= 4
+                elif not (self.name == "Billy Bob" and sprite): # Check if it's NOT Billy Bob
+                    if "cult" in sprite_path: # Check if it's a merfolk sprite
+                        width *= 2
+                        height *= 2
+                self.image = pygame.transform.scale(self.image, (width, height))
+            else:
+                # Fallback to colored rectangle if sprite not found
+                self.image = pygame.Surface((width, height))
+                self.image.fill(color)
         else:
-            # Fallback to colored rectangle if sprite not found
             self.image = pygame.Surface((width, height))
             self.image.fill(color)
 

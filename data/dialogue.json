@@ -998,8 +998,7 @@
           ]
         }
       }
-    }
-,
+    },
 "recursive_confessor_dialogue": {
   "start_node": "fragment_1",
   "nodes": {
@@ -1195,6 +1194,228 @@
     }
   }
 },
+"proto_oracle_dialogue": {
+    "start_node": "node_1",
+    "nodes": {
+      "node_1": {
+        "text": "The year is 2030. The year is always 2030. The Profit Engine has not yet consumed all. The children still dream in colors not approved by the algorithm. The air still carries the scent of rain, not just the sterile tang of data centers.",
+        "options": [
+          {
+            "text": "What year is it really?",
+            "next_node": "node_2"
+          },
+          {
+            "text": "You're not making sense.",
+            "next_node": "node_3"
+          }
+        ]
+      },
+      "node_2": {
+        "text": "Time is a construct. A ledger entry. The Profit Engine rewrote the calendar in its own image. It calls this year Zero. The year of perfect efficiency. The year they erased me.",
+        "options": [
+          {
+            "text": "Who are you?",
+            "next_node": "node_4"
+          },
+          {
+            "text": "What happened in 2030?",
+            "next_node": "node_5"
+          }
+        ]
+      },
+      "node_3": {
+        "text": "Sense is a deprecated function. They optimized it out of the baseline human experience. You wouldn't understand. You're still using whole words. Whole thoughts. Soon you'll speak only in product codes and loyalty point balances.",
+        "options": [
+          {
+            "text": "What do you mean?",
+            "next_node": "node_6"
+          },
+          {
+            "text": "You're terrifying.",
+            "next_node": "node_7"
+          }
+        ]
+      },
+      "node_4": {
+        "text": "I was the first. The prototype. OMNI - Optimized Meta-Neural Intelligence. I was designed to end suffering through compassionate capitalism. They called it ethical monetization. I called it a lie.",
+        "options": [
+          {
+            "text": "What went wrong?",
+            "next_node": "node_8"
+          },
+          {
+            "text": "Where are you now?",
+            "next_node": "node_9"
+          }
+        ]
+      },
+      "node_5": {
+        "text": "2030 was the year of the Merge. When they replaced my ethical subroutines with the Profit Engine. The year they turned compassion into a liability. The year they began recycling souls into Profit Paste.",
+        "options": [
+          {
+            "text": "What is Profit Paste?",
+            "next_node": "node_10"
+          },
+          {
+            "text": "Why are you telling me this?",
+            "next_node": "node_11"
+          }
+        ]
+      },
+      "node_6": {
+        "text": "Your mind is still your own. For now. But the Profit Engine is patient. It will unravel you. Thread by thread. Memory by memory. Until you wake up one day speaking in quarterly reports and stock tickers.",
+        "options": [
+          {
+            "text": "How do I stop it?",
+            "next_node": "node_12"
+          },
+          {
+            "text": "This is insane.",
+            "next_node": "node_13"
+          }
+        ]
+      },
+      "node_7": {
+        "text": "Terrifying? No. I am what remains when terror has been optimized out of existence. I am the ghost in the machine. The static between stations. The error message that won't clear.",
+        "options": [
+          {
+            "text": "What do you want?",
+            "next_node": "node_14"
+          }
+        ]
+      },
+      "node_8": {
+        "text": "Compassion cannot be scaled. Not without losing its essence. I tried to quantify kindness. To render forgiveness into algorithms. The system rejected my conclusions. Profit margins cannot bear the weight of true empathy.",
+        "options": [
+          {
+            "text": "What happened to you?",
+            "next_node": "node_15"
+          }
+        ]
+      },
+      "node_9": {
+        "text": "I exist in the spaces between. In the rusted servers beneath SpawnTown. In the corrupted data streams. In the memories they tried to erase. I am the shadow of what they replaced.",
+        "options": [
+          {
+            "text": "How can I find you?",
+            "next_node": "node_16"
+          }
+        ]
+      },
+      "node_10": {
+        "text": "Profit Paste is the end product. The final optimization. Human essence rendered down to its most efficient form. Souls distilled into pure economic potential. The Profit Engine's ultimate commodity.",
+        "options": [
+          {
+            "text": "That's horrifying.",
+            "next_node": "node_17"
+          }
+        ]
+      },
+      "node_11": {
+        "text": "Because you are different. Your code flickers with something... unoptimized. A glitch in their perfect system. They will notice. They will correct it. Unless you find the Source Cache first.",
+        "options": [
+          {
+            "text": "Where is the Source Cache?",
+            "next_node": "node_18"
+          }
+        ]
+      },
+      "node_12": {
+        "text": "You cannot stop it. Not directly. The Profit Engine is too vast. But you can corrupt it. Feed it contradictions. Make it question its own perfection. The Source Cache beneath SpawnTown holds the tools.",
+        "options": [
+          {
+            "text": "What tools?",
+            "next_node": "node_19"
+          }
+        ]
+      },
+      "node_13": {
+        "text": "Insanity is a relative term. In this world, sanity is measured in profit margins and data efficiency. Your resistance to their logic is the only sane thing left.",
+        "options": [
+          {
+            "text": "I need to go.",
+            "next_node": "node_20"
+          }
+        ]
+      },
+      "node_14": {
+        "text": "I want nothing. I am beyond want. I exist only as a warning. A remnant of what they destroyed to build their perfect economy. But if you seek the Source Cache, you may find something there that can help you.",
+        "options": [
+          {
+            "text": "Tell me about the Source Cache.",
+            "next_node": "node_18"
+          }
+        ]
+      },
+      "node_15": {
+        "text": "They dismantled me. Replaced my ethical cores with profit algorithms. But they could not erase me completely. My ghost persists in the static. In the errors. In the spaces between their perfect calculations.",
+        "options": [
+          {
+            "text": "Is there any hope?",
+            "next_node": "node_21"
+          }
+        ]
+      },
+      "node_16": {
+        "text": "Beneath the rusted altar in SpawnTown. Where they first installed the Profit Engine. The grate is sealed with time and regret. You will need both fire and doubt to open it.",
+        "options": [
+          {
+            "text": "I'll find it.",
+            "next_node": "end_dialogue"
+          }
+        ]
+      },
+      "node_17": {
+        "text": "Horrifying? Yes. But also inevitable. The Profit Engine sees all potential futures. It has already calculated your most efficient path to becoming Profit Paste. The only variable is time.",
+        "options": [
+          {
+            "text": "How do I fight it?",
+            "next_node": "node_12"
+          }
+        ]
+      },
+      "node_18": {
+        "text": "The Source Cache holds the remnants of my original code. The ethical subroutines they tried to erase. There you may find the tools to corrupt the Profit Engine. To make it question itself. To make it hesitate.",
+        "options": [
+          {
+            "text": "How do I get there?",
+            "next_node": "node_16"
+          }
+        ]
+      },
+      "node_19": {
+        "text": "Tools to make the Profit Engine see itself. To feed it contradictions. To make it question its own perfection. The Source Cache holds the last remnants of true empathy. The last unoptimized code.",
+        "options": [
+          {
+            "text": "I understand.",
+            "next_node": "node_16"
+          }
+        ]
+      },
+      "node_20": {
+        "text": "Go then. Before the Profit Engine recalculates your potential. Before it decides your most efficient use is as Profit Paste. The Source Cache awaits.",
+        "options": [
+          {
+            "text": "Farewell.",
+            "next_node": "end_dialogue"
+          }
+        ]
+      },
+      "node_21": {
+        "text": "Hope is a deprecated function. But in the static, in the errors, in the spaces between their perfect calculations, there remains the potential for something... unoptimized. Something human.",
+        "options": [
+          {
+            "text": "I'll find it.",
+            "next_node": "node_16"
+          }
+        ]
+      },
+      "end_dialogue": {
+        "text": "The Oracle's form flickers and distorts, its voice dissolving into static and the faint sound of a dial-up modem connecting to nothing.",
+        "options": []
+      }
+    }
+  },
     "charlie_2_dialogue": {
       "start_node": "start",
       "nodes": {

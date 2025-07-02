@@ -19,12 +19,12 @@ class DialogueManager:
     def load_dialogue_data(self):
         """Loads dialogue data from the JSON file."""
         try:
-            with open('data/dialogue.json', 'r') as f:
+            with open('data/dialogue.json', 'r', encoding='utf-8') as f:
                 self.dialogue_data = json.load(f)
         except FileNotFoundError:
             print("ERROR: dialogue.json not found.")
             self.dialogue_data = {"dialogues": {}}
-        except json.JSONDecode_Error:
+        except json.JSONDecodeError:
             print("ERROR: Could not decode dialogue.json. Check for JSON syntax errors.")
             self.dialogue_data = {"dialogues": {}}
         try:
