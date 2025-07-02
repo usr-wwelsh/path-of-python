@@ -538,5 +538,17 @@
         "projectile_sprite_path": "graphics/spells/ice/ozocubus_refrigeration.png",
         "ranged_attack_pattern": "burst",
         "xp_value": 500
+    },
+    "vault_bot": {
+        "name": "Vault Bot",
+        "health": 600,
+        "damage": 50,
+        "speed": 10,
+        "sprite_path": "graphics/dc-mon/bot.png",
+        "attack_range": 1000,
+        "attack_cooldown": 30,
+        "projectile_sprite_path": "graphics/dc-misc/num3.png",
+        "ranged_attack_pattern": "single",
+        "xp_value": 5000
     }
 }

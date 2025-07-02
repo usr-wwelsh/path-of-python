@@ -112,6 +112,22 @@
                         4576
                     ],
                     "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_portal_rotated.png"
+                },
+                {
+                    "target_scene": "bot",
+                    "location": [
+                        1280,
+                        1536
+                    ],
+                    "graphic": ""
+                },
+                {
+                    "target_scene": "vault",
+                    "location": [
+                        3936,
+                        3808
+                    ],
+                    "graphic": ""
                 }
             ],
             "map_width": 50,

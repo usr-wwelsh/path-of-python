@@ -51,7 +51,8 @@
       ],
       "rewards": {"scrap": 120, "exp": 6000, "item": "ledger_of_sins"},
       "is_completed": false,
-      "is_unlocked": false
+      "is_unlocked": false,
+      "tilemap_scene_name": "bot"
     },
     {
       "id": "quest_005",

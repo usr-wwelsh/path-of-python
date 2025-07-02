@@ -28,6 +28,9 @@ class NPC(pygame.sprite.Sprite):
         elif self.name == "Charlie2":
             sprite_filename = "deformed_elf.png"
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
+        elif self.name == "archivist":
+            sprite_filename = "archivist.png"
+            sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
         elif self.name == "Maze Wanderer":
             sprite_filename = "deep_elf_sorcerer.png"
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
@@ -45,7 +48,10 @@ class NPC(pygame.sprite.Sprite):
 
         if os.path.exists(sprite_path):
             self.image = pygame.image.load(sprite_path).convert_alpha()
-            if not (self.name == "Billy Bob" and sprite): # Check if it's NOT Billy Bob
+            if self.name == "archivist":
+                width *= 4
+                height *= 4
+            elif not (self.name == "Billy Bob" and sprite): # Check if it's NOT Billy Bob
                 if "cult" in sprite_path: # Check if it's a merfolk sprite
                     width *= 2
                     height *= 2

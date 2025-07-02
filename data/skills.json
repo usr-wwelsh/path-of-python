@@ -42,14 +42,26 @@
     {
       "id": "ice_nova",
       "name": "Ice Nova",
-      "description": "Unleashes a ring of ice that chills and damages enemies.",
+      "description": "Unleashes a devastating ring of frost that expands outward, freezing enemies at the epicenter and chilling those further away.",
       "type": "spell",
-      "tags": ["cold", "aoe", "chill"],
-      "mana_cost": 12,
-      "base_damage": {"min": 15, "max": 25, "type": "cold"},
-      "cooldown": 2.0,
-      "cast_time": 0.7,
-      "chill_duration": 3.0
+      "tags": ["cold", "aoe", "chill", "freeze"],
+      "mana_cost": 15,
+      "base_damage": {"min": 15, "max": 3000, "type": "cold"},
+      "cooldown": 0.5,
+      "cast_time": 0.8,
+      "radius": 150,
+      "freeze_duration": {"base": 1.5, "per_chill_stack": 0.2},
+      "chill_effect": {"slow_percentage": 30, "duration": 4.0},
+      "visual_effects": {
+        "particle_count": 120,
+        "particle_speed": 200,
+        "shatter_delay": 0.3,
+        "frost_decay_duration": 2.0
+      },
+      "damage_scaling": {
+        "inner_ring_multiplier": 1.5,
+        "outer_ring_multiplier": 0.7
+      }
     },
     {
       "id": "puncture",
@@ -118,7 +130,7 @@
       "type": "spell",
       "tags": ["lightning", "chain", "aoe"],
       "mana_cost": 15,
-      "base_damage": {"min": 25, "max": 50, "type": "lightning"},
+      "base_damage": {"min": 25, "max": 5000, "type": "lightning"},
       "cooldown": 0,
       "cast_time": 0.7,
       "chain_count": 4
@@ -130,7 +142,7 @@
       "type": "attack",
       "tags": ["melee", "aoe", "physical", "channel"],
       "mana_cost": 10,
-      "base_damage": {"min": 10, "max": 20, "type": "physical"},
+      "base_damage": {"min": 10, "max": 2000, "type": "physical"},
       "cooldown": 0,
       "channel_cost_per_second": 5,
       "hit_interval": 0.2

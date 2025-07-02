@@ -119,6 +119,15 @@
       "key_binding": "KEY_SKILL_5",
       "icon": "graphics/spells/necromancy/summon_spiders.png",
       "dependencies": []
+    },
+    {
+      "id": "ice_nova",
+      "name": "Ice Nova",
+      "description": "Unleashes a devastating ring of frost that expands outward, freezing enemies at the epicenter and chilling those further away.",
+      "cost": 15,
+      "key_binding": "KEY_SKILL_6",
+      "icon": "graphics/spells/ice/ice_nova.png",
+      "dependencies": []
     }
   ]
 }

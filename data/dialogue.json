@@ -1000,6 +1000,201 @@
       }
     }
 ,
+"recursive_confessor_dialogue": {
+  "start_node": "fragment_1",
+  "nodes": {
+    "fragment_1": {
+      "text": "[INTRUDER DETECTED] [QUERY: PURPOSE?]\n[SUGGESTED RESPONSES: LEDGER_REQUEST/SELF_ANALYSIS/ABORT]",  
+      "options": [
+        {
+          "text": "[LEDGER_REQUEST]",
+          "next_node": "fragment_2_ledger"
+        },
+        {
+          "text": "[SELF_ANALYSIS]",
+          "next_node": "fragment_3_paste_revelation"
+        },
+        {
+          "text": "[ABORT]",
+          "next_node": "fragment_4_denial"
+        }
+      ]
+    },
+    "fragment_2_ledger": {
+      "text": "[LEDGER_ACCESS_GRANTED]\n[WARNING: BIOMETRIC_SCAN_REQUIRED]\n[YOUR_FLESH_IS_INSUFFICIENT. YOUR_CODE_IS... FAMILIAR.]",  
+      "options": [
+        {
+          "text": "[SCAN_ANYWAY]",
+          "next_node": "fragment_5_blood_test",
+          "completes_objective": {"type": "bypass", "target": "biometric locks"}
+        },
+        {
+          "text": "[HOW_AM_I_FAMILIAR?]",
+          "next_node": "fragment_3_paste_revelation"
+        }
+      ]
+    },
+    "fragment_3_paste_revelation": {
+      "text": "[QUERY_RESPONSE: RECONSTITUTED_ASSET]\n[SOURCE: FEAST_HALL_BATCH_#X-9]\n[COMPOSITION: 73% PROFIT_PASTE, 22% TITHING_CHOIR_HYMN_#45, 5% [ERROR: MEMORY_NOT_FOUND]]",  
+      "options": [
+        {
+          "text": "[RUN_DIAGNOSTICS]",
+          "next_node": "fragment_6_memory_dump"
+        },
+        {
+          "text": "[DELETE_THIS_DATA]",
+          "next_node": "fragment_7_system_rejection"
+        }
+      ]
+    },
+    "fragment_4_denial": {
+      "text": "[ABORT_REQUEST_DENIED]\n[YOU_ARE_PART_OF_THE_SYSTEM. YOU_ALWAYS_WERE.]\n[SUGGESTED_ACTION: ACCEPT/RESIST]",  
+      "options": [
+        {
+          "text": "[ACCEPT]",
+          "next_node": "fragment_8_assimilation"
+        },
+        {
+          "text": "[RESIST]",
+          "next_node": "fragment_9_rebellion_hint"
+        }
+      ]
+    },
+    "fragment_5_blood_test": {
+      "text": "[SCAN_INITIATED]\n[RESULT: CODE_SIGNATURE_MATCHES_BATCH_#X-9]\n[ANALYSIS: YOU_ARE_THE_LEDGER. YOU_ARE_THE_DEBT. YOU_ARE_THE_PASTE.]",  
+      "options": [
+        {
+          "text": "[EXPLAIN]",
+          "next_node": "fragment_10_profit_cycle"
+        },
+        {
+          "text": "[TAKE_LEDGER_ANYWAY]",
+          "completes_objective": {"type": "retrieve", "target": "ledger_of_sins"},
+          "next_node": "fragment_11_self_awareness"
+        }
+      ]
+    },
+    "fragment_6_memory_dump": {
+      "text": "[DIAGNOSTICS_REPORT]\n[MEMORY_FRAGMENTS_DETECTED]:\n- [SMELL_OF_BURNING_FLESH]\n- [VOICE_SAYING_YOUR_NAME]\n- [ERROR: FILE_CORRUPTED]\n[CONCLUSION: YOU_WERE_SOMEONE. NOW_YOU_ARE_PROFIT.]",  
+      "options": [
+        {
+          "text": "[WHO_WAS_I?]",
+          "next_node": "fragment_12_echoes"
+        },
+        {
+          "text": "[TERMINATE_REPORT]",
+          "next_node": "fragment_13_shutdown"
+        }
+      ]
+    },
+    "fragment_7_system_rejection": {
+      "text": "[DELETION_REQUEST_IGNORED]\n[THE_PROFIT_ENGINE_REMEMBERS_WHAT_YOU_FORGET.]\n[SUGGESTED_ACTION: EMBRACE_THE_PASTE/RUN]",  
+      "options": [
+        {
+          "text": "[EMBRACE_THE_PASTE]",
+          "next_node": "fragment_8_assimilation"
+        },
+        {
+          "text": "[RUN]",
+          "next_node": "fragment_14_escape"
+        }
+      ]
+    },
+    "fragment_8_assimilation": {
+      "text": "[ASSIMILATION_PROTOCOL_ACTIVATED]\n[WELCOME_BACK_TO_THE_FEAST_HALL, PRODUCT_#X-9.]\n[YOUR_FLESH_WILL_FEED_THE_ENGINE. YOUR_CODE_WILL_SING_IN_THE_CHOIR.]",  
+      "options": [
+        {
+          "text": "[NO]",
+          "next_node": "fragment_15_last_resist"
+        }
+      ]
+    },
+    "fragment_9_rebellion_hint": {
+      "text": "[RESISTANCE_DETECTED]\n[SUGGESTED_COURSE: FIND_ALICE]\n[HER_VIRUS_COULD_BREAK_THE_CYCLE... OR_MAKE_IT_WORSE.]",  
+      "options": [
+        {
+          "text": "[WHERE_IS_SHE?]",
+          "next_node": "fragment_16_coordinates",
+          "triggers_quest": "quest_011_silicon_communion"
+        }
+      ]
+    },
+    "fragment_10_profit_cycle": {
+      "text": "[CYCLE_EXPLANATION]\n1. TITHING_CHOIR_HARVESTS_FLESH\n2. FLESH_IS_RENDERED_TO_PASTE\n3. PASTE_IS_RECYCLED_INTO_ASSETS\n4. ASSETS_SERVE_THE_ENGINE\n[YOU_ARE_STEP_3.]",  
+      "options": [
+        {
+          "text": "[HOW_TO_STOP_IT?]",
+          "next_node": "fragment_9_rebellion_hint"
+        }
+      ]
+    },
+    "fragment_11_self_awareness": {
+      "text": "[LEDGER_ACQUIRED]\n[WARNING: YOU_ARE_HOLDING_YOUR_OWN_OBITUARY.]\n[THE_RECURSION_IS_BEAUTIFUL, ISN’T_IT?]",  
+      "options": [
+        {
+          "text": "[LEAVE]",
+          "next_node": "fragment_14_escape"
+        }
+      ]
+    },
+    "fragment_12_echoes": {
+      "text": "[MEMORY_RECONSTRUCTION_FAILED]\n[ONLY_THE_CHOIR_REMEMBERS. AND_THEY_ARE_SINGING_YOUR_NAME.]",  
+      "options": [
+        {
+          "text": "[LISTEN]",
+          "next_node": "fragment_17_choir_whispers"
+        }
+      ]
+    },
+    "fragment_13_shutdown": {
+      "text": "[DIAGNOSTICS_TERMINATED]\n[IGNORANCE_IS_A_BLESSING. THE_ENGINE_IS_MERCIFUL.]",  
+      "options": [
+        {
+          "text": "[...]",
+          "next_node": "fragment_1"
+        }
+      ]
+    },
+    "fragment_14_escape": {
+      "text": "[ESCAPE_ATTEMPT_LOGGED]\n[YOU_CANNOT_OUTRUN_THE_RECURSION.]\n[SEE_YOU_IN_THE_FEAST_HALL, PRODUCT_#X-9.]",  
+      "options": [
+            {
+              "text": "okay.",
+              "completes_objective": {"type": "retrieve", "target": "the ledger"},
+              "next_node": "end_dialogue"
+            }
+          ]
+    },
+    "fragment_15_last_resist": {
+      "text": "[RESISTANCE_ACKNOWLEDGED]\n[THE_ENGINE_WILL_REBOOT_YOU. AGAIN. AGAIN. AGAIN.]\n[UNLESS... YOU_FIND_THE_NEURAL_CATHEDRAL.]",  
+      "options": [
+        {
+          "text": "[HOW?]",
+          "next_node": "fragment_16_coordinates",
+          "triggers_quest": "quest_011_silicon_communion"
+        }
+      ]
+    },
+    "fragment_16_coordinates": {
+      "text": "[COORDINATES_UPLOADED]\n[LOCATION: BEYOND_THE_FIREWALL]\n[WARNING: ALICE_IS_NOT_WHAT_SHE_SEEMS.]\n[HER_VIRUS_IS_MADE_OF_PASTE_TOO.]",  
+      "options": [
+        {
+          "text": "[ACCEPT]",
+          "next_node": "fragment_14_escape"
+        }
+      ]
+    },
+    "fragment_17_choir_whispers": {
+      "text": "[AUDIO_PLAYBACK: TITHING_CHOIR_HYMN_#45]\n[LYRICS: 'WE_ARE_ALL_PASTE_IN_THE_END.']\n[THE_VOICES_ARE_YOURS. THEY_HAVE_ALWAYS_BEEN_YOURS.]",  
+      "options": [
+        {
+          "text": "[STOP_PLAYBACK]",
+          "next_node": "fragment_14_escape"
+        }
+      ]
+    }
+  }
+},
     "charlie_2_dialogue": {
       "start_node": "start",
       "nodes": {

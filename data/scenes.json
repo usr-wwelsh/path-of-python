@@ -124,6 +124,16 @@
             "name": "third",
             "class": "core.dungeons.third.third",
             "dungeon_data_path": "data/dungeons/third.json"
+        },
+        {
+            "name": "bot",
+            "class": "core.dungeons.bot.bot",
+            "dungeon_data_path": "data/dungeons/bot.json"
+        },
+        {
+            "name": "vault",
+            "class": "core.dungeons.vault.vault",
+            "dungeon_data_path": "data/dungeons/vault.json"
         }
     ]
 }

@@ -16,7 +16,7 @@
   },
   "technomancer": {
     "name": "Technomancer",
-    "skills": ["arc", "fireball"],
+    "skills": ["arc", "ice_nova"],
     "description": "Wields arcane energies to unleash powerful spells.",
     "base_sprite": "graphics/player/base/merfolk_f.png",
     "stats": {

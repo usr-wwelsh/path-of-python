@@ -12,6 +12,7 @@ from entities.cleave_skill import CleaveSkill # Import CleaveSkill
 from entities.cyclone_skill import CycloneSkill # Import CycloneSkill
 from entities.fireball_skill import FireballSkill # Import FireballSkill
 from entities.summon_spiders import SummonSpiders # Import SummonSpiders
+from entities.ice_nova import IceNovaSkill # Import IceNovaSkill
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y, class_name="knight", initial_stats=None):
@@ -122,6 +123,7 @@ class Player(pygame.sprite.Sprite):
         self.cyclone_skill = CycloneSkill(self) # Initialize CycloneSkill
         self.fireball_skill = FireballSkill(self) # Initialize FireballSkill
         self.summon_spiders_skill = SummonSpiders(self) # Initialize SummonSpiders
+        self.ice_nova_skill = IceNovaSkill(self) # Initialize IceNovaSkill
 
         # Corrupted Blood attributes
         self.corrupted_blood_stacks = 0
@@ -170,7 +172,7 @@ class Player(pygame.sprite.Sprite):
         if class_name == "stalker":
             self.unlocked_skills = ["cleave", "cyclone"]
         elif class_name == "technomancer":
-            self.unlocked_skills = ["arc", "fireball"]
+            self.unlocked_skills = ["arc", "ice_nova"]
         elif class_name == "hordemonger":
             self.unlocked_skills = ["summon_skeleton", "summon_spiders"]
         else:
@@ -214,6 +216,8 @@ class Player(pygame.sprite.Sprite):
             return self.fireball_skill.can_cast()
         elif skill_id == "summon_spiders":
             return self.summon_spiders_skill.can_cast()
+        elif skill_id == "ice_nova":
+            return self.ice_nova_skill.can_cast()
 
         # Fallback for skills not explicitly handled above (e.g., passive skills from skill_tree.json)
         skill = next((s for s in self.skills if s['id'] == skill_id), None)
@@ -249,6 +253,10 @@ class Player(pygame.sprite.Sprite):
             return True
         elif skill_id == "summon_spiders":
             self.summon_spiders_skill.activate() # Removed mouse_pos arguments
+            return True
+        elif skill_id == "ice_nova":
+            if mouse_pos and self.class_name == "technomancer":
+                self.ice_nova_skill.activate()
             return True
 
         # Fallback for skills not explicitly handled above (e.g., passive skills from skill_tree.json)
@@ -622,6 +630,7 @@ class Player(pygame.sprite.Sprite):
         self.summon_skeletons_skill.update(dt)
         self.fireball_skill.update(dt)
         self.summon_spiders_skill.update(dt)
+        self.ice_nova_skill.update(dt)
 
         # Update Corrupted Blood effect
         self._update_corrupted_blood(dt)

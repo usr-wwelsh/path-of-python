@@ -372,7 +372,7 @@ class Quest:
             if obj["type"].lower() == objective_type.lower() and \
                (obj_target_lower == target_lower or \
                 obj_target_lower == self._get_plural_form(target_lower)):
-                obj["count"] += amount
+                obj["count"] = min(obj["count"] + amount, obj["required"])
                 print(f"Objective '{objective_type} {target}' progress: {obj['count']}/{obj['required']} for quest '{self.name}'.")
                 updated = True
                 break # Assuming one objective per type/target combination for simplicity
