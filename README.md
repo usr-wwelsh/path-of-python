@@ -12,11 +12,11 @@
 ![til](./example.gif)
 
 ### Quest System: MASSIVE UPDATE
-* In a grim cyberpunk dystopia, players fight against the Profit Engine—a ruthless AI system that harvests humans for
-* "Profit Paste" and enforces debt slavery through its Tithing Choir enforcers. Starting with rescuing a prisoner from
-* processing, quests escalate to hacking corporate grids, raiding caravans, and stealing incriminating ledgers,
-* revealing deeper layers of systemic horror. The story unfolds through sequential, objective-driven missions, pushing
-* players toward an inevitable rebellion against the machine's cold, algorithmic oppression.
+In a grim cyberpunk dystopia, players fight against the Profit Engine—a ruthless AI system that harvests humans for
+"Profit Paste" and enforces debt slavery through its Tithing Choir enforcers. Starting with rescuing a prisoner from
+processing, quests escalate to hacking corporate grids, raiding caravans, and stealing incriminating ledgers,
+revealing deeper layers of systemic horror. The story unfolds through sequential, objective-driven missions, pushing
+players toward an inevitable rebellion against the machine's cold, algorithmic oppression.
 
 ### Character Classes: MASSIVE UPDATE
 
