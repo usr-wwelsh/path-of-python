@@ -14,7 +14,7 @@
 ### Character Classes: MASSIVE UPDATE
 
 *   **Stalker:** A master of close combat, dealing devastating blows. (cleave and cyclone)
-*   **Technomancer:** Wields arcane energies to unleash powerful spells. (arc and fireball)
+*   **Technomancer:** Wields arcane energies to unleash powerful spells. (arc and ice nova)
 *   **Hordemonger:** Commands legions of undead and arachnid minions.  (summon spiders and summon skeletons)
 ## Game Concept
 
