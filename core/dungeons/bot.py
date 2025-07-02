@@ -37,7 +37,7 @@ class bot(BaseGameplayScene):
 
         # Check if player is standing on the rectangle
         if self.arrow_rect and self.player.rect.colliderect(self.arrow_rect):
-            SceneManager.get_instance().transition_to_scene("vault")
+            self.game.scene_manager.set_scene("vault")
             return True
 
         super().update(dt, self.entities)
@@ -48,30 +48,28 @@ class bot(BaseGameplayScene):
 
     def draw(self, screen):
         super().draw(screen)
-        # Draw the rectangle for debugging purposes
+        # Draw the rectangle for debugging purposes, adjusting for camera
         if self.arrow_rect:
-            pygame.draw.rect(screen, (255, 0, 0), self.arrow_rect, 2)
+            draw_rect = self.arrow_rect.move(-self.camera_x, -self.camera_y)
+            pygame.draw.rect(screen, (0, 0, 0), draw_rect, 0) # Black filled rectangle
+            pygame.draw.rect(screen, (255, 255, 0), draw_rect, 1) # yellow outline rectangle
 
         for sprite in self.effects:
             screen.blit(sprite.image, (sprite.rect.x - self.camera_x, sprite.rect.y - self.camera_y))
 
     def _calculate_rect_position(self):
-        """Calculate and store the rectangle's screen position"""
+        """Calculate and store the rectangle's world position"""
         tile_size = 64
         rect_size = 150
 
-        # Calculate position at bottom-right of the map
-        rect_map_x = (self.map_width * tile_size) - (tile_size // 2) - 1050
-        rect_map_y = (self.map_height * tile_size) - (tile_size // 2) - 1000
+        # Calculate position at bottom-right of the map in world coordinates
+        rect_world_x = (self.map_width * tile_size) - (tile_size // 2) - 1050
+        rect_world_y = (self.map_height * tile_size) - (tile_size // 2) - 1000
 
-        # Convert to screen coordinates
-        screen_x = rect_map_x - self.camera_x
-        screen_y = rect_map_y - self.camera_y
-
-        # Create rect for click detection
+        # Create rect for collision detection in world coordinates
         self.arrow_rect = pygame.Rect(
-            int(screen_x - rect_size / 2),
-            int(screen_y - rect_size / 2),
+            int(rect_world_x - rect_size / 2),
+            int(rect_world_y - rect_size / 2),
             rect_size,
             rect_size
         )

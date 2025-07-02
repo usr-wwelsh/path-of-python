@@ -121,8 +121,8 @@ class SummonSkeletons:
         # Calculate scaled stats based on player level
         player_level = self.player.level
         scaled_health = self.skeleton_health + (player_level - 1) * 5  # Example: +5 health per level
-        scaled_damage = self.skeleton_damage + (player_level - 1) * 10  # Example: +10 damage per level
-        scaled_speed = self.skeleton_speed + (player_level - 2) * 5  # Example: +5 speed per level (start scaling from level 2)
+        scaled_damage = self.skeleton_damage + (player_level - 1) * 20  # Example: +10 damage per level
+        scaled_speed = self.skeleton_speed + (player_level - 2) * 10  # Example: +5 speed per level (start scaling from level 2)
         
         # Ensure stats don't go below base values for level 1
         scaled_health = max(self.skeleton_health, scaled_health)
@@ -131,6 +131,9 @@ class SummonSkeletons:
 
         # Create a skeleton enemy with scaled stats
         skeleton = Skeleton(self.player.game, x, y, scaled_health, scaled_damage, scaled_speed, self.skeleton_image_path, self, player_level=player_level) # Pass self (SummonSkeletons instance) as owner
+    # Debug prints to verify player level and scaled stats
+        print(f"Summoning skeleton at player level {player_level}")
+        print(f"Scaled stats: health={scaled_health}, damage={scaled_damage}, speed={scaled_speed}")
         # Add skeleton to the scene's friendly_entities group
         self.player.game.current_scene.friendly_entities.add(skeleton)
         self.player.game.current_scene.enemies.add(skeleton)  # Add skeleton to enemies group so they can be targeted
@@ -160,7 +163,8 @@ class Skeleton(Enemy):
         self.player_level = player_level
         # Calculate scale factor based on player level
         # Base scale is 1.0 for level 1, increases by 0.1 for every 5 levels
-        scale_increment_per_level = 0.50 # Increased to 50%per level
+        # Reduce the sprite size growth rate
+        scale_increment_per_level = 0.10  # 10% per level
         self.scale_factor = 2.0 + (self.player_level - 1) * scale_increment_per_level # Base scale 2.0 for level 1
         
         # Load and scale the sprite image

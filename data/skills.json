@@ -98,6 +98,8 @@
       "cast_time": 1.0,
       "minion_duration": 10.0,
       "minion_count": 30,
+      "skeleton_health": 50,
+      "skeleton_damage": 10,
       "skeleton_speed": 250
     },
     {
