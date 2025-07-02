@@ -12,10 +12,10 @@ class IceNovaSkill:
         self.description = "Unleashes a devastating ring of frost that expands outward, freezing enemies at the epicenter and chilling those further away."
         self.mana_cost = 15 + (player.level * 3)
         
-        # Damage scales from 15-30 at level 1 to 3000 at level 100
-        self.base_damage_min = 15
-        self.base_damage_max = 30
-        self.max_damage = 3000
+        # Damage scales from 36 to 51 at level 1 to 500 at level 150
+        self.base_damage_min = 36
+        self.base_damage_max = 51
+        self.max_damage = 500
         self.damage_type = "cold"
         
         self.cooldown = 0.5
@@ -44,8 +44,8 @@ class IceNovaSkill:
         self.outer_ring_multiplier = 0.7
 
     def _calculate_damage(self):
-        """Calculate damage based on player level, scaling linearly to max damage at level 100"""
-        level_scale = min(1.0, self.player.level / 100.0)
+        """Calculate damage based on player level, scaling linearly to max damage at level 150"""
+        level_scale = min(1.0, self.player.level / 150.0)
         min_dmg = self.base_damage_min + (self.max_damage - self.base_damage_min) * level_scale
         max_dmg = self.base_damage_max + (self.max_damage - self.base_damage_max) * level_scale
         return {"min": min_dmg, "max": max_dmg, "type": self.damage_type}

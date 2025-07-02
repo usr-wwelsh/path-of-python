@@ -556,7 +556,9 @@ class Enemy(pygame.sprite.Sprite):
     def draw(self, screen, camera_x, camera_y, zoom_level):
         # Calculate the enemy's position on the screen relative to the camera and zoom
         scale_factor = 1.0
-        if self.modifiers:
+        if self.name == "profit_scribe":
+            scale_factor = 3.0
+        elif self.modifiers:
             scale_factor = 1.0 + (len(self.modifiers) * 0.5)
         scaled_image = pygame.transform.scale(self.image, (int(self.rect.width * zoom_level * scale_factor), int(self.rect.height * zoom_level * scale_factor)))
         screen_x = (self.rect.x - camera_x) * zoom_level
