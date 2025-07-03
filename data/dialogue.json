@@ -1201,7 +1201,7 @@
         "text": "The year is 2030. The year is always 2030. The Profit Engine has not yet consumed all. The children still dream in colors not approved by the algorithm. The air still carries the scent of rain, not just the sterile tang of data centers.",
         "options": [
           {
-            "text": "What year is it really?",
+            "text": "The year is 2300 jackass..",
             "next_node": "node_2"
           },
           {
@@ -1412,7 +1412,11 @@
       },
       "end_dialogue": {
         "text": "The Oracle's form flickers and distorts, its voice dissolving into static and the faint sound of a dial-up modem connecting to nothing.",
-        "options": []
+        "options": [
+         {
+          "text": "..."
+         }
+        ]
       }
     }
   },

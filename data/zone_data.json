@@ -87,7 +87,7 @@
                         1152,
                         160
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/sewer_portal_rusted.png"
+                    "graphic": "graphics/dc-dngn/gateways/sewer_portal_rusted.png"
                 },
                 {
                     "target_scene": "tower",
@@ -95,7 +95,7 @@
                         384,
                         2720
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/fleshy_orifice_open.png"
+                    "graphic": "graphics/dc-dngn/gateways/fleshy_orifice_open.png"
                 },
                 {
                     "target_scene": "maze",
@@ -111,7 +111,7 @@
                         928,
                         4576
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_portal_rotated.png"
+                    "graphic": "graphics/dc-dngn/gateways/dngn_portal_rotated.png"
                 },
                 {
                     "target_scene": "bot",

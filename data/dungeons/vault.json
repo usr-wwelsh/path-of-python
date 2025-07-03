@@ -40405,7 +40405,7 @@
         ]
     ],
     "enemy_types": [
-        "grum"
+
     ],
     "name": "vault",
     "portal_graphic": "",
@@ -40414,17 +40414,7 @@
     "portal_x": 123,
     "portal_y": 119,
     "decorations": [],
-    "enemies": [
-        {
-            "type": "grum",
-            "x": 174,
-            "y": 125,
-            "health": 90,
-            "damage": 22,
-            "speed": 32,
-            "sprite_path": "graphics/dc-mon/unique/grum.png"
-        }
-    ],
+    "enemies": [],
     "portals": [
         {
             "target_scene": "spawn_town",
