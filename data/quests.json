@@ -60,8 +60,8 @@
       "description": "Bob finds a lab where the Profit Engine designs its 'product lines'—including a vat with your face.",
       "objectives": [
         {"description": "Descend into the Flesh Algorithm lab", "completed": false},
-        {"description": "Destroy 3 prototype vats", "completed": false},
-        {"description": "Kill the Lead Butcher", "completed": false}
+        {"description": "Kill 3 prototype vats", "completed": false},
+        {"description": "Kill 1 Lead Butcher", "completed": false}
       ],
       "rewards": {"scrap": 200, "exp": 10000, "item": "butchers_cleaver"},
       "is_completed": false,
@@ -73,6 +73,7 @@
       "name": "Silicon Communion",
       "description": "Alice's AI fragment reveals a backdoor into the Neural Cathedral. The walls whisper your name.",
       "objectives": [
+        {"description": "Talk to Alice in Spawn Town", "completed": false},
         {"description": "Breach the Neural Cathedral dungeon", "completed": false},
         {"description": "Survive the dogma firewalls", "completed": false},
         {"description": "Download the Profit Engine's weakness", "completed": false}

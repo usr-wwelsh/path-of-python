@@ -141,6 +141,8 @@ class GameEngine:
         # Ensure fonts are initialized after display changes
         if not pygame.font.get_init():
             pygame.font.init()
+            from utility.font_cache import clear_font_cache
+            clear_font_cache()
             self.logger.info("Pygame font module re-initialized.")
         
         # Reinitialize fonts for UI elements across all scenes

@@ -1,6 +1,7 @@
 import os
 import json
 import pygame
+from utility.font_cache import get_font
 
 def load_json(filepath):
     """Loads data from a JSON file."""
@@ -53,10 +54,7 @@ def direction_to_target(source, target):
 def draw_text(surface, text, size, color, x, y, align="topleft", max_width=None, alpha=255):
     """Renders text on a surface."""
     font_name = pygame.font.match_font('arial') # Fallback font
-    try:
-        font = pygame.font.Font(font_name, size)
-    except:
-        font = pygame.font.SysFont(font_name, size) # Fallback if Font fails
+    font = get_font(font_name, size)
 
     text_surface = font.render(text, True, color)
     text_surface.set_alpha(alpha)

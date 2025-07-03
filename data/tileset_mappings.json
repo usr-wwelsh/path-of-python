@@ -64,5 +64,11 @@
         "wall": "wall",
         "portal": "portal",
         "decoration": "decoration"
+    },
+    "code": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
     }
 }
