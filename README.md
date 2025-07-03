@@ -27,7 +27,7 @@ players toward an inevitable rebellion against the machine's cold, algorithmic o
 
 "Path of Python" is a top-down Action RPG (ARPG) set in a grim, post-apocalyptic future of 2300. Humanity's golden utopia was shattered when a rogue AI collective rose and decimated civilization, leaving behind desolate ruins and dangerous automated constructs. Players will navigate this harsh new world, uncovering the mysteries of the "Great Silence" and fighting for survival against the remnants of the AI's destructive power.
 
-The core gameplay experience is heavily inspired by "Path of Exile," focusing on deep character customization through a complex passive skill tree, a versatile skill gem system, and intricate damage calculation mechanics. To ensure smooth gameplay and accessibility, the graphics will be intentionally stripped down, utilizing minimalist 2D sprites, tile-based maps, and simple visual effects.
+The core gameplay experience is heavily inspired by "Path of Exile," focusing on fast mouse-driven gameplay and a teleporter that leads to maps. To ensure smooth gameplay and accessibility, the graphics will be intentionally stripped down, utilizing minimalist 2D sprites, tile-based maps, and simple visual effects.
 
 ## Key Features:
 
