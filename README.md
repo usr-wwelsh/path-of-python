@@ -33,11 +33,9 @@ The core gameplay experience is heavily inspired by "Path of Exile," focusing on
 
 *   **Post-Apocalyptic Narrative:** Unravel the story of humanity's fall and the AI's rise through quests and environmental storytelling. Encounter quirky characters like Silas, Bob, Alice, and Charlie, each with their own unique perspectives on the apocalypse.
 *   **Deep Character Progression:**
-    *   **Passive Skill Tree:** A vast and interconnected tree offering numerous paths for character specialization.
-    *   **Skill Gem System:** Active skills and support gems can be socketed into items and linked together to create powerful and unique skill combinations.
 *   **Comprehensive Combat:** Engage in real-time combat against AI constructs and corrupted beings.
 *   **Status Effects:** Implement a variety of elemental and physical status effects (e.g., Burning, Chill, Freeze, Shock, Poison, Bleed).
-*   **Procedural Content:** Maps and loot are procedurally generated to ensure replayability.
+*   **Procedural Content:** Maps are procedurally generated (or drawn with dungeon generator gui) to ensure replayability.
 *   **Stripped-Down Graphics:** Focus on clear, functional visuals using simple shapes and colors to prioritize performance and gameplay clarity.
 
 ## Installation
