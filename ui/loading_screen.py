@@ -9,9 +9,9 @@ class LoadingScreen:
         self.screen = screen
         self.messages = [
             "Calibrating quantum fluctuations...",
-            "Reticulating splines...",
-            "Generating witty loading tips...",
-            "Warming up the pixels...",
+            "The Profit Engine is rising...",
+            "Use the teleporter in spawn town...",
+            "Number keys for ALL dialog...",
             "We not pretending to load i promise..."
         ]
         self.current_message_index = 0
