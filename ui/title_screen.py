@@ -17,6 +17,8 @@ class TitleScreen(BaseScene):
         self.alpha = 0
         self.alpha_direction = 1
         self.x_offset = 0
+        self.is_muted = False
+        self.last_volume = 0.5 # Store the last volume before muting
         self.recreate_ui()
 
     def recreate_ui(self):
@@ -44,10 +46,10 @@ class TitleScreen(BaseScene):
             settings.SCREEN_WIDTH // 2 - 100, settings.SCREEN_HEIGHT // 2 + 290, 200, 50,
             "Exit Game", lambda: (pygame.quit(), sys.exit())
         )
-        self.volume_slider = VolumeSlider(
-            settings.SCREEN_WIDTH // 2 - 100, settings.SCREEN_HEIGHT - 150, 200, 20,
-            pygame.mixer.music.get_volume(),
-            lambda vol: pygame.mixer.music.set_volume(vol)
+        # New mute button
+        self.mute_button = Button(
+            settings.SCREEN_WIDTH // 2 - 150, settings.SCREEN_HEIGHT // 2 + 175, 40, 40,
+            pygame.transform.scale(pygame.image.load("graphics/dc-misc/mute.png").convert_alpha(), (32, 32)), self.toggle_mute
         )
 
     def open_dungeon_generator(self):
@@ -76,6 +78,15 @@ class TitleScreen(BaseScene):
     def exit(self):
         self.game.logger.info("Exiting Title Screen.")
 
+    def toggle_mute(self):
+        if self.is_muted:
+            pygame.mixer.music.set_volume(self.last_volume)
+            self.is_muted = False
+        else:
+            self.last_volume = pygame.mixer.music.get_volume()
+            pygame.mixer.music.set_volume(0)
+            self.is_muted = True
+        self.game.logger.info(f"Music muted: {self.is_muted}")
         
     def handle_event(self, event):
         self.start_button.handle_event(event)
@@ -83,8 +94,8 @@ class TitleScreen(BaseScene):
         self.load_character_button.handle_event(event)
         self.dungeon_maker_button.handle_event(event)
         self.exit_button.handle_event(event)
-        self.volume_slider.handle_event(event)
         self.settings_button.handle_event(event)
+        self.mute_button.handle_event(event) # Handle mute button event
 
     def update(self, dt):
         self.animation_frame += 0.001
@@ -150,11 +161,7 @@ class TitleScreen(BaseScene):
         self.dungeon_maker_button.draw(screen)
         self.exit_button.draw(screen)
         self.settings_button.draw(screen)
-
-        # Draw rectangle around volume slider
-        pygame.draw.rect(screen, settings.UI_SECONDARY_COLOR, (self.volume_slider.rect.x - 5, self.volume_slider.rect.y - 5, self.volume_slider.rect.width + 10, self.volume_slider.rect.height + 10), 2)
-        self.volume_slider.draw(screen)
-        draw_text(screen, "Volume", settings.UI_FONT_SIZE_DEFAULT, settings.UI_PRIMARY_COLOR, self.volume_slider.rect.x + self.volume_slider.rect.width // 2, self.volume_slider.rect.y - 30, align="center")
+        self.mute_button.draw(screen) # Draw mute button
 
 
 class InfoScreen(BaseScene):
@@ -202,32 +209,3 @@ class InfoScreen(BaseScene):
             screen.blit(text_surface, text_rect)
             y_offset += 30
         self.back_button.draw(screen)
-
-class VolumeSlider:
-    def __init__(self, x, y, width, height, initial_volume, on_change_callback):
-        self.rect = pygame.Rect(x, y, width, height)
-        self.volume = initial_volume
-        self.on_change_callback = on_change_callback
-        self.thumb_width = 10
-        self.dragging = False
-
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1 and self.rect.collidepoint(event.pos):
-                self.dragging = True
-        elif event.type == pygame.MOUSEBUTTONUP:
-            self.dragging = False
-        elif event.type == pygame.MOUSEMOTION:
-            if self.dragging:
-                mouse_x = event.pos[0]
-                self.volume = (mouse_x - self.rect.x) / self.rect.width
-                self.volume = max(0, min(1, self.volume))
-                self.on_change_callback(self.volume)
-
-    def draw(self, surface):
-        # Draw slider background
-        pygame.draw.rect(surface, settings.UI_SECONDARY_COLOR, self.rect)
-        # Draw thumb
-        thumb_x = self.rect.x + int(self.volume * self.rect.width)
-        thumb_rect = pygame.Rect(thumb_x - self.thumb_width // 2, self.rect.y, self.thumb_width, self.rect.height)
-        pygame.draw.rect(surface, settings.UI_ACCENT_COLOR, thumb_rect)
