@@ -135,7 +135,13 @@ class TitleScreen(BaseScene):
 
         # Load the title image
         title_image = pygame.image.load("graphics/title.png").convert_alpha()
-        title_rect = title_image.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 3))
+        # Scale the title image to fit the screen width while maintaining aspect ratio
+        aspect_ratio = title_image.get_width() / title_image.get_height()
+        title_scale_factor = 0.75  # Make the title image 75% smaller
+        new_width = int(title_image.get_width() * title_scale_factor)
+        new_height = int(title_image.get_height() * title_scale_factor)
+        title_image = pygame.transform.scale(title_image, (new_width, new_height))
+        title_rect = title_image.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 4))
         screen.blit(title_image, title_rect)
 
         self.start_button.draw(screen)

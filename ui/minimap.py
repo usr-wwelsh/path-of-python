@@ -14,7 +14,7 @@ class Minimap:
         self.nearby_radius = nearby_radius
         self.image = pygame.Surface(self.minimap_size, pygame.SRCALPHA)
         self.rect = self.image.get_rect()
-        # Position the minimap in the top right corner
+        # Position the minimap in the top right corner - this will be updated in draw
         self.rect.topright = (SCREEN_WIDTH - 10, 10)
 
         self.tilemap_cache = None  # Add tilemap cache
@@ -24,6 +24,8 @@ class Minimap:
         self.close_button_rect = None
         self.portal_glow_radius = 20  # Initial glow radius
         self.portal_glow_direction = 1  # 1 for increasing, -1 for decreasing
+        self.original_screen_width = SCREEN_WIDTH
+        self.original_screen_height = SCREEN_HEIGHT
 
     def update(self, entities, scene):
         # Update the list of entities (called by the scene or HUD)
@@ -221,11 +223,22 @@ class Minimap:
         return (end, point1, point2, point3)
 
     def draw(self, screen):
+        current_screen_width, current_screen_height = screen.get_size()
+        width_scale = current_screen_width / self.original_screen_width
+        height_scale = current_screen_height / self.original_screen_height
+
+        # Update minimap position based on current screen resolution
+        scaled_minimap_width = self.minimap_size[0] * width_scale
+        scaled_minimap_height = self.minimap_size[1] * height_scale
+        
+        self.rect.topright = (current_screen_width - (10 * width_scale), 10 * height_scale)
+        self.image = pygame.transform.scale(self.image, (int(scaled_minimap_width), int(scaled_minimap_height)))
+
         if self.enlarged:
             # Draw enlarged minimap background
-            enlarged_size = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            enlarged_size = (current_screen_width // 2, current_screen_height // 2)
             enlarged_rect = pygame.Rect(0, 0, enlarged_size[0], enlarged_size[1])
-            enlarged_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            enlarged_rect.center = (current_screen_width // 2, current_screen_height // 2)
             pygame.draw.rect(screen, (0, 0, 0), enlarged_rect)
 
             # Scale the cached tilemap
@@ -288,12 +301,12 @@ class Minimap:
                     pygame.draw.circle(screen, color, (int(entity_x + enlarged_rect.left), int(entity_y + enlarged_rect.top)), 3)
 
             # Draw close button
-            close_button_size = 20
+            close_button_size = 20 * width_scale
             close_button_x = enlarged_rect.right - close_button_size
             close_button_y = enlarged_rect.top
             self.close_button_rect = pygame.Rect(close_button_x, close_button_y, close_button_size, close_button_size)
             pygame.draw.rect(screen, (200, 0, 0), self.close_button_rect)
-            font = pygame.font.Font(None, 20)
+            font = pygame.font.Font(None, int(20 * width_scale))
             text_surface = font.render("X", True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=self.close_button_rect.center)
             screen.blit(text_surface, text_rect)
@@ -302,12 +315,16 @@ class Minimap:
 
     def handle_event(self, event, minimap_rect):
         if event.type == pygame.MOUSEBUTTONDOWN:
+            current_screen_width, current_screen_height = pygame.display.get_surface().get_size()
+            width_scale = current_screen_width / self.original_screen_width
+            height_scale = current_screen_height / self.original_screen_height
+
             if self.enlarged:
                 # Calculate screen position of close button
-                close_button_size = 20
-                enlarged_size = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+                close_button_size = 20 * width_scale
+                enlarged_size = (current_screen_width // 2, current_screen_height // 2)
                 enlarged_rect = pygame.Rect(0, 0, enlarged_size[0], enlarged_size[1])
-                enlarged_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+                enlarged_rect.center = (current_screen_width // 2, current_screen_height // 2)
                 close_button_x = enlarged_rect.right - close_button_size
                 close_button_y = enlarged_rect.top
                 close_button_screen_rect = pygame.Rect(close_button_x, close_button_y, close_button_size, close_button_size)
@@ -320,5 +337,14 @@ class Minimap:
                     # Calculate relative position to the minimap
                     relative_x = event.pos[0] - minimap_rect.x
                     relative_y = event.pos[1] - minimap_rect.y
-                    if self.enlarge_button_rect.collidepoint(relative_x, relative_y):
+                    
+                    # Scale the enlarge button rect for collision detection
+                    scaled_enlarge_button_rect = pygame.Rect(
+                        self.enlarge_button_rect.x * width_scale,
+                        self.enlarge_button_rect.y * height_scale,
+                        self.enlarge_button_rect.width * width_scale,
+                        self.enlarge_button_rect.height * height_scale
+                    )
+
+                    if scaled_enlarge_button_rect.collidepoint(relative_x, relative_y):
                         self.enlarged = True
