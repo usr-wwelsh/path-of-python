@@ -8,7 +8,7 @@ class LoadingScreen:
     def __init__(self, screen):
         self.screen = screen
         self.messages = [
-            "Calibrating quantum fluctuations...",
+            "Preparing...",
             "The Profit Engine is rising...",
             "Use the teleporter in spawn town...",
             "Number keys for ALL dialog...",
@@ -26,6 +26,19 @@ class LoadingScreen:
         self.FONT_SIZE = 36 # Default font size
         self.FONT_COLOR = (255, 255, 255) # White
         self.BACKGROUND_COLOR = (0, 0, 0) # Black
+
+        pygame.display.set_caption("")
+        
+        # Load and set the window icon from an .ico file
+        try:
+            icon_path = "icon.ico" # Placeholder path for the icon file
+            icon_surface = pygame.image.load(icon_path)
+            pygame.display.set_icon(icon_surface)
+        except pygame.error as e:
+            print(f"Could not load icon: {e}")
+            # Fallback to a transparent icon if loading fails
+            empty_surface = pygame.Surface((1, 1), pygame.SRCALPHA)
+            pygame.display.set_icon(empty_surface)
 
         # Using default pygame font as get_font caused import error
         self.title_font = pygame.font.Font(None, 72) # Larger font for title
@@ -93,6 +106,7 @@ class LoadingScreen:
         self.screen.blit(percentage_surface, percentage_rect)
 
         pygame.display.flip()
+        
 
     def run(self):
         running = True
@@ -104,6 +118,8 @@ class LoadingScreen:
 
             self.update()
             self.draw()
+            
 
             if time.time() - self.start_time > self.duration:
                 running = False
+                pygame.display.set_caption("Path of Python")

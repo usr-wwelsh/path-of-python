@@ -204,9 +204,7 @@ class SpawnTown(BaseGameplayScene):
         weapon = Weapon("Basic Sword", "A simple sword.", "sword", 10)
         health_potion = HealthPotion("Health Potion", "A potion that heals you.")
 
-        # Add items to player's inventory
-        self.player.inventory.add_item(health_potion, 1)
-        self.player.inventory.add_item(weapon, 1)
+
         self.load_portal_data()
         self.ui_elements = [] # List to store UI elements
         self.shop_window = None # Initialize shop_window to None

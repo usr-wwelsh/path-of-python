@@ -35,7 +35,8 @@ class InventoryScreen(BaseScene):
 
     def draw(self, screen):
         if self.background_image:
-            screen.blit(self.background_image, (0, 0))  # Draw the background image
+            scaled_background = pygame.transform.scale(self.background_image, (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
+            screen.blit(scaled_background, (0, 0))  # Draw the background image
         else:
             screen.fill(settings.UI_BACKGROUND_COLOR)  # Fallback to background color
 
@@ -45,7 +46,7 @@ class InventoryScreen(BaseScene):
                   settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2 + 20, align="center")
 
         # Display items in inventory
-        player = self.game.spawn_town.player
+        player = self.game.player
         if player and player.inventory and player.inventory.items:
             item_x = 100
             item_y = 200

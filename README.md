@@ -40,12 +40,12 @@ The core gameplay experience is heavily inspired by "Path of Exile," focusing on
 
 ## Installation
 
-1.  Make sure you have Python installed (preferably Python 3.x).
+1.  Make sure you have Python installed (preferably Python 3.10.6).
 2.  Clone this repository.
 3.  Install the required dependencies using pip:
 
     ```
-    pip install pygame noise panda3d gltf ursina screeninfo scipy numpy hypothesis olefile typing_extensions h2 
+    pip install pygame noise
     ```
 
 ## How to Run the Game

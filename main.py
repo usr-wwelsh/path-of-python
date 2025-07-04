@@ -13,8 +13,9 @@ from ui.loading_screen import LoadingScreen
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((800, 600)) # Assuming a default screen size
-    loading_screen = LoadingScreen(screen)
-    loading_screen.run()
+    if "-dev" not in sys.argv:
+        loading_screen = LoadingScreen(screen)
+        loading_screen.run()
     pygame.init()
     pygame.mixer.init()
     pygame.mixer.music.load("./data/corrupted.wav")  # Changed to corrupted.wav
