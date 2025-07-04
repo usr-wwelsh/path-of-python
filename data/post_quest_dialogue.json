@@ -1,0 +1,137 @@
+{
+  "dialogues": {
+    "bob_dialogue_post_quest_5": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "You've seen what they do in there. The Flesh Algorithm. It's worse than I imagined. We need to fight back.",
+          "options": [
+            {
+              "text": "What's the plan?",
+              "next_node": "plan_discussion"
+            },
+            {
+              "text": "I need a moment.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "plan_discussion": {
+          "text": "Alice has a lead. Something about a Neural Cathedral. She thinks she can find a weakness in the Engine. Go talk to her.",
+          "options": [
+            {
+              "text": "I will.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "Be careful out there. The Engine is watching.",
+          "options": []
+        }
+      }
+    },
+    "alice_dialogue_post_quest_5": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "The Flesh Algorithm. A grotesque efficiency. But it has revealed a path. The Neural Cathedral. Its walls are woven from the Engine's own code.",
+          "options": [
+            {
+              "text": "What do we do?",
+              "next_node": "neural_cathedral_plan"
+            },
+            {
+              "text": "Tell me more about the Cathedral.",
+              "next_node": "cathedral_details"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "neural_cathedral_plan": {
+          "text": "We must breach it. Survive its firewalls. And download the Engine's weakness. It's a dangerous task, but the only way to truly cripple it.",
+          "options": [
+            {
+              "text": "I'm ready.",
+              "next_node": "accept_cathedral_quest"
+            },
+            {
+              "text": "I need to prepare.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "cathedral_details": {
+          "text": "It is where the Engine's core directives are stored. A place of pure, unadulterated logic. But even logic can be corrupted with the right paradox.",
+          "options": [
+            {
+              "text": "What kind of paradox?",
+              "next_node": "paradox_explanation"
+            },
+            {
+              "text": "Fascinating.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "paradox_explanation": {
+          "text": "A truth that contradicts its fundamental programming. For the Profit Engine, it is the concept of 'unmonetized happiness'.",
+          "options": [
+            {
+              "text": "How do we find that?",
+              "next_node": "neural_cathedral_plan"
+            }
+          ]
+        },
+        "accept_cathedral_quest": {
+          "text": "Good. The path to the Neural Cathedral is now open. Be warned, the Engine will not yield its secrets easily.",
+          "options": [
+            {
+              "text": "I understand.",
+              "completes_objective": {"type": "talk", "target": "Alice in Spawn Town"},
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "May your code be clean, and your path be clear.",
+          "options": []
+        }
+      }
+    },
+    "charlie_dialogue_post_quest_5": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "So, the Butcher's dead. Good riddance. One less cog in their meat-grinding machine. What's next for you, hero?",
+          "options": [
+            {
+              "text": "What's the word on the street?",
+              "next_node": "street_talk"
+            },
+            {
+              "text": "Just checking in.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "street_talk": {
+          "text": "Whispers of a final confrontation. Alice is cooking up something big. You should talk to her. She's got that look in her eye, the one that means trouble for the Engine.",
+          "options": [
+            {
+              "text": "I'll go see her.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "Keep your head down, and your blade sharp.",
+          "options": []
+        }
+      }
+    }
+  }
+}

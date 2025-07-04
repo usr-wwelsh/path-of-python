@@ -684,3 +684,6 @@ class Player(pygame.sprite.Sprite):
         """Deactivates the specified skill."""
         if skill_id == "cyclone":
             self.cyclone_skill.deactivate()
+        elif skill_id == "ice_nova":
+            self.ice_nova_skill.stop_channeling()
+            

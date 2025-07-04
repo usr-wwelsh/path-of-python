@@ -53,6 +53,10 @@ class CharacterSelectionScene(BaseScene):
         self.selected_char_helmet_lift_offset = 0 # New: for selected character's helmet lift during confirmation
         self.selected_char_helmet_lift_target = SCREEN_HEIGHT # New: target height for selected character's helmet lift
         self.selected_char_helmet_lift_speed = 150.0 # New: speed for selected character's helmet lift
+        
+        # Create a surface to render the scene on, which will then be scaled and centered
+        self.render_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.render_rect = self.render_surface.get_rect()
 
         self.load_graphics()
         self.setup_character_positions()
@@ -143,21 +147,50 @@ class CharacterSelectionScene(BaseScene):
         if self.confirm_animation_active:
             return # Disable input during animation
 
+        if not hasattr(event, 'pos'):
+            self.confirm_button.handle_event(event)
+            return
+        # Translate mouse coordinates to the render surface
+        mouse_pos = event.pos
+        scale_x = self.game.screen.get_width() / self.render_surface.get_width()
+        scale_y = self.game.screen.get_height() / self.render_surface.get_height()
+        
+        # For simplicity, we'll assume uniform scaling, so we can use the same scale factor
+        scale = min(scale_x, scale_y)
+        
+        unscaled_width = self.render_surface.get_width() * scale
+        unscaled_height = self.render_surface.get_height() * scale
+        
+        offset_x = (self.game.screen.get_width() - unscaled_width) / 2
+        offset_y = (self.game.screen.get_height() - unscaled_height) / 2
+        
+        # Translate mouse position
+        translated_mouse_pos = ((mouse_pos[0] - offset_x) / scale, (mouse_pos[1] - offset_y) / scale)
+
+
         if event.type == pygame.MOUSEMOTION:
             self.hovered_class = None
             for i, rect in enumerate(self.character_positions):
-                if rect.collidepoint(event.pos):
+                if rect.collidepoint(translated_mouse_pos):
                     self.hovered_class = list(self.classes.keys())[i]
                     break
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1: # Left click
                 for i, rect in enumerate(self.character_positions):
-                    if rect.collidepoint(event.pos):
+                    if rect.collidepoint(translated_mouse_pos):
                         self.selected_class = list(self.classes.keys())[i]
                         self.selected_character_rect = rect.copy() # Store rect for visual feedback
                         self.game.logger.info(f"Selected class: {self.selected_class}")
                         break
-        self.confirm_button.handle_event(event)
+        
+        # Create a new event with the translated position for the button
+        if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP):
+            event_dict = event.dict.copy()
+            event_dict['pos'] = translated_mouse_pos
+            new_event = pygame.event.Event(event.type, event_dict)
+            self.confirm_button.handle_event(new_event)
+        else:
+            self.confirm_button.handle_event(event)
     
     def confirm_selection(self):
         if self.selected_class:
@@ -281,18 +314,21 @@ class CharacterSelectionScene(BaseScene):
         end_x = start_x
         end_y = 0
         pygame.draw.line(screen, color, (start_x, start_y - helmet_y_offset), (end_x, end_y), 2)
+
     def draw(self, screen):
+        # Fill the render surface with a transparent color to start fresh
+        self.render_surface.fill((0, 0, 0, 0))
         # Apply screen shake offset if active
         draw_offset_x = self.shake_offset_x if self.confirm_animation_active else 0
         draw_offset_y = self.shake_offset_y if self.confirm_animation_active else 0
 
         # Draw darkened room graphic
-        screen.blit(self.darkened_room_graphic, (draw_offset_x, draw_offset_y))
+        self.render_surface.blit(self.darkened_room_graphic, (draw_offset_x, draw_offset_y))
 
         # Draw flickering light effect (overlay)
         flicker_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         flicker_surface.fill((255, 255, 255, int(self.flicker_alpha))) # White light, varying alpha
-        screen.blit(flicker_surface, (draw_offset_x, draw_offset_y))
+        self.render_surface.blit(flicker_surface, (draw_offset_x, draw_offset_y))
 
         # Draw characters
         for i, (class_name, data) in enumerate(self.classes.items()):
@@ -301,11 +337,11 @@ class CharacterSelectionScene(BaseScene):
             if self.confirm_animation_active:
                 if class_name == self.selected_class:
                     # Draw full sprite
-                    screen.blit(data["full_sprite"], (char_rect.x + draw_offset_x, char_rect.y + 50 + draw_offset_y))
+                    self.render_surface.blit(data["full_sprite"], (char_rect.x + draw_offset_x, char_rect.y + 50 + draw_offset_y))
                     # Draw helmet with the new, higher animated offset for selected character
                     helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 120 - self.selected_char_helmet_lift_offset + draw_offset_y)) # Adjusted initial Y
-                    self.draw_helmet_wires(screen, char_rect, self.selected_char_helmet_lift_offset, draw_offset_x, draw_offset_y)
-                    screen.blit(data["helmet_sprite"], helmet_rect.topleft)
+                    self.draw_helmet_wires(self.render_surface, char_rect, self.selected_char_helmet_lift_offset, draw_offset_x, draw_offset_y)
+                    self.render_surface.blit(data["helmet_sprite"], helmet_rect.topleft)
                 # Unselected characters are handled by electricity effects, no need to draw their sprites here
             else:
                 # Normal drawing logic (hover/non-hover)
@@ -313,36 +349,36 @@ class CharacterSelectionScene(BaseScene):
                 
                 if self.hovered_class == class_name:
                     # Draw full sprite
-                    screen.blit(data["full_sprite"], (char_rect.x + draw_offset_x, char_rect.y + 50 + draw_offset_y))
+                    self.render_surface.blit(data["full_sprite"], (char_rect.x + draw_offset_x, char_rect.y + 50 + draw_offset_y))
                     # Draw helmet with animated offset (hover)
                     helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 170 - helmet_y_offset + draw_offset_y)) # Adjusted initial Y
-                    self.draw_helmet_wires(screen, char_rect, helmet_y_offset, draw_offset_x, draw_offset_y)
-                    screen.blit(data["helmet_sprite"], helmet_rect.topleft)
+                    self.draw_helmet_wires(self.render_surface, char_rect, helmet_y_offset, draw_offset_x, draw_offset_y)
+                    self.render_surface.blit(data["helmet_sprite"], helmet_rect.topleft)
                 else:
                     # Draw base sprite
-                    screen.blit(data["base_sprite_image"], (char_rect.x + draw_offset_x, char_rect.y + draw_offset_y))
+                    self.render_surface.blit(data["base_sprite_image"], (char_rect.x + draw_offset_x, char_rect.y + draw_offset_y))
                     # Draw helmet with animated offset (non-hover)
                     helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 200 - helmet_y_offset + draw_offset_y)) # Adjusted initial Y
-                    self.draw_helmet_wires(screen, char_rect, helmet_y_offset, draw_offset_x, draw_offset_y)
-                    screen.blit(data["helmet_sprite"], helmet_rect.topleft)
+                    self.draw_helmet_wires(self.render_surface, char_rect, helmet_y_offset, draw_offset_x, draw_offset_y)
+                    self.render_surface.blit(data["helmet_sprite"], helmet_rect.topleft)
 
             if not self.confirm_animation_active:
                 name_font = pygame.font.Font(None, 72) # Create a font object
                 name_text = name_font.render(class_name, True, (255, 255, 0)) # Render the text
                 name_rect = name_text.get_rect(center=(char_rect.centerx + draw_offset_x, char_rect.top - 50 + draw_offset_y)) # Position the text
-                screen.blit(name_text, name_rect.topleft) # Draw the text
+                self.render_surface.blit(name_text, name_rect.topleft) # Draw the text
 
         # Draw selected character border (only in normal state)
         if not self.confirm_animation_active and self.selected_character_rect:
             # Adjust selected_character_rect for shake offset if needed, though it's not shaking here
             border_rect = self.selected_character_rect.copy()
-            pygame.draw.rect(screen, (255, 255, 0), border_rect, 3) # Yellow border
+            pygame.draw.rect(self.render_surface, (255, 255, 0), border_rect, 3) # Yellow border
 
         # Draw info section and confirm button (only in normal state)
         if not self.confirm_animation_active:
-            pygame.draw.rect(screen, (50, 50, 50), self.info_section_rect) # Dark grey background for info section
-            self.confirm_button.draw(screen)
-            pygame.draw.rect(screen, (200, 200, 200), self.info_section_rect, 2) # Light grey border
+            pygame.draw.rect(self.render_surface, (50, 50, 50), self.info_section_rect) # Dark grey background for info section
+            self.confirm_button.draw(self.render_surface)
+            pygame.draw.rect(self.render_surface, (200, 200, 200), self.info_section_rect, 2) # Light grey border
 
         # Display info based on hovered or selected class
         display_class_data = None
@@ -354,16 +390,32 @@ class CharacterSelectionScene(BaseScene):
         if display_class_data:
             # Display class name in info section
             name_text = self.font.render(f"Class: {display_class_data['name']}", True, (255, 255, 255))
-            screen.blit(name_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 10))
+            self.render_surface.blit(name_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 10))
 
             # Display skills
             if display_class_data and 'skills' in display_class_data:
                 skills_text = self.font.render(f"Skills: {', '.join(display_class_data['skills'])}", True, (255, 255, 255))
-                screen.blit(skills_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 50))
+                self.render_surface.blit(skills_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 50))
 
             # Display description
             description_text = self.font.render(f"Description: {display_class_data['description']}", True, (255, 255, 255))
-            screen.blit(description_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 90))
+            self.render_surface.blit(description_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 90))
 
         # Draw electricity effects (always, if active)
-        self.electricity_effects.draw(screen)
+        self.electricity_effects.draw(self.render_surface)
+
+        # --- Scaling and Centering ---
+        # Calculate the scale factor to fit the render surface onto the screen while maintaining aspect ratio
+        screen_width, screen_height = screen.get_size()
+        scale_x = screen_width / self.render_surface.get_width()
+        scale_y = screen_height / self.render_surface.get_height()
+        scale = min(scale_x, scale_y)
+
+        # Scale the render surface
+        scaled_surface = pygame.transform.smoothscale(self.render_surface, (int(self.render_surface.get_width() * scale), int(self.render_surface.get_height() * scale)))
+        
+        # Get the rect of the scaled surface and center it on the screen
+        scaled_rect = scaled_surface.get_rect(center=screen.get_rect().center)
+        
+        # Blit the scaled surface to the screen
+        screen.blit(scaled_surface, scaled_rect)

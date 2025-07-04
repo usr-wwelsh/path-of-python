@@ -25,9 +25,15 @@ import inspect # Import inspect module
 class GameEngine:
     """Manages the main game loop, scenes, and core systems."""
     def __init__(self):
+        # Center the window before initializing pygame
+        if not settings.FULLSCREEN:
+            os.environ['SDL_VIDEO_CENTERED'] = '1'
+            
         pygame.init()
         # Initialize the screen with basic settings first
         self.screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
+        self.game_surface = pygame.Surface((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)) # Game is rendered to this surface
+        
         # Configure logging
         logging.basicConfig(level=logging.DEBUG if settings.DEBUG_MODE else logging.INFO,
                             format='%(asctime)s - %(levelname)s - %(message)s')
@@ -117,6 +123,10 @@ class GameEngine:
         self.logger.info("Applying display settings.")
         self.logger.info(f"Fullscreen: {self.settings.FULLSCREEN}, Borderless: {self.settings.BORDERLESS}, Vsync: {self.settings.VSYNC}")
 
+        # Center the window before reinitializing the display
+        if not self.settings.FULLSCREEN:
+            os.environ['SDL_VIDEO_CENTERED'] = '1'
+
         # Calculate flags based on settings
         flags = 0
         if self.settings.FULLSCREEN:
@@ -131,12 +141,15 @@ class GameEngine:
                 flags,
                 vsync=self.settings.VSYNC
             )
+            # Also update the game surface to match the new resolution
+            self.game_surface = pygame.Surface((self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT))
         except pygame.error as e:
             self.logger.error(f"Failed to set display mode: {e}")
             # Fallback to basic windowed mode if there's an error
             self.screen = pygame.display.set_mode(
                 (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT)
             )
+            self.game_surface = pygame.Surface((self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT))
         
         # Ensure fonts are initialized after display changes
         if not pygame.font.get_init():
@@ -149,15 +162,6 @@ class GameEngine:
         self.reinitialize_ui_fonts() # Call the new method here
 
         pygame.display.set_caption(self.settings.CAPTION)
-
-        # Center the window if not in fullscreen
-        if not self.settings.FULLSCREEN:
-            try:
-                window_x = (pygame.display.Info().current_w - self.settings.SCREEN_WIDTH) // 2
-                window_y = (pygame.display.Info().current_h - self.settings.SCREEN_HEIGHT) // 2
-                os.environ['SDL_VIDEO_WINDOW_POS'] = f"{window_x},{window_y}"
-            except Exception as e:
-                self.logger.warning(f"Could not center window: {e}")
 
     def reinitialize_ui_fonts(self):
         """Reinitializes fonts for UI elements in all loaded scenes."""
@@ -190,20 +194,19 @@ class GameEngine:
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'projectiles'):
                     self.scene_manager.current_scene.projectiles.update(dt, self.scene_manager.current_scene.player, self.scene_manager.current_scene.tile_map, self.scene_manager.current_scene.tile_size)
 
-                try:
-                    self.screen.fill((0, 0, 0)) # Clear screen
-                except pygame.error as e:
-                    self.logger.error(f"Failed to fill screen: {e}")
-                    self.apply_display_settings() # Try to reinitialize display
-                    continue # Skip this frame if display is not ready
+                # --- Rendering starts here ---
+                
+                # 1. Clear the game surface
+                self.game_surface.fill((0, 0, 0))
 
-                self.scene_manager.draw(self.screen)
+                # 2. Draw all game elements to the game_surface
+                self.scene_manager.draw(self.game_surface)
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'effects'):
                     for sprite in self.scene_manager.current_scene.effects:
-                        self.screen.blit(sprite.image, (sprite.rect.x - self.scene_manager.current_scene.camera_x, sprite.rect.y - self.scene_manager.current_scene.camera_y))
+                        self.game_surface.blit(sprite.image, (sprite.rect.x - self.scene_manager.current_scene.camera_x, sprite.rect.y - self.scene_manager.current_scene.camera_y))
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'projectiles'):
                     for sprite in self.scene_manager.current_scene.projectiles:
-                        sprite.draw(self.screen, self.scene_manager.current_scene.camera_x, self.scene_manager.current_scene.camera_y, self.scene_manager.current_scene.zoom_level)
+                        sprite.draw(self.game_surface, self.scene_manager.current_scene.camera_x, self.scene_manager.current_scene.camera_y, self.scene_manager.current_scene.zoom_level)
 
                 self.input_handler.reset_inputs() # Reset input states for the next frame
 
@@ -211,15 +214,15 @@ class GameEngine:
                     debug_y_offset = 10
                     if self.settings.SHOW_FPS:
                         fps_text = f"FPS: {int(self.clock.get_fps())}"
-                        draw_text(self.screen, fps_text, 18, (255, 255, 0), 10, debug_y_offset)
+                        draw_text(self.game_surface, fps_text, 18, (255, 255, 0), 10, debug_y_offset)
                         debug_y_offset += 20
                     if self.settings.SHOW_SCENE_NAME:
                         scene_name_text = f"Scene: {self.scene_manager.current_scene_name}"
-                        draw_text(self.screen, scene_name_text, 18, (255, 255, 0), 10, debug_y_offset)
+                        draw_text(self.game_surface, scene_name_text, 18, (255, 255, 0), 10, debug_y_offset)
                         debug_y_offset += 20
                     if self.settings.SHOW_DELTA_TIME:
                         dt_text = f"DT: {dt:.4f}s"
-                        draw_text(self.screen, dt_text, 18, (255, 255, 0), 10, debug_y_offset)
+                        draw_text(self.game_surface, dt_text, 18, (255, 255, 0), 10, debug_y_offset)
                         debug_y_offset += 20
                     if self.settings.SHOW_PLAYER_TILE_COORDS:
                         if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'player'):
@@ -227,13 +230,22 @@ class GameEngine:
                             tile_x = int(player.rect.x / 32)
                             tile_y = int(player.rect.y / 32)
                             player_coords_text = f"Player Tile: ({tile_x}, {tile_y})"
-                            draw_text(self.screen, player_coords_text, 18, (255, 255, 0), 10, debug_y_offset)
+                            draw_text(self.game_surface, player_coords_text, 18, (255, 255, 0), 10, debug_y_offset)
                             debug_y_offset += 20
-
+                
+                # 3. Clear the main screen and draw the scaled game_surface onto it
                 try:
+                    self.screen.fill((0, 0, 0)) # Black bars
+                    # Calculate position to center the game_surface
+                    screen_w, screen_h = self.screen.get_size()
+                    surface_w, surface_h = self.game_surface.get_size()
+                    top_left_x = (screen_w - surface_w) // 2
+                    top_left_y = (screen_h - surface_h) // 2
+                    
+                    self.screen.blit(self.game_surface, (top_left_x, top_left_y))
                     pygame.display.flip()
                 except pygame.error as e:
-                    self.logger.error(f"Failed to flip display: {e}")
+                    self.logger.error(f"Failed to fill or flip display: {e}")
                     self.apply_display_settings() # Try to reinitialize display
                     continue # Skip this frame if display is not ready
 

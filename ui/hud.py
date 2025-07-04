@@ -24,6 +24,8 @@ class HUD:
         self.quest_tracker = QuestTracker() # Get the singleton instance
         self.quest_tracker_hud = QuestTrackerHUD(self.quest_tracker) # Instantiated QuestTrackerHUD
         self.skill_tree_data = self.load_skill_tree_data()
+        self.original_screen_width = SCREEN_WIDTH
+        self.original_screen_height = SCREEN_HEIGHT
 
     def load_skill_tree_data(self):
         skill_tree_path = os.path.join(os.getcwd(), "data", "skill_tree.json")
@@ -40,14 +42,18 @@ class HUD:
         self.player.experience = self.player.experience  # Dummy change to force XP redraw
 
     def draw(self, screen):
+        current_screen_width, current_screen_height = screen.get_size()
+        width_scale = current_screen_width / self.original_screen_width
+        height_scale = current_screen_height / self.original_screen_height
+
         # Draw Health Bar
-        self._draw_bar(screen, 10, SCREEN_HEIGHT - 40, 300, 30, self.player.current_life, self.player.max_life, RED, "HP")
+        self._draw_bar(screen, 10 * width_scale, current_screen_height - (40 * height_scale), 300 * width_scale, 30 * height_scale, self.player.current_life, self.player.max_life, RED, "HP")
 
         # Draw Energy Shield Bar
-        self._draw_bar(screen, 10, SCREEN_HEIGHT - 65, 300, 30, self.player.current_energy_shield, self.player.max_energy_shield, (100, 100, 200), "ES")
+        self._draw_bar(screen, 10 * width_scale, current_screen_height - (65 * height_scale), 300 * width_scale, 30 * height_scale, self.player.current_energy_shield, self.player.max_energy_shield, (100, 100, 200), "ES")
 
         # Draw Mana Bar
-        self._draw_bar(screen, SCREEN_WIDTH - 310, SCREEN_HEIGHT - 40, 300, 30, self.player.current_mana, self.player.max_mana, BLUE, "MP")
+        self._draw_bar(screen, current_screen_width - (310 * width_scale), current_screen_height - (40 * height_scale), 300 * width_scale, 30 * height_scale, self.player.current_mana, self.player.max_mana, BLUE, "MP")
 
         # Draw Skill Bar (Placeholder)
         #self._draw_skill_bar(screen)
@@ -59,17 +65,17 @@ class HUD:
         if not self.player.game.current_scene.is_dark: # Only draw minimap if scene is not dark
             self.minimap.draw(screen)
         # Draw Level/Experience Gauge
-        self._draw_experience_gauge(screen)
+        self._draw_experience_gauge(screen, width_scale, height_scale)
         # Draw Summon Spiders Cooldown Gauge only if player has the skill
         if self.player.has_skill("summon_spiders"):
-            self._draw_skill_cooldown_gauge(screen, self.player.summon_spiders_skill, "Summon Spiders", SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 100)
+            self._draw_skill_cooldown_gauge(screen, self.player.summon_spiders_skill, "Summon Spiders", current_screen_width // 2 - (150 * width_scale), current_screen_height - (100 * height_scale), width_scale, height_scale)
         # Draw Summon Skeletons Cooldown Gauge only if player has the skill
         if self.player.has_skill("summon_skeleton"):
-            self._draw_skill_cooldown_gauge(screen, self.player.summon_skeletons_skill, "Summon Skeletons", SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 70)
+            self._draw_skill_cooldown_gauge(screen, self.player.summon_skeletons_skill, "Summon Skeletons", current_screen_width // 2 - (150 * width_scale), current_screen_height - (70 * height_scale), width_scale, height_scale)
 
         # Draw Minion Counts
         self.quest_tracker_hud.draw(screen) # Call QuestTrackerHUD's draw method
-        self._draw_minion_counts(screen)
+        self._draw_minion_counts(screen, width_scale, height_scale)
 
     def _draw_bar(self, screen, x, y, width, height, current_value, max_value, color, label):
         # Background bar
@@ -81,7 +87,7 @@ class HUD:
         # Border
         pygame.draw.rect(screen, UI_PRIMARY_COLOR, (x, y, width, height), 2)
         # Text
-        text = f"{label}: {int(current_value)}/{int(max_value)}"
+        text = f"{label}: {int(current_value)}/{int(max_value)}" # Define text here
         draw_text(screen, text, UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, x + width // 2, y + height // 2, align="center")
 
     def _draw_skill_bar(self, screen):
@@ -123,11 +129,12 @@ class HUD:
             key_name = pygame.key.name(potion_keys[i]).upper()
             draw_text(screen, key_name, UI_FONT_SIZE_DEFAULT - 8, UI_PRIMARY_COLOR, slot_rect.centerx, slot_rect.centery, align="center")
 
-    def _draw_experience_gauge(self, screen):
-        gauge_x = SCREEN_WIDTH // 2 - 150 # Centered at the top
-        gauge_y = 10
-        gauge_width = 300
-        gauge_height = 25
+    def _draw_experience_gauge(self, screen, width_scale, height_scale):
+        current_screen_width, _ = screen.get_size()
+        gauge_x = current_screen_width // 2 - (150 * width_scale) # Centered at the top
+        gauge_y = 10 * height_scale
+        gauge_width = 300 * width_scale
+        gauge_height = 25 * height_scale
 
         # Background bar
         pygame.draw.rect(screen, UI_BACKGROUND_COLOR, (gauge_x, gauge_y, gauge_width, gauge_height))
@@ -148,18 +155,21 @@ class HUD:
         text = f"Level: {self.player.level} | XP: {int(self.player.experience)}/{int(xp_for_next_level)} ({int(xp_remaining)} left)"
         draw_text(screen, text, UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, gauge_x + gauge_width // 2, gauge_y + gauge_height // 2, align="center")
 
-    def _draw_skill_cooldown_gauge(self, screen, skill_instance, skill_name, x, y, width=300, height=25):
+    def _draw_skill_cooldown_gauge(self, screen, skill_instance, skill_name, x, y, width_scale, height_scale, width=300, height=25):
         current_time = pygame.time.get_ticks()
         time_since_last_use = current_time - skill_instance.last_used
         
+        scaled_width = width * width_scale
+        scaled_height = height * height_scale
+
         # Background bar
-        pygame.draw.rect(screen, UI_BACKGROUND_COLOR, (x, y, width, height))
+        pygame.draw.rect(screen, UI_BACKGROUND_COLOR, (x, y, scaled_width, scaled_height))
 
         # Foreground bar (cooldown progress)
         if time_since_last_use < skill_instance.cooldown:
             cooldown_progress = time_since_last_use / skill_instance.cooldown
-            fill_width = cooldown_progress * width
-            pygame.draw.rect(screen, (255, 165, 0), (x, y, fill_width, height)) # Orange for cooldown
+            fill_width = cooldown_progress * scaled_width
+            pygame.draw.rect(screen, (255, 165, 0), (x, y, fill_width, scaled_height)) # Orange for cooldown
 
             # Cooldown text
             remaining_time_ms = skill_instance.cooldown - time_since_last_use
@@ -167,16 +177,17 @@ class HUD:
             text = f"{skill_name} Cooldown: {remaining_time_s:.1f}s"
         else:
             text = f"{skill_name} Ready!"
-            pygame.draw.rect(screen, GREEN, (x, y, width, height)) # Green when ready
+            pygame.draw.rect(screen, GREEN, (x, y, scaled_width, scaled_height)) # Green when ready
 
         # Border
-        pygame.draw.rect(screen, UI_PRIMARY_COLOR, (x, y, width, height), 2)
+        pygame.draw.rect(screen, UI_PRIMARY_COLOR, (x, y, scaled_width, scaled_height), 2)
 
         # Text
-        draw_text(screen, text, UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, x + width // 2, y + height // 2, align="center")
-    def _draw_minion_counts(self, screen):
-        minion_count_x = SCREEN_WIDTH - 10
-        minion_count_y = SCREEN_HEIGHT - 100
+        draw_text(screen, text, UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, x + scaled_width // 2, y + scaled_height // 2, align="center")
+    def _draw_minion_counts(self, screen, width_scale, height_scale):
+        current_screen_width, current_screen_height = screen.get_size()
+        minion_count_x = current_screen_width - (10 * width_scale)
+        minion_count_y = current_screen_height - (100 * height_scale)
         
         # Get active friendly entities from the current scene
         friendly_entities = self.player.game.current_scene.friendly_entities
@@ -192,7 +203,7 @@ class HUD:
 
         if self.player.has_skill("summon_spiders"):
             draw_text(screen, f"Spiders: {spider_count}", UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, minion_count_x, minion_count_y, align="bottomright")
-            minion_count_y -= 20 # Move up for next count
+            minion_count_y -= (20 * height_scale) # Move up for next count
 
         if self.player.has_skill("summon_skeleton"):
             draw_text(screen, f"Skeletons: {skeleton_count}", UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, minion_count_x, minion_count_y, align="bottomright")

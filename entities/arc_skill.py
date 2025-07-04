@@ -12,7 +12,7 @@ class ArcSkill:
     def __init__(self, player):
         self.player = player
         self.arc_chain_lightning_image_path = "graphics/spells/air/chain_lightning.png" # Store path instead of loaded image
-        self.chain_range = 500  # Increased distance within which lightning can chain to the next enemy
+        self.chain_range = 1500  # Increased distance within which lightning can chain to the next enemy
         self.arc_speed = 500  # Speed of the visual lightning projectile
         self.last_used = 0
         self.damage_variation = 5

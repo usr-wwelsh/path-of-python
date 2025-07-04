@@ -395,6 +395,7 @@ class BaseGameplayScene(BaseScene):
                                 self.game.dialogue_manager.start_dialogue(entity.dialogue_id)
                                 break # Interact with only one NPC at a time
 
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             print(f"Mouse button down event. Button: {event.button}")
             if event.button == 4:  # Scrolling up
@@ -437,7 +438,9 @@ class BaseGameplayScene(BaseScene):
         if event.type == pygame.MOUSEBUTTONUP:
             # Handle skill deactivation on mouse button release
             skill_key_constant = None
-            if event.button == KEY_SKILL_6: # Mouse Button 7
+            if event.button == KEY_SKILL_5: # Mouse Button 6
+                skill_key_constant = "KEY_SKILL_5"
+            elif event.button == KEY_SKILL_6: # Mouse Button 7
                 skill_key_constant = "KEY_SKILL_6"
 
             if skill_key_constant and self.player:

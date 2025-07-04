@@ -37,10 +37,22 @@ class DialogueManager:
             print("WARNING: spawntown_generated_npcs_dialogue.json not found. Procedurally generated NPCs may not have dialogue.")
         except json.JSONDecodeError:
             print("ERROR: Could not decode spawntown_generated_npcs_dialogue.json. Check for JSON syntax errors.")
+        try:
+            with open('data/post_quest_dialogue.json', 'r', encoding='utf-8') as f:
+                self.post_quest_dialogue_data = json.load(f)
+        except FileNotFoundError:
+            print("WARNING: post_quest_dialogue.json not found. Post-quest dialogues may not be available.")
+            self.post_quest_dialogue_data = {"dialogues": {}}
+        except json.JSONDecodeError:
+            print("ERROR: Could not decode post_quest_dialogue.json. Check for JSON syntax errors.")
+            self.post_quest_dialogue_data = {"dialogues": {}}
 
     def start_dialogue(self, dialogue_id):
         """Starts a new dialogue tree."""
-        dialogue_tree = self.dialogue_data["dialogues"].get(dialogue_id)
+        dialogue_tree = self.post_quest_dialogue_data["dialogues"].get(dialogue_id)
+        if not dialogue_tree:
+            dialogue_tree = self.dialogue_data["dialogues"].get(dialogue_id)
+
         if dialogue_tree:
             # Check if this is a procedurally generated NPC dialogue
             if dialogue_id in ["villager_dialogue", "merchant_dialogue", "town_crier_dialogue"]:
@@ -56,7 +68,7 @@ class DialogueManager:
                 # For other dialogue types, use the defined start_node
                 self.current_dialogue_node = dialogue_tree["nodes"].get(dialogue_tree["start_node"])
         else:
-            print(f"WARNING: Dialogue ID '{dialogue_id}' not found.")
+            print(f"WARNING: Dialogue ID '{dialogue_id}' not found in either dialogue data set.")
             self.current_dialogue_node = None
 
     def get_current_dialogue_text(self):
@@ -100,7 +112,11 @@ class DialogueManager:
                         if dialogue_tree_id == "charlie_dialogue" and (next_node_id == "ask_about_vibe" or next_node_id == "explain_hustle"):
                             self.game.spawn_town.open_shop_window()  # Open the shop window
 
-                        self.current_dialogue_node = self.dialogue_data["dialogues"][dialogue_tree_id]["nodes"].get(next_node_id)
+                        # Determine which dialogue data to use based on the current dialogue_tree_id
+                        if dialogue_tree_id in self.post_quest_dialogue_data["dialogues"]:
+                            self.current_dialogue_node = self.post_quest_dialogue_data["dialogues"][dialogue_tree_id]["nodes"].get(next_node_id)
+                        else:
+                            self.current_dialogue_node = self.dialogue_data["dialogues"][dialogue_tree_id]["nodes"].get(next_node_id)
                         self.animation_time = 0  # Reset animation for new node
                         self.chars_visible = 0   # Reset visible characters
                     else:
@@ -111,6 +127,9 @@ class DialogueManager:
     def get_current_dialogue_tree_id(self):
         """Helper to find which dialogue tree the current node belongs to."""
         for tree_id, tree_data in self.dialogue_data["dialogues"].items():
+            if self.current_dialogue_node in tree_data["nodes"].values():
+                return tree_id
+        for tree_id, tree_data in self.post_quest_dialogue_data["dialogues"].items():
             if self.current_dialogue_node in tree_data["nodes"].values():
                 return tree_id
         return None

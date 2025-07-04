@@ -337,6 +337,12 @@ class QuestTracker:
             if quest.name == quest_name:
                 return "Completed"
         return "Quest not found."
+    def is_quest_completed(self, quest_id):
+        """Checks if a specific quest is completed."""
+        for quest in self.all_quests:
+            if quest.name == quest_id:
+                return quest.is_completed
+        return False # Return False if quest_id is not found
 
 class Quest:
     def __init__(self, name, description, objectives, tilemap_scene_name=None):

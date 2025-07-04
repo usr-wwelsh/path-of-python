@@ -1,6 +1,7 @@
 import pygame
 import json
 import os
+from progression.quest_tracker import QuestTracker
 import random
 from core.base_gameplay_scene import BaseGameplayScene
 from entities.player import Player
@@ -120,6 +121,9 @@ class SpawnTown(BaseGameplayScene):
         self.display_message3 = False
         self.message3_start_time = 0
         self.message3_duration = 5000  # 5 seconds
+        self.display_message4 = False
+        self.message4_start_time = 0
+        self.message4_duration = 8000  # 8 seconds
 
         # Instantiate MapGenerator and then generate the map
         map_generator = SpawnTownMapGenerator(100, 100, seed=47) # Create an instance with desired width and height
@@ -142,17 +146,28 @@ class SpawnTown(BaseGameplayScene):
         print(f"SpawnTown: Added {len(self.npcs)} NPCs to self.npcs group.")
         self.effects = pygame.sprite.Group() # Add effects group
 
+        self.quest_tracker = QuestTracker()
+        # Determine dialogue IDs based on quest completion
+        if self.quest_tracker.is_quest_completed("quest_005"):
+            bob_dialogue_id = "bob_dialogue_post_quest_5"
+            alice_dialogue_id = "alice_dialogue_post_quest_5"
+            charlie_dialogue_id = "charlie_dialogue_post_quest_5"
+        else:
+            bob_dialogue_id = "bob_dialogue"
+            alice_dialogue_id = "alice_dialogue"
+            charlie_dialogue_id = "charlie_dialogue"
+
         # Create some NPCs
-        npc1 = create_npc(game, 664, 397, "Bob the Bold", "bob_dialogue")
+        npc1 = create_npc(game, 664, 397, "Bob the Bold", bob_dialogue_id)
         self.npcs.add(npc1)
 
-        npc2 = create_npc(game, 864, 397, "Alice the Agile", "alice_dialogue")
+        npc2 = create_npc(game, 864, 397, "Alice the Agile", alice_dialogue_id)
         self.npcs.add(npc2)
 
-        npc3 = create_npc(game, 764, 597, "Charlie the Calm", "charlie_dialogue")
+        npc3 = create_npc(game, 764, 597, "Charlie the Calm", charlie_dialogue_id)
         self.npcs.add(npc3)
         self.charlie = npc3 # Store charlie for shop positioning
-
+        
         npc4 = create_npc(game, 6140, 3928, "Proto Oracle", "proto_oracle_dialogue")
         self.npcs.add(npc4)
 
@@ -401,6 +416,14 @@ class SpawnTown(BaseGameplayScene):
         if self.display_message3:
             if current_time - self.message3_start_time > self.message3_duration:
                 self.display_message3 = False
+                self.display_message4 = True
+                self.message4_start_time = current_time
+
+        # Message 4
+        if self.display_message4:
+            if current_time - self.message4_start_time > self.message4_duration:
+                self.display_message4 = False
+     
 
 
     def draw(self, screen):
@@ -453,12 +476,17 @@ class SpawnTown(BaseGameplayScene):
             text_surface = font.render("Right click to blink...", True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))
             screen.blit(text_surface, text_rect)
-        if self.teleporter_menu:
-            self.teleporter_menu.draw(screen)
         elif self.display_message3:
             text_surface = font.render("Mouse side button to attack...", True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))
             screen.blit(text_surface, text_rect)
+        elif self.display_message4:
+            text_surface = font.render("GO TO TELEPORTER TOP LEFT CORNER 4 QUESTS n SHIT....", True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))
+            screen.blit(text_surface, text_rect)
+
+        if self.teleporter_menu:
+            self.teleporter_menu.draw(screen)    
 
         self.draw_ui_elements(screen) # Draw UI elements
 
@@ -492,7 +520,6 @@ class SpawnTown(BaseGameplayScene):
                     except FileNotFoundError:
                         print(f"SpawnTown: Warning: Could not load portal image: {full_path}")
 
-                # Move these lines inside the loop
                 portal_x = portal.get("location", [0, 0])[0]
                 portal_y = portal.get("location", [0, 0])[1]
                 portal_rect = pygame.Rect(portal_x, portal_y, 64, 64)  # Example size
