@@ -22,8 +22,13 @@ class SettingsMenu(BaseScene):
 
         button_width = 250
         button_height = 50
-        start_y = settings.SCREEN_HEIGHT // 2 - 150
         spacing = 60
+
+        # Calculate total height of UI elements block for dynamic vertical centering
+        # The total height is from the top of the first element to the bottom of the last element.
+        # There are 8 spacing units between elements and the height of the last button.
+        total_ui_block_height = (8 * spacing) + button_height 
+        start_y = (settings.SCREEN_HEIGHT - total_ui_block_height) // 2
 
         # Resolution Dropdown
         resolution_options = [f"{w}x{h}" for w, h in settings.RESOLUTIONS]
@@ -146,7 +151,8 @@ class SettingsMenu(BaseScene):
 
     def draw(self, screen):
         screen.fill(settings.UI_BACKGROUND_COLOR)
-        draw_text(screen, "SETTINGS", settings.UI_FONT_SIZE_LARGE, settings.UI_PRIMARY_COLOR, settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 4, align="center")
+        # Position the "SETTINGS" title dynamically above the UI elements
+        draw_text(screen, "SETTINGS", settings.UI_FONT_SIZE_LARGE, settings.UI_PRIMARY_COLOR, settings.SCREEN_WIDTH // 2, self.buttons[0].rect.y - 80, align="center")
         
         # Draw volume slider
         pygame.draw.rect(screen, settings.UI_SECONDARY_COLOR, self.volume_slider_rect, 2)

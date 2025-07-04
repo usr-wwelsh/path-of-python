@@ -2,7 +2,7 @@ import pygame
 import json
 import os
 from core.scene_manager import BaseScene
-from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, UI_FONT, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_BACKGROUND_COLOR
+from config.settings import UI_FONT, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_BACKGROUND_COLOR
 from ui.menus import Button
 from progression.quest_tracker import QuestTracker
 
@@ -11,39 +11,102 @@ class SaveMenu(BaseScene):
         super().__init__(game)
         self.text_color = UI_PRIMARY_COLOR
         self.font = pygame.font.SysFont(UI_FONT, UI_FONT_SIZE_DEFAULT)
-        self.back_button = Button(
-            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT - 100, 200, 50,
-            "Back", self.go_back
-        )
-        self.save_button = Button(
-            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 50, 200, 50,
-            "Save Game", self.save_game
-        )
-        self.load_button = Button(
-            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50, 200, 50,
-            "Load Game", self.load_game
-        )
+        
+        # Initialize buttons without fixed positions, positions will be set in reposition_elements
+        self.back_button = Button(0, 0, 200, 50, "Back", self.go_back)
+        self.save_button = Button(0, 0, 200, 50, "Save Game", self.save_game)
+        self.load_button = Button(0, 0, 200, 50, "Load Game", self.load_game)
+        
         self.save_files = self.load_save_files()
         self.selected_save = None
         self.previous_scene_name = None
+        
+        # Store save file rects for collision detection
+        self.save_file_rects = [] 
+        self.title_rect = None # To store the rect for the "Save Menu" title
+
+        # Initial positioning
+        self.reposition_elements()
 
     def enter(self):
         self.game.logger.info("Entering Save Menu.")
         self.previous_scene_name = self.game.scene_manager.current_scene_name
+        self.reposition_elements() # Recalculate positions on entry
 
     def exit(self):
         self.game.logger.info("Exiting Save Menu.")
 
+    def reposition_elements(self):
+        current_screen_width, current_screen_height = pygame.display.get_surface().get_size()
+
+        # Calculate dynamic widths for centering
+        max_save_file_width = 0
+        if self.save_files:
+            for save_file in self.save_files:
+                temp_surface = self.font.render(save_file, True, self.text_color)
+                max_save_file_width = max(max_save_file_width, temp_surface.get_width())
+        else:
+            max_save_file_width = 200 # Default width if no save files
+
+        # Determine the widest element for horizontal centering
+        menu_center_x = current_screen_width // 2
+        
+        # Calculate vertical positions for the main content block
+        save_list_height = len(self.save_files) * 30
+        
+        # Define vertical spacing
+        spacing_title_to_list = 30
+        spacing_list_to_save_btn = 30
+        spacing_save_to_load_btn = 50
+
+        # Calculate total height of the main interactive block (save list + save/load buttons)
+        main_block_height = save_list_height + spacing_list_to_save_btn + self.save_button.rect.height + \
+                            spacing_save_to_load_btn + self.load_button.rect.height
+        
+        # Calculate the top-left y for the main block to be vertically centered
+        # This will be the starting point for the save list
+        main_block_start_y = (current_screen_height - main_block_height) // 2
+
+        # Position "Save Menu" title
+        # Center the title above the main block
+        title_y = main_block_start_y - spacing_title_to_list - UI_FONT_SIZE_DEFAULT
+        self.title_rect = self.font.render("Save Menu", True, self.text_color).get_rect(center=(menu_center_x, title_y + UI_FONT_SIZE_DEFAULT // 2))
+
+        current_y = main_block_start_y
+
+        # Position save list items and store their rects
+        self.save_file_rects = []
+        save_list_x = (current_screen_width - max_save_file_width) // 2 # Center the list itself
+        for i, save_file in enumerate(self.save_files):
+            save_rect = pygame.Rect(save_list_x, current_y + i * 30, max_save_file_width, 30)
+            self.save_file_rects.append(save_rect)
+        
+        current_y += save_list_height + spacing_list_to_save_btn
+
+        # Position Save Game button
+        self.save_button.rect.topleft = (menu_center_x - self.save_button.rect.width // 2, current_y)
+        current_y += self.save_button.rect.height + spacing_save_to_load_btn
+
+        # Position Load Game button
+        self.load_button.rect.topleft = (menu_center_x - self.load_button.rect.width // 2, current_y)
+        # The current_y is now at the bottom of the load button, but we don't need it for the back button if it's anchored to the bottom.
+
+        # Position Back button
+        # Keep it near the bottom, but also horizontally centered
+        self.back_button.rect.topleft = (menu_center_x - self.back_button.rect.width // 2, current_screen_height - 100)
+
+
     def handle_event(self, event):
+        if event.type == pygame.VIDEORESIZE:
+            self.reposition_elements() # Recalculate positions on window resize
         self.back_button.handle_event(event)
         self.save_button.handle_event(event)
         self.load_button.handle_event(event)
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
-            for i, save_file in enumerate(self.save_files):
-                save_rect = pygame.Rect(50, 100 + i * 30, 200, 30)
+            for i, save_rect in enumerate(self.save_file_rects): # Use stored rects for collision
                 if save_rect.collidepoint(mouse_pos):
-                    self.selected_save = save_file
+                    self.selected_save = self.save_files[i]
                     print(f"Selected save: {self.selected_save}") # Debugging
 
     def update(self, dt):
@@ -51,9 +114,11 @@ class SaveMenu(BaseScene):
 
     def draw(self, screen):
         screen.fill(UI_BACKGROUND_COLOR)
+        
+        # Draw "Save Menu" title
         text_surface = self.font.render("Save Menu", True, self.text_color)
-        text_rect = text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4 - 100))
-        screen.blit(text_surface, text_rect)
+        screen.blit(text_surface, self.title_rect)
+
         self.back_button.draw(screen)
         self.save_button.draw(screen)
         self.load_button.draw(screen)
@@ -62,8 +127,8 @@ class SaveMenu(BaseScene):
         for i, save_file in enumerate(self.save_files):
             text_color = (0, 255, 0) if save_file == self.selected_save else self.text_color
             save_surface = self.font.render(save_file, True, text_color)
-            save_rect = save_surface.get_rect(topleft=(50, 100 + i * 30))
-            screen.blit(save_surface, save_rect)
+            # Use the stored rect for drawing
+            screen.blit(save_surface, self.save_file_rects[i])
 
     def save_game(self):
         player = self.game.player
