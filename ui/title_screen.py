@@ -23,7 +23,7 @@ class TitleScreen(BaseScene):
 
         # New attributes for background animation timing
         self.last_background_draw_time = 0
-        self.background_draw_interval = 1000 / 60 # 1 FPS for background animation (1000ms / 1 frame)
+        self.background_draw_interval = 1000 / 1 # 1 FPS for background animation (1000ms / 1 frame)
         self.background_surface = pygame.Surface((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
         self.needs_background_redraw = True # Flag to force initial redraw
 
@@ -126,7 +126,7 @@ class TitleScreen(BaseScene):
             ]
 
             # Draw the background images with a parallax effect
-            num_vertical_repeats = 50
+            num_vertical_repeats = 10
             for j in range(num_vertical_repeats):
                 # Create a unique list of images for each layer
                 layer_images = random.sample(self.background_images, len(self.background_images))
