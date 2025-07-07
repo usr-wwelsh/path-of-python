@@ -23,6 +23,10 @@ class Paste(pygame.sprite.Sprite):
         self.spiral_count = 0
         self.picked_up = False # Add a picked_up flag
 
+        # Only "drop" if the amount is 1000 or more
+        if self.amount < 1000:
+            self.picked_up = True
+
     def update(self, dt, player):
         if self.picked_up:
             return # If already picked up, don't update
@@ -58,6 +62,8 @@ class Paste(pygame.sprite.Sprite):
                     self.spiraling = False # Stop spiraling after 3 times
 
     def draw(self, screen, camera_x, camera_y, zoom_level):
+        if self.picked_up: # Only draw if not picked up
+            return
         screen_x = (self.rect.x - camera_x) * zoom_level
         screen_y = (self.rect.y - camera_y) * zoom_level
         screen.blit(self.image, (screen_x, screen_y))

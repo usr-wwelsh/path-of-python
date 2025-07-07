@@ -16,10 +16,11 @@ class IceNovaSkill:
         # Damage scales from 36 to 51 at level 1 to 500 at level 150
         self.base_damage_min = 36
         self.base_damage_max = 51
-        self.max_damage = 500
+        self.max_damage = 5000
         self.damage_type = "cold"
         
-        self.cooldown = 0.5
+        self.cooldown = 0.5 # Cooldown for click-based activation
+        self.last_cast_time = 0 # Track last cast time for cooldown
         self.cast_time = 0.8 # This might be less relevant for continuous channeling
         self.max_radius = TILE_SIZE * 5
         
@@ -31,27 +32,28 @@ class IceNovaSkill:
         self.particle_count = 120
         self.particle_speed = 200 # This might be less relevant for continuous pulsing
 
-        # New attributes for continuous pulsing
-        self.is_channeling = False
-        self.channel_start_time = 0
-        self.mana_per_second_channeled = 10 # Mana cost per second while channeling
-        self.last_mana_deduction_time = 0
-        self.current_nova_instance = None # To hold the single active pulsing nova
+        # Attributes for single pulse nova
         self.pulsation_min_radius = TILE_SIZE * 0.5 # Minimum radius for pulsation
         base_pulsation_speed = self.max_radius / 0.3
         max_pulsation_speed_multiplier = 3.0
         level_factor = min(1.0, max(0.0, (self.player.level - 1) / (200 - 1)))
         self.pulsation_speed = base_pulsation_speed * (1 + level_factor * (max_pulsation_speed_multiplier - 1)) # Speed for both expansion and contraction (faster than old expansion_speed)
-        self.pulsation_hit_interval = 0.5 # How often a hit occurs during pulsation (at max radius)
-
-        # Attributes for the persistent inner ring visual effect
-        self.inner_ring_particle_count = 50 # Fewer particles for a less dense inner ring
-        self.inner_ring_radius = TILE_SIZE * 1.5 # Fixed radius for the inner ring
-        self.inner_ring_color = (100, 150, 200, 255) # Darker blue, fully opaque
+        self.pulsation_hit_interval = 0.1 # How often a hit occurs during pulsation (at max radius)
         
-        # List to hold active nova instances (will primarily hold current_nova_instance)
+        # List to hold active nova instances (each click creates one)
         self.active_novas = []
+
+        # New attributes for the dark blue barrier circle
+        self.barrier_duration = 10.0 # Barrier lasts for 10 seconds (changed from 3.0)
+        self.barrier_color = (0, 0, 139, 200) # Dark blue, slightly transparent
+        self.barrier_radius = (TILE_SIZE ) # Radius for the barrier (half the size)
+        self.active_barriers = [] # List to hold active barrier instances
         
+        # Barrier DoT and Slow effects
+        self.barrier_dot_interval = 0.1 # Damage and slow every 0.1 seconds
+        self.barrier_slow_percentage = 70 # Super slow movement (70% slow)
+        self.barrier_slow_duration = 5.0 # Slow effect lasts for 1 second (reapplied every interval)
+
         # Damage scaling by distance
         self.inner_ring_multiplier = 1.5
         self.outer_ring_multiplier = 0.7
@@ -109,44 +111,39 @@ class IceNovaSkill:
         return {"min": self.base_damage_min, "max": self.base_damage_max, "type": self.damage_type}
 
     def can_cast(self):
-        if self.is_channeling: # If already channeling, assume it's valid to continue (mana checked in update)
-            return True
+        current_time = pygame.time.get_ticks()
+        if (current_time - self.last_cast_time) / 1000.0 < self.cooldown:
+            # print("Ice Nova is on cooldown!")
+            return False
         if self.player.current_mana < self.mana_cost:
             print("Not enough mana for Ice Nova!")
             return False
         return True
 
     def activate(self):
-        if not self.is_channeling: # Only start channeling if not already
-            if not self.can_cast(): # Check initial mana cost
-                return
-            print(f"IceNovaSkill.activate() called. Starting channeling.")
-            self.player.current_mana -= self.mana_cost # Deduct initial mana
-            self.is_channeling = True
-            self.channel_start_time = pygame.time.get_ticks()
-            self.last_mana_deduction_time = self.channel_start_time
+        if not self.can_cast():
+            return
+        
+        print(f"IceNovaSkill.activate() called. Casting single nova.")
+        self.player.current_mana -= self.mana_cost # Deduct initial mana
+        self.last_cast_time = pygame.time.get_ticks() # Set last cast time for cooldown
 
-            # Create a single nova instance for continuous pulsing
-            if self.current_nova_instance:
-                # If for some reason an old instance is still active, mark it for removal
-                self.current_nova_instance.is_complete = True 
-                self.remove_particles(self.current_nova_instance.nova_sprites)
-                self.remove_particles(self.current_nova_instance.inner_ring_sprites) # Also remove inner ring particles
-            
-            self.current_nova_instance = _NovaInstance(self.player, self.game, self)
-            self.active_novas.append(self.current_nova_instance) # Add to active_novas for update loop
-            print(f"Player activated Ice Nova! Mana remaining: {self.player.current_mana}")
-        else:
-            print("Ice Nova is already channeling.")
+        # Create a new nova instance for each click
+        new_nova = _NovaInstance(self.player, self.game, self)
+        self.active_novas.append(new_nova)
+        
+        # Create a new barrier instance at player's current position
+        new_barrier = _IceNovaBarrier(
+            self.game, 
+            self.player.rect.center, 
+            self.barrier_radius, 
+            self.barrier_color, 
+            self.barrier_duration,
+            self # Pass skill_parent for damage/slow calculation
+        )
+        self.active_barriers.append(new_barrier)
 
-    def stop_channeling(self):
-        print("IceNovaSkill.stop_channeling() called.")
-        self.is_channeling = False
-        if self.current_nova_instance:
-            # Allow the current pulse to finish or fade out
-            self.current_nova_instance.is_fading_out = True 
-            self.current_nova_instance.is_expanding = False # Start shrinking to fade out
-            self.current_nova_instance = None # Clear reference, _NovaInstance will handle its own completion
+        print(f"Player cast Ice Nova! Mana remaining: {self.player.current_mana}")
         
     def _create_particle_image(self):
         """Create a frost particle image for the main pulsating nova"""
@@ -158,30 +155,8 @@ class IceNovaSkill:
             pygame.draw.circle(surf, color, (size//2, size//2), size//2 - _*2)
         return surf
 
-    def _create_inner_ring_particle_image(self):
-        """Create a darker frost particle image for the persistent inner ring"""
-        size = random.randint(5, 12) # Smaller particles for inner ring
-        surf = pygame.Surface((size, size), pygame.SRCALPHA)
-        color = self.inner_ring_color
-        pygame.draw.circle(surf, color, (size//2, size//2), size//2)
-        return surf
-
     def update(self, dt):
-        # Handle mana deduction for channeling
-        if self.is_channeling:
-            current_time = pygame.time.get_ticks()
-            time_since_last_deduction = (current_time - self.last_mana_deduction_time) / 1000.0 # in seconds
-            mana_to_deduct = self.mana_per_second_channeled * time_since_last_deduction
-
-            if mana_to_deduct >= 1: # Deduct mana in whole units or at a reasonable interval
-                if self.player.current_mana >= mana_to_deduct:
-                    self.player.current_mana -= mana_to_deduct
-                    self.last_mana_deduction_time = current_time
-                    # print(f"Ice Nova channeling mana deduction. Mana remaining: {self.player.current_mana}")
-                else:
-                    print("Not enough mana to continue channeling Ice Nova. Stopping.")
-                    self.stop_channeling() # Automatically stop if mana runs out
-
+        # Update and remove completed nova instances
         novas_to_remove = []
         for nova in self.active_novas:
             nova.update(dt)
@@ -191,6 +166,17 @@ class IceNovaSkill:
         for nova in novas_to_remove:
             self.active_novas.remove(nova)
             # The _NovaInstance itself will handle particle removal when it sets is_complete
+
+        # Update and remove completed barrier instances
+        barriers_to_remove = []
+        for barrier in self.active_barriers:
+            barrier.update(dt)
+            if barrier.is_complete:
+                barriers_to_remove.append(barrier)
+        
+        for barrier in barriers_to_remove:
+            self.active_barriers.remove(barrier)
+            # The _IceNovaBarrier itself will handle its removal from effects
 
     def remove_particles(self, sprite_group):
         """Remove particles from a specific sprite group from the scene"""
@@ -213,16 +199,12 @@ class _NovaInstance(pygame.sprite.Sprite): # Inherit from Sprite to use .image a
 
         self.current_radius = self.min_radius # Start from min radius for pulsation
         self.is_expanding = True # Controls if it's expanding or shrinking
-        self.is_fading_out = False # Flag set when channeling stops, to complete current pulse and remove
-
+        
         self.is_complete = False # Flag to indicate when this nova instance is done
         self.last_hit_time = pygame.time.get_ticks() # Track last hit time for interval
 
         self.nova_sprites = pygame.sprite.Group()
-        self.inner_ring_sprites = pygame.sprite.Group() # New group for the inner ring
         
-        self.current_rotation = 0 # For inner ring rotation
-
         # Create initial visual effect particles for the main pulsating nova
         for i in range(self.skill_parent.particle_count): 
             particle = pygame.sprite.Sprite()
@@ -233,42 +215,9 @@ class _NovaInstance(pygame.sprite.Sprite): # Inherit from Sprite to use .image a
             self.nova_sprites.add(particle)
             self.game.current_scene.effects.add(particle)
 
-        # Create particles for the persistent inner ring
-        for i in range(self.skill_parent.inner_ring_particle_count):
-            particle = pygame.sprite.Sprite()
-            particle.original_image = self.skill_parent._create_inner_ring_particle_image() # Store original image
-            particle.image = particle.original_image # Current image for display
-            particle.rect = particle.image.get_rect(center=self.player.rect.center)
-            particle.original_angle = (360 / self.skill_parent.inner_ring_particle_count) * i # Store original angle
-            particle.distance = self.skill_parent.inner_ring_radius # Fixed radius for inner ring
-            self.inner_ring_sprites.add(particle)
-            self.game.current_scene.effects.add(particle)
-
     def update(self, dt):
         if self.is_complete:
             return
-
-        # Calculate angular speed for inner ring rotation
-        if self.pulsation_speed > 0:
-            angular_speed = (180 * self.pulsation_speed) / self.max_radius
-        else:
-            angular_speed = 0 # No rotation if pulsation speed is zero
-
-        self.current_rotation = (self.current_rotation + angular_speed * dt) % 360
-
-        # Update inner ring particle positions and rotation
-        for particle in self.inner_ring_sprites:
-            # Calculate the new angle for the particle based on the overall ring rotation
-            new_particle_angle = (particle.original_angle + self.current_rotation) % 360
-            rad_angle = math.radians(new_particle_angle)
-            
-            # No need to rotate individual particle images, just update their positions
-            offset_x = particle.distance * math.cos(rad_angle)
-            offset_y = particle.distance * math.sin(rad_angle)
-            particle.rect.center = (
-                self.player.rect.centerx + offset_x,
-                self.player.rect.centery + offset_y
-            )
 
         # Determine target radius and speed based on expansion/contraction for main nova
         if self.is_expanding:
@@ -310,30 +259,16 @@ class _NovaInstance(pygame.sprite.Sprite): # Inherit from Sprite to use .image a
         elif not self.is_expanding and self.current_radius <= self.min_radius:
             self.current_radius = self.min_radius # Ensure it's exactly min_radius
             
-            if self.skill_parent.is_channeling and not self.is_fading_out:
-                self.is_expanding = True # Start expanding again for next pulse
-            else:
-                # Channeling has stopped, and we've shrunk to min_radius, so complete
-                self.is_complete = True
-                self.skill_parent.remove_particles(self.nova_sprites) # Remove main nova particles when complete
-                self.skill_parent.remove_particles(self.inner_ring_sprites) # Remove inner ring particles too
+            # After one full expansion and contraction, this nova instance is complete
+            self.is_complete = True
+            self.skill_parent.remove_particles(self.nova_sprites) # Remove main nova particles when complete
 
     def _perform_hit(self):
         damage = self.skill_parent._calculate_damage() # Use skill_parent's damage calculation
         hit_enemies = []
         player_center = self.player.rect.center
         
-        # Projectile blocking logic
-        for projectile in self.game.current_scene.projectiles:
-            projectile_center = projectile.rect.center
-            distance = math.hypot(player_center[0] - projectile_center[0], player_center[1] - projectile_center[1])
-            if distance <= self.max_radius:
-                # Exclude ArcSkill projectiles from being blocked
-                if isinstance(projectile, ArcProjectile):
-                    # print(f"Ice Nova did NOT block ArcProjectile!") # Commented out for less console spam
-                    continue # Do not block ArcProjectile
-                print(f"Ice Nova blocked projectile!")
-                projectile.kill()  # Remove the projectile from all sprite groups
+        # Projectile blocking logic removed from here, now handled by _IceNovaBarrier
         
         for enemy in self.game.current_scene.enemies:
             enemy_center = enemy.rect.center
@@ -369,3 +304,123 @@ class _NovaInstance(pygame.sprite.Sprite): # Inherit from Sprite to use .image a
             damage_amount = random.randint(int(dmg["min"]), int(dmg["max"]))
             enemy.take_damage(damage_amount)
             print(f"Ice Nova hit {enemy.name} for {damage_amount} {dmg['type']} damage!")
+
+
+class _IceNovaBarrier(pygame.sprite.Sprite):
+    def __init__(self, game, position, radius, color, duration, skill_parent):
+        super().__init__()
+        self.game = game
+        self.position = position
+        self.radius = radius
+        self.base_color = color # Base dark blue
+        self.duration = duration
+        self.skill_parent = skill_parent # Reference to IceNovaSkill for damage/slow
+        self.creation_time = pygame.time.get_ticks()
+        self.is_complete = False
+
+        self.glow_color = (0, 255, 255) # Neon Cyan for hacker look
+        self.glow_thickness = 2
+        self.grid_density = 15 # Spacing for grid lines
+        self.flicker_timer = 0
+        self.flicker_interval = 100 # ms between flickers
+
+        self.last_damage_time = pygame.time.get_ticks() # For DoT and slow application
+
+        self._draw_barrier_image() # Initial drawing
+
+        # Add to effects group
+        self.game.current_scene.effects.add(self)
+
+    def _draw_barrier_image(self, flicker_offset=0):
+        size = int(self.radius * 2)
+        self.image = pygame.Surface((size, size), pygame.SRCALPHA)
+        center = (size // 2, size // 2)
+
+        # Base dark blue filled circle
+        pygame.draw.circle(self.image, self.base_color, center, int(self.radius))
+
+        # Glowing outer ring (pulsating effect handled in update by alpha)
+        # Draw with full alpha here, update will modify it
+        pygame.draw.circle(self.image, self.glow_color, center, int(self.radius), self.glow_thickness)
+
+        # Grid pattern
+        for i in range(0, size, self.grid_density):
+            pygame.draw.line(self.image, self.glow_color + (50,), (i, 0), (i, size), 1) # Vertical lines
+            pygame.draw.line(self.image, self.glow_color + (50,), (0, i), (size, i), 1) # Horizontal lines
+
+        # Apply flicker offset
+        if flicker_offset != 0:
+            temp_surf = pygame.Surface((size, size), pygame.SRCALPHA)
+            temp_surf.blit(self.image, (flicker_offset, flicker_offset))
+            self.image = temp_surf
+
+        self.rect = self.image.get_rect(center=self.position)
+
+    def update(self, dt):
+        if self.is_complete:
+            return
+
+        current_time = pygame.time.get_ticks()
+        elapsed_time = (current_time - self.creation_time) / 1000.0
+
+        if elapsed_time >= self.duration:
+            self.is_complete = True
+            self.game.current_scene.effects.remove(self)
+            return
+
+        # Pulsating glow effect
+        # Use sine wave for smooth pulsation, varying alpha
+        pulse_factor = (math.sin(elapsed_time * 1.25) + 1) / 2 # Varies from 0 to 1
+        alpha = int(100 + pulse_factor * 155) # Alpha from 100 to 255
+        
+        # Flicker effect
+        self.flicker_timer += dt * 1000 # Convert dt to milliseconds
+        if self.flicker_timer >= self.flicker_interval:
+            flicker_offset = random.choice([-1, 0, 1]) if random.random() < 0.3 else 0 # 30% chance to flicker
+            self._draw_barrier_image(flicker_offset)
+            self.flicker_timer = 0
+        
+        # Apply pulsating alpha to the entire image
+        self.image.set_alpha(alpha)
+
+        # Damage over time and super slow application
+        if (current_time - self.last_damage_time) / 1000.0 >= self.skill_parent.barrier_dot_interval:
+            self.last_damage_time = current_time
+            damage = self.skill_parent._calculate_damage()
+            
+            for enemy in self.game.current_scene.enemies:
+                enemy_center = enemy.rect.center
+                distance = math.hypot(self.position[0] - enemy_center[0], self.position[1] - enemy_center[1])
+                
+                if distance <= self.radius:
+                    # Apply outer ring damage multiplier
+                    final_damage = {
+                        "min": damage["min"] * self.skill_parent.outer_ring_multiplier,
+                        "max": damage["max"] * self.skill_parent.outer_ring_multiplier,
+                        "type": damage["type"]
+                    }
+                    damage_amount = random.randint(int(final_damage["min"]), int(final_damage["max"]))
+                    enemy.take_damage(damage_amount)
+                    # print(f"Ice Nova barrier dealt {damage_amount} {final_damage['type']} damage to {enemy.name}!")
+
+                    # Apply super slow movement
+                    enemy.apply_slow(
+                        self.skill_parent.barrier_slow_percentage / 100,
+                        self.skill_parent.barrier_slow_duration
+                    )
+                    # print(f"Ice Nova barrier applied super slow to {enemy.name}!")
+
+        # Projectile blocking logic
+        projectiles_to_remove = []
+        for projectile in self.game.current_scene.projectiles:
+            projectile_center = projectile.rect.center
+            distance = math.hypot(self.position[0] - projectile_center[0], self.position[1] - projectile_center[1])
+            if distance <= self.radius * 2:
+                # Exclude ArcSkill projectiles from being blocked
+                if isinstance(projectile, ArcProjectile):
+                    continue # Do not block ArcProjectile
+                print(f"Ice Nova barrier blocked projectile!")
+                projectiles_to_remove.append(projectile)
+        
+        for projectile in projectiles_to_remove:
+            projectile.kill() # Remove the projectile from all sprite groups

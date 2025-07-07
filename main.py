@@ -13,6 +13,7 @@ from ui.loading_screen import LoadingScreen
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((800, 600)) # Assuming a default screen size
+    pygame.mouse.set_visible(False) # Hide the system cursor
     if "-dev" not in sys.argv:
         loading_screen = LoadingScreen(screen)
         loading_screen.run()

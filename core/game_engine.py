@@ -47,6 +47,9 @@ class GameEngine:
         self.clock = pygame.time.Clock()
         self.running = True
 
+        # Load custom cursor image
+        self.custom_cursor_image = pygame.image.load('graphics/gui/cursor.png').convert_alpha()
+
         self.input_handler = InputHandler()
 
         self.player = None # Initialize player to None
@@ -207,6 +210,14 @@ class GameEngine:
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'projectiles'):
                     for sprite in self.scene_manager.current_scene.projectiles:
                         sprite.draw(self.game_surface, self.scene_manager.current_scene.camera_x, self.scene_manager.current_scene.camera_y, self.scene_manager.current_scene.zoom_level)
+
+                # Draw the custom cursor, centered on the mouse position
+                mouse_pos = pygame.mouse.get_pos()
+                cursor_x = mouse_pos[0] - self.custom_cursor_image.get_width() // 2
+                cursor_y = mouse_pos[1] - self.custom_cursor_image.get_height() // 2
+                self.game_surface.blit(self.custom_cursor_image, (cursor_x, cursor_y))
+                
+                
 
                 self.input_handler.reset_inputs() # Reset input states for the next frame
 

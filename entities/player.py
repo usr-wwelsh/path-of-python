@@ -305,8 +305,10 @@ class Player(pygame.sprite.Sprite):
         return True
 
     def set_target(self, world_x, world_y):
-        # Set the target directly to world coordinates
-        self.target = (world_x, world_y)
+        # Adjust target to be the center of the player sprite
+        target_center_x = world_x - self.width // 2
+        target_center_y = world_y - self.height // 2
+        self.target = (target_center_x, target_center_y)
         self.is_moving = True
         # Calculate initial velocity towards the target
         direction_x = self.target[0] - self.rect.x
@@ -493,8 +495,13 @@ class Player(pygame.sprite.Sprite):
 
         map_width = len(tile_map[0]) if tile_map and len(tile_map) > 0 else 0
         map_height = len(tile_map) if tile_map else 0
-        target_tile_x = int(target_x // tile_size)
-        target_tile_y = int(target_y // tile_size)
+        
+        # Adjust target to be the center of the player sprite
+        target_center_x = target_x - self.width // 2
+        target_center_y = target_y - self.height // 2
+
+        target_tile_x = int(target_center_x // tile_size)
+        target_tile_y = int(target_center_y // tile_size)
 
         if 0 <= target_tile_x < map_width:
             if 0 <= target_tile_y < map_height:
@@ -502,10 +509,10 @@ class Player(pygame.sprite.Sprite):
                     if target_tile_x < len(tile_map[target_tile_y]):
                         tile_type = tile_map[target_tile_y][target_tile_x]
                         if tile_type not in ('wall', 'mountain', 'building', 'rubble'):
-                            # Teleport the player to the target location
-                            self.rect.x = target_x
-                            self.rect.y = target_y
-                            print(f"Player blinked to ({target_x}, {target_y})")
+                            # Teleport the player to the adjusted target location
+                            self.rect.x = target_center_x
+                            self.rect.y = target_center_y
+                            print(f"Player blinked to ({target_center_x}, {target_center_y})")
                         else:
                             print("Cannot blink to an unwalkable tile.")
                     else:
@@ -690,6 +697,4 @@ class Player(pygame.sprite.Sprite):
         """Deactivates the specified skill."""
         if skill_id == "cyclone":
             self.cyclone_skill.deactivate()
-        elif skill_id == "ice_nova":
-            self.ice_nova_skill.stop_channeling()
-            
+        
