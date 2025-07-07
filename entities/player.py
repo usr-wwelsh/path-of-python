@@ -70,6 +70,8 @@ class Player(pygame.sprite.Sprite):
         self.item_find_chance = 0.0
         self.evasion = 0.0
         self.stealth = 0.0
+        self.paste = 0  # Initialize paste
+        self.acquired_paste_nodes = [] # Initialize acquired paste nodes
 
         # Energy Shield Recharge attributes
         self.energy_shield_recharge_delay = 3000 # 3 seconds cooldown before recharge starts
@@ -462,9 +464,11 @@ class Player(pygame.sprite.Sprite):
         tile_map = self.game.scene_manager.current_scene.tile_map
         player_tile_x = int(self.rect.centerx // tile_size)
         player_tile_y = int(self.rect.centery // tile_size)
+        map_width = len(tile_map[0]) if tile_map and len(tile_map) > 0 else 0
+        map_height = len(tile_map) if tile_map else 0
 
-        if 0 <= player_tile_x < self.game.scene_manager.current_scene.map_width and \
-           0 <= player_tile_y < self.game.scene_manager.current_scene.map_height:
+        if 0 <= player_tile_x < map_width and \
+           0 <= player_tile_y < map_height:
             if player_tile_y < len(tile_map) and player_tile_x < len(tile_map[player_tile_y]):
                 tile_type = tile_map[player_tile_y][player_tile_x]
                 if tile_type in ('wall', 'mountain', 'building', 'rubble'):
@@ -487,11 +491,13 @@ class Player(pygame.sprite.Sprite):
         tile_size = TILE_SIZE
         tile_map = self.game.scene_manager.current_scene.tile_map
 
+        map_width = len(tile_map[0]) if tile_map and len(tile_map) > 0 else 0
+        map_height = len(tile_map) if tile_map else 0
         target_tile_x = int(target_x // tile_size)
         target_tile_y = int(target_y // tile_size)
 
-        if 0 <= target_tile_x < self.game.scene_manager.current_scene.map_width:
-            if 0 <= target_tile_y < self.game.scene_manager.current_scene.map_height:
+        if 0 <= target_tile_x < map_width:
+            if 0 <= target_tile_y < map_height:
                 if target_tile_y < len(tile_map):
                     if target_tile_x < len(tile_map[target_tile_y]):
                         tile_type = tile_map[target_tile_y][target_tile_x]

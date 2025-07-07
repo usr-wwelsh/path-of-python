@@ -12,7 +12,7 @@ from world.map_generator import MapGenerator
 from core.pathfinding import Pathfinding
 from config.constants import (
     ENEMY_SPAWN_DISTANCE, ENEMY_SPAWN_COOLDOWN, TILE_SIZE,
-    KEY_SKILL_TREE, KEY_INVENTORY, KEY_PAUSE_MENU, KEY_SETTINGS_MENU
+    KEY_PASTE_TREE, KEY_INVENTORY, KEY_PAUSE_MENU, KEY_SETTINGS_MENU
 )
 from config import settings # Import settings for screen dimensions
 

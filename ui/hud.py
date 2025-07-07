@@ -26,6 +26,9 @@ class HUD:
         self.skill_tree_data = self.load_skill_tree_data()
         self.original_screen_width = SCREEN_WIDTH
         self.original_screen_height = SCREEN_HEIGHT
+        self.last_paste_count = 0
+        self.show_prompt = False
+        self.prompt_start_time = 0
 
     def load_skill_tree_data(self):
         skill_tree_path = os.path.join(os.getcwd(), "data", "skill_tree.json")
@@ -54,6 +57,21 @@ class HUD:
 
         # Draw Mana Bar
         self._draw_bar(screen, current_screen_width - (310 * width_scale), current_screen_height - (40 * height_scale), 300 * width_scale, 30 * height_scale, self.player.current_mana, self.player.max_mana, BLUE, "MP")
+        # Draw Paste
+        # draw_text(screen, f"Paste: {self.player.paste}", UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, current_screen_width // 2, current_screen_height - (90 * height_scale), align="center")
+        paste_x = current_screen_width // 2 - (150 * width_scale)
+        paste_y = 10 * height_scale + 25 * height_scale + 5 * height_scale
+        paste_width = 300 * width_scale
+        paste_height = 20 * height_scale
+        self._draw_bar(screen, paste_x, paste_y, paste_width, paste_height, self.player.paste % 50000, 50000, GREEN, "Profit Paste")
+        paste_count = self.player.paste // 50000
+
+        if paste_count > self.last_paste_count:
+            self.show_prompt = True
+            self.prompt_start_time = pygame.time.get_ticks()
+            self.last_paste_count = paste_count
+
+        draw_text(screen, str(paste_count), UI_FONT_SIZE_DEFAULT, RED, paste_x + paste_width + 10 * width_scale, paste_y + paste_height // 2, align="midleft")
 
         # Draw Skill Bar (Placeholder)
         #self._draw_skill_bar(screen)
@@ -77,6 +95,22 @@ class HUD:
         self.quest_tracker_hud.draw(screen) # Call QuestTrackerHUD's draw method
         self._draw_minion_counts(screen, width_scale, height_scale)
 
+        # Display the prompt
+        if self.show_prompt:
+            time_elapsed = pygame.time.get_ticks() - self.prompt_start_time
+            if time_elapsed < 10000:
+                text_size = 62
+                text = "PRESS P TO OPEN THE PROFIT PASTE SKILL TREE."
+                # Draw black border
+                draw_text(screen, text, text_size, (0, 0, 0), current_screen_width // 2 - 2, current_screen_height // 2 - 2, align="center")
+                draw_text(screen, text, text_size, (0, 0, 0), current_screen_width // 2 - 2, current_screen_height // 2 + 2, align="center")
+                draw_text(screen, text, text_size, (0, 0, 0), current_screen_width // 2 + 2, current_screen_height // 2 - 2, align="center")
+                draw_text(screen, text, text_size, (0, 0, 0), current_screen_width // 2 + 2, current_screen_height // 2 + 2, align="center")
+                # Draw green text
+                draw_text(screen, text, text_size, GREEN, current_screen_width // 2, current_screen_height // 2, align="center")
+            else:
+                self.show_prompt = False
+
     def _draw_bar(self, screen, x, y, width, height, current_value, max_value, color, label):
         # Background bar
         pygame.draw.rect(screen, UI_BACKGROUND_COLOR, (x, y, width, height))
@@ -87,7 +121,10 @@ class HUD:
         # Border
         pygame.draw.rect(screen, UI_PRIMARY_COLOR, (x, y, width, height), 2)
         # Text
-        text = f"{label}: {int(current_value)}/{int(max_value)}" # Define text here
+        if label == "Profit Paste":
+            text = f"{label}"
+        else:
+            text = f"{label}: {int(current_value)}/{int(max_value)}" # Define text here
         draw_text(screen, text, UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, x + width // 2, y + height // 2, align="center")
 
     def _draw_skill_bar(self, screen):

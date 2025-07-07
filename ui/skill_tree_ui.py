@@ -1,7 +1,6 @@
 import pygame
 from core.scene_manager import BaseScene
 from config import settings
-from config.constants import KEY_SKILL_TREE
 from core.utils import draw_text
 import json
 import os

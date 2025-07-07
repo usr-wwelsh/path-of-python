@@ -38,6 +38,17 @@ class SettingsMenu(BaseScene):
             resolution_options, self._set_resolution, default_option=current_resolution
         ))
 
+        # Add instructional text for dropdown
+        dropdown_x = settings.SCREEN_WIDTH // 2 - button_width // 2
+        dropdown_y = start_y
+        text_offset_x = button_width // 2 + 10 # Offset to the right of the dropdown
+        text_offset_y_line1 = -10 # Above the dropdown
+        text_offset_y_line2 = 10 # Below the dropdown
+
+        self.resolution_instructions_line1_pos = (dropdown_x + button_width + 10, dropdown_y + button_height // 2 - 15)
+        self.resolution_instructions_line2_pos = (dropdown_x + button_width + 10, dropdown_y + button_height // 2 + 5)
+
+
         # VSync Toggle
         self.buttons.append(Button(
             settings.SCREEN_WIDTH // 2 - button_width // 2, start_y + spacing, button_width, button_height,
@@ -158,6 +169,10 @@ class SettingsMenu(BaseScene):
         pygame.draw.rect(screen, settings.UI_SECONDARY_COLOR, self.volume_slider_rect, 2)
         pygame.draw.rect(screen, settings.UI_PRIMARY_COLOR, self.volume_handle_rect)
         draw_text(screen, f"Volume: {int(self.volume * 100)}%", settings.UI_FONT_SIZE_SMALL, settings.UI_PRIMARY_COLOR, self.volume_slider_rect.centerx, self.volume_slider_rect.y - 20, align="center")
+
+        # Draw dropdown instructions with Unicode characters
+        draw_text(screen, "↑↓ to scroll", settings.UI_FONT_SIZE_SMALL, settings.UI_PRIMARY_COLOR, self.resolution_instructions_line1_pos[0], self.resolution_instructions_line1_pos[1], align="left")
+        draw_text(screen, "ENTER to select", settings.UI_FONT_SIZE_SMALL, settings.UI_PRIMARY_COLOR, self.resolution_instructions_line2_pos[0], self.resolution_instructions_line2_pos[1], align="left")
 
         for button in self.buttons:
             button.draw(screen)

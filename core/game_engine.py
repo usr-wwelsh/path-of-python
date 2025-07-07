@@ -10,7 +10,7 @@ from core.scene_manager import SceneManager, BaseScene
 from core.utils import draw_text
 from ui.hud import HUD # Import HUD
 from ui.inventory_screen import InventoryScreen # Import InventoryScreen
-from ui.skill_tree_ui import SkillTreeUI # Import SkillTreeUI
+from ui.paste_tree_screen import PasteTreeScreen # Import PasteTreeScreen
 from ui.dialogue_manager import DialogueManager
 from progression.quests import QuestManager # Import QuestManager
 from progression.quest_tracker import QuestTracker # Import QuestTracker

@@ -3,6 +3,7 @@ import os
 import math
 import random
 from config.constants import TILE_SIZE
+from entities.paste import Paste
 from utility.image_cache import load_image
 from entities.projectile import Projectile
 from ui.damage_text import DamageText
@@ -146,7 +147,23 @@ class Enemy(pygame.sprite.Sprite):
             print(f"Enemy {self.name} died. Awarding {xp_to_give} XP to player.") # Debug print
             self.game.player.gain_experience(xp_to_give) # Pass xp_value instead of level
             self.game.quest_tracker.update_quest_progress("kill", self.name)
+            self.drop_paste()
             self.kill()
+
+    def calculate_paste_drop(self):
+        """Calculates the amount of paste to drop based on the enemy's XP."""
+        # Simple linear relationship: paste drop = XP / 10 (adjust as needed)
+        paste_amount = self.xp_value / 10
+        return int(paste_amount)
+
+    def drop_paste(self):
+        """Handles the dropping of paste when the enemy dies."""
+        paste_amount = self.calculate_paste_drop()
+        print(f"Enemy {self.name} dropped {paste_amount} paste.")
+        # Create a paste entity and add it to the game world (implementation in the next steps)
+        paste = Paste(self.rect.centerx, self.rect.centery, paste_amount)
+        self.game.current_scene.paste.add(paste)
+
     def apply_modifiers(self, modifiers):
         """Applies the given modifiers to the enemy."""
         for modifier in modifiers:
@@ -580,7 +597,6 @@ class Enemy(pygame.sprite.Sprite):
         # Draw damage texts
         for damage_text in self.damage_texts:
             damage_text.draw(screen, camera_x, camera_y, zoom_level)
-        # Draw modifiers
         from utility.font_cache import get_font
         font = get_font(None, 20)  # Small font size
         text_color = (255, 255, 0) if self.modifiers else (255, 255, 255)  # Yellow if modifiers, white otherwise

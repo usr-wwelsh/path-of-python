@@ -1,0 +1,109 @@
+{
+  "stalker": {
+    "name": "Stalker Paste Tree",
+    "nodes": [
+      {
+        "id": "cleave_empower",
+        "name": "Empowered Cleave",
+        "description": "Cleave deals 40% more damage."
+      },
+      {
+        "id": "cyclone_range",
+        "name": "Extended Cyclone",
+        "description": "Cyclone's radius is increased by 25%."
+      },
+      {
+        "id": "cleave_reality",
+        "name": "Reality Cleaver",
+        "description": "Cleave tears a rift in space every 5 hits, dealing 300% damage in a 10-tile cone and leaving a void that slows enemies by 70% for 3 seconds."
+      },
+      {
+        "id": "void_embrace",
+        "name": "Void Embrace",
+        "description": "At 30% HP or below, you become intangible and regenerate 20% HP per second for 5 seconds (60s cooldown)."
+      },
+      {
+        "id": "entropic_decay",
+        "name": "Entropic Decay",
+        "description": "Enemies near you lose 5% max HP per second as pure damage. This effect stacks with itself every 10 seconds."
+      },
+            {
+        "id": "paradox_armor",
+        "name": "Paradox Armor",
+        "description": "50% of damage taken is applied over 10 seconds instead. If you would die, revert 5 seconds in time (300s cooldown)."
+      }
+
+    ]
+  },
+  "technomancer": {
+    "name": "Technomancer Paste Tree",
+    "nodes": [
+      {
+        "id": "arc_multishot",
+        "name": "Arc Multishot",
+        "description": "Arc fires 2 additional projectiles."
+      },
+      {
+        "id": "ice_nova_freeze",
+        "name": "Freezing Nova",
+        "description": "Ice Nova has a 30% chance to freeze enemies for 5 second."
+      },
+      {
+        "id": "arc_singularity",
+        "name": "Singularity Arc",
+        "description": "Arc chains infinitely between enemies, growing 20% stronger with each jump. At 10+ chains, creates a black hole at the final target."
+      },
+      {
+        "id": "nova_overload",
+        "name": "Overload Nova",
+        "description": "Ice Nova now detonates twice and leaves behind cryo-mines that explode when enemies approach, freezing them for 5 seconds."
+      },
+      {
+        "id": "quantum_entanglement",
+        "name": "Quantum Entanglement",
+        "description": "Spells have a 15% chance to cast twice. Duplicate spells deal 50% more damage and apply all effects."
+      },
+      {
+        "id": "recursive_spell",
+        "name": "Recursive Spell",
+        "description": "Your spells echo 3 additional times at 50% effectiveness. Each echo has a 10% chance to trigger another full-power cast."
+      }
+
+    ]
+  },
+  "hordemonger": {
+    "name": "Hordemonger Paste Tree",
+    "nodes": [
+      {
+        "id": "webweavers_wrath",
+        "name": "Webweaver's Wrath",
+        "description": "Spiders create lingering webs on the ground that further slow and entangle enemies."
+      },
+      {
+        "id": "skeleton_armor",
+        "name": "Armored Skeletons",
+        "description": "Summoned skeletons gain 40% increased health."
+      },
+      {
+        "id": "arachnophobia",
+        "name": "Arachnophobia",
+        "description": "Spiders now explode on death, dealing 300% of their base hp as damage in a 4-tile radius and spawning 3 smaller spiders."
+      },
+      {
+        "id": "skeleton_overlord",
+        "name": "Skeleton Overlord",
+        "description": "Every 10th skeleton summoned is an Overlord with 500% health, and 200% damage."
+      },
+      {
+        "id": "necrotic_plague",
+        "name": "Necrotic Plague",
+        "description": "Minion attacks have a 20% chance to inflict a stacking plague that deals 10% max HP per second and spreads to nearby enemies on death."
+      },
+      {
+        "id": "singularity_core",
+        "name": "Singularity Core",
+        "description": "All damage has a 5% chance to collapse enemies into a micro-singularity, pulling in nearby foes and dealing 1000% damage after 2 seconds."
+      }
+    ]
+  }
+}

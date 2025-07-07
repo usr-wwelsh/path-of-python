@@ -8,8 +8,8 @@ from entities.player import Player
 from entities.boss_portal import BossPortal  # Import BossPortal
 from ui.hud import HUD
 from config.constants import (
-    KEY_INVENTORY, KEY_SKILL_TREE, KEY_INTERACT, KEY_OPTIONS_MENU,
-    STATE_INVENTORY, STATE_SKILL_TREE, STATE_PAUSE_MENU, STATE_SETTINGS_MENU, TILE_SIZE,
+    KEY_INVENTORY, KEY_PASTE_TREE, KEY_INTERACT, KEY_OPTIONS_MENU, # Added KEY_PASTE_TREE
+    STATE_INVENTORY, STATE_PASTE_TREE, STATE_PAUSE_MENU, STATE_SETTINGS_MENU, TILE_SIZE,
     KEY_RIGHT_MOUSE, KEY_SKILL_1, KEY_SKILL_2, KEY_SKILL_3, KEY_SKILL_4, KEY_PAGE_UP, KEY_PAGE_DOWN,
     KEY_SKILL_5, KEY_SKILL_6, FOG_RADIUS # Added KEY_SKILL_5, KEY_SKILL_6, FOG_RADIUS
 )
@@ -18,6 +18,7 @@ import math # Import math for distance calculation
 from entities.enemy import Enemy # Import the Enemy class
 from entities.projectile import Projectile # Import the Projectile class
 from entities.npc import NPC
+from entities.paste import Paste  # Import the Paste class
 
 # Removed: from core.boss_system_manager import BossSystemManager # Import BossSystemManager
 class BaseGameplayScene(BaseScene):
@@ -67,6 +68,7 @@ class BaseGameplayScene(BaseScene):
                 {"name": "Old Scavenger", "tile_x": 10, "tile_y": 10, "dialogue_id": "old_scavenger_intro"}
             ]
             self.decorations = []
+            self.paste = pygame.sprite.Group()  # Initialize paste group
             # If dungeon_data is provided, attempt to load enemies
             if self.dungeon_data and not self.enemies_loaded:
                 self.load_enemies(self.dungeon_data.get('enemies', []))
@@ -95,6 +97,7 @@ class BaseGameplayScene(BaseScene):
         self.npcs = [
             {"name": "Old Scavenger", "tile_x": 10, "tile_y": 10, "dialogue_id": "old_scavenger_intro"}
         ]
+        self.paste = pygame.sprite.Group()  # Initialize paste group
 
         # If dungeon_data is provided, attempt to load enemies
         if self.dungeon_data:
@@ -357,8 +360,8 @@ class BaseGameplayScene(BaseScene):
         if event.type == pygame.KEYDOWN:
             if event.key == KEY_INVENTORY:
                 self.game.scene_manager.set_scene(STATE_INVENTORY, self.player, self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
-            elif event.key == KEY_SKILL_TREE:
-                self.game.scene_manager.set_scene(STATE_SKILL_TREE, self.player, self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
+            elif event.key == KEY_PASTE_TREE:
+                self.game.scene_manager.set_scene(STATE_PASTE_TREE, self.player, self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
             elif event.key == pygame.K_ESCAPE:
                 self.game.scene_manager.set_scene(STATE_PAUSE_MENU, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
             elif event.key == KEY_OPTIONS_MENU:
@@ -503,6 +506,13 @@ class BaseGameplayScene(BaseScene):
 
         # Update projectiles
         self.projectiles.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
+        
+        # Update paste
+        for p in self.paste:
+            p.update(dt, self.player)
+            if p.rect.colliderect(self.player.rect):
+                self.player.paste += p.amount
+                self.paste.remove(p)
 
         # Get map dimensions and tile size from the current scene (e.g., SpawnTown)
         if hasattr(self.game, 'current_scene') and isinstance(self.game.current_scene, BaseGameplayScene):
@@ -681,6 +691,9 @@ class BaseGameplayScene(BaseScene):
                     continue
                 portal.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
 
+            # Draw paste
+            for paste in self.paste:
+                paste.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
             # Draw projectiles
             for projectile in self.projectiles:
                 projectile.draw(screen, self.camera_x, self.camera_y, self.zoom_level)

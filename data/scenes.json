@@ -33,6 +33,10 @@
             "class": "ui.skill_tree_ui.SkillTreeUI"
         },
         {
+            "name": "paste_tree",
+            "class": "ui.paste_tree_screen.PasteTreeScreen"
+        },
+        {
             "name": "swamp_cave_dungeon",
             "class": "core.swamp_cave_dungeon.SwampCaveDungeon",
             "darkness": true
