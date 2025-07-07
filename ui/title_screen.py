@@ -102,7 +102,7 @@ class TitleScreen(BaseScene):
         if self.animation_frame > 120:
             self.animation_frame = 0
 
-        self.x_offset += 0.1
+        self.x_offset += 0.01
         if self.x_offset > settings.SCREEN_WIDTH:
             self.x_offset = 0
 
@@ -111,22 +111,11 @@ class TitleScreen(BaseScene):
 
         # Load background images
         self.background_images = [
-            pygame.image.load("graphics/dc-dngn/dngn_blood_fountain.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_blood_fountain2.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_blue_fountain.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_blue_fountain2.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_sparkling_fountain.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_sparkling_fountain2.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/crumbled_column.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_orcish_idol.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/elephant_statue.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/granite_stump.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/zot_pillar.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_closed_door.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_open_door.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_trap_arrow.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_trap_axe.png").convert_alpha(),
-            pygame.image.load("graphics/dc-dngn/dngn_trap_blade.png").convert_alpha()
+            pygame.image.load("graphics/dc-misc/num0.png").convert_alpha(),
+            pygame.image.load("graphics/dc-misc/demon_num1.png").convert_alpha(),
+            pygame.image.load("graphics/dc-misc/num1.png").convert_alpha(),
+
+
         ]
 
         # Draw the background images with a parallax effect
