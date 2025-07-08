@@ -144,6 +144,12 @@
             "name": "neural_cathedral",
             "class": "core.dungeons.neural_cathedral.neural_cathedral",
             "dungeon_data_path": "data/dungeons/neural_cathedral.json"
+        },
+        {
+            "name": "vault",
+            "class": "core.dungeons.vault.vault",
+            "dungeon_data_path": "data/dungeons/vault.json",
+            "darkness": true
         }
     ]
 }
