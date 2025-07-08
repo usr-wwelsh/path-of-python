@@ -11,11 +11,12 @@
 ![til](./example2.gif)
 ![til](./example3.gif)
 ![til](./example.gif)
+![til](./example6.gif)
 ### Profit Paste Tree (Press P): MASSIVE UPDATE
 Harvest Profit Paste from elite enemies to unlock game-changing upgrades in your class's Paste Tree:
 
 Rewrite your combat DNA.
-![til](./example6.gif)
+
 ### STALKER UPGRADES
 * ⚔️ EMPOWERED CLEAVE - "Cleave deals 40% more damage." 
 * 🌀 REALITY CLEAVER - "Cleave tears a rift in space every 5 hits, dealing 300% damage in a 10-tile cone and leaving a void that slows enemies by 70% for 3 seconds."
