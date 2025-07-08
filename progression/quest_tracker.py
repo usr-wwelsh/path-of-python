@@ -61,6 +61,10 @@ class QuestTracker:
                                 obj_type = "kill"
                                 obj_target = description[len("kill "):]
                                 obj_required = 1
+                        elif desc_lower.startswith("talk to "):
+                            obj_type = "talk"
+                            obj_target = description[len("talk to "):].strip()
+                            obj_required = 1
                         elif desc_lower.startswith("save "):
                             obj_type = "save"
                             obj_target = description[len("save "):]
@@ -171,6 +175,10 @@ class QuestTracker:
                             obj_type = "hold"
                             obj_target = description[len("hold the line "):]
                             obj_required = 1
+                        elif desc_lower.startswith("talk to "):
+                            obj_type = "talk"
+                            obj_target = description[len("talk to "):]
+                            obj_required = 1
                         elif desc_lower.startswith("breach "):
                             obj_type = "breach"
                             obj_target = description[len("breach "):]
@@ -249,7 +257,7 @@ class QuestTracker:
                             "completed_original": obj_data.get('completed', False) # Keep original completed status
                         })
                     
-                    quest = Quest(q_data['name'], q_data['description'], parsed_objectives, q_data.get('tilemap_scene_name'))
+                    quest = Quest(q_data['id'], q_data['name'], q_data['description'], parsed_objectives, q_data.get('tilemap_scene_name'))
                     quest.is_completed = q_data.get('is_completed', False)
                     quest.is_unlocked = q_data.get('is_unlocked', False) # Assuming quests can be locked/unlocked
                     self.all_quests.append(quest)
@@ -340,12 +348,229 @@ class QuestTracker:
     def is_quest_completed(self, quest_id):
         """Checks if a specific quest is completed."""
         for quest in self.all_quests:
-            if quest.name == quest_id:
+            if quest.id == quest_id:
                 return quest.is_completed
         return False # Return False if quest_id is not found
 
+    def _parse_objective_data(self, obj_data):
+        description = obj_data.get('description_original', obj_data.get('description', ''))
+        
+        obj_type = "unknown"
+        obj_target = ""
+        obj_required = 1
+        obj_count = obj_data.get('count', 0) # Load count from save data
+        
+        desc_lower = description.lower()
+        if desc_lower.startswith("talk to "):
+            obj_type = "talk"
+            obj_target = description[len("talk to "):].strip()
+            obj_required = 1
+        elif desc_lower.startswith("kill "):
+            parts = description.split(" ", 2)
+            if len(parts) > 2 and parts[1].isdigit():
+                obj_type = "kill"
+                obj_required = int(parts[1])
+                obj_target = parts[2]
+            else:
+                obj_type = "kill"
+                obj_target = description[len("kill "):]
+                obj_required = 1
+        elif desc_lower.startswith("save "):
+            obj_type = "save"
+            obj_target = description[len("save "):]
+            obj_required = 1
+        elif desc_lower.startswith("find "):
+            obj_type = "find"
+            obj_target = description[len("find "):]
+            obj_required = 1
+        elif desc_lower.startswith("disable "):
+            obj_type = "disable"
+            obj_target = description[len("disable "):]
+            obj_required = 1
+        elif desc_lower.startswith("extract "):
+            obj_type = "extract"
+            obj_target = description[len("extract "):]
+            obj_required = 1
+        elif desc_lower.startswith("ambush "):
+            obj_type = "ambush"
+            obj_target = description[len("ambush "):]
+            obj_required = 1
+        elif desc_lower.startswith("burn "):
+            obj_type = "burn"
+            obj_target = description[len("burn "):]
+            obj_required = 1
+        elif desc_lower.startswith("infiltrate "):
+            obj_type = "infiltrate"
+            obj_target = description[len("infiltrate "):]
+            obj_required = 1
+        elif desc_lower.startswith("bypass "):
+            obj_type = "bypass"
+            obj_target = description[len("bypass "):]
+            obj_required = 1
+        elif desc_lower.startswith("retrieve "):
+            obj_type = "retrieve"
+            obj_target = description[len("retrieve "):]
+            obj_required = 1
+        elif desc_lower.startswith("navigate "):
+            obj_type = "navigate"
+            obj_target = description[len("navigate "):]
+            obj_required = 1
+        elif desc_lower.startswith("defend "):
+            obj_type = "defend"
+            obj_target = description[len("defend "):]
+            obj_required = 1
+        elif desc_lower.startswith("escape "):
+            obj_type = "escape"
+            obj_target = description[len("escape "):]
+            obj_required = 1
+        elif desc_lower.startswith("disguise "):
+            obj_type = "disguise"
+            obj_target = description[len("disguise "):]
+            obj_required = 1
+        elif desc_lower.startswith("plant "):
+            obj_type = "plant"
+            obj_target = description[len("plant "):]
+            obj_required = 1
+        elif desc_lower.startswith("descend into "):
+            obj_type = "descend"
+            obj_target = description[len("descend into "):]
+            obj_required = 1
+        elif desc_lower.startswith("destroy "):
+            parts = description.split(" ", 2)
+            if len(parts) > 2 and parts[1].isdigit():
+                obj_type = "destroy"
+                obj_required = int(parts[1])
+                obj_target = parts[2]
+            else:
+                obj_type = "destroy"
+                obj_target = description[len("destroy "):]
+                obj_required = 1
+        elif desc_lower.startswith("locate "):
+            obj_type = "locate"
+            obj_target = description[len("locate "):]
+            obj_required = 1
+        elif desc_lower.startswith("override "):
+            obj_type = "override"
+            obj_target = description[len("override "):]
+            obj_required = 1
+        elif desc_lower.startswith("survive "):
+            parts = description.split(" ", 2)
+            if len(parts) > 2 and parts[1].isdigit():
+                obj_type = "survive"
+                obj_required = int(parts[1])
+                obj_target = parts[2]
+            else:
+                obj_type = "survive"
+                obj_target = description[len("survive "):]
+                obj_required = 1
+        elif desc_lower.startswith("free "):
+            parts = description.split(" ", 2)
+            if len(parts) > 2 and parts[1].isdigit():
+                obj_type = "free"
+                obj_required = int(parts[1])
+                obj_target = parts[2]
+            else:
+                obj_type = "free"
+                obj_target = description[len("free "):]
+                obj_required = 1
+        elif desc_lower.startswith("convince "):
+            obj_type = "convince"
+            obj_target = description[len("convince "):]
+            obj_required = 1
+        elif desc_lower.startswith("sabotage "):
+            obj_type = "sabotage"
+            obj_target = description[len("sabotage "):]
+            obj_required = 1
+        elif desc_lower.startswith("hold the line "):
+            obj_type = "hold"
+            obj_target = description[len("hold the line "):]
+            obj_required = 1
+        elif desc_lower.startswith("breach "):
+            obj_type = "breach"
+            obj_target = description[len("breach "):]
+            obj_required = 1
+        elif desc_lower.startswith("download "):
+            obj_type = "download"
+            obj_target = description[len("download "):]
+            obj_required = 1
+        elif desc_lower.startswith("ascend "):
+            obj_type = "ascend"
+            obj_target = description[len("ascend "):]
+            obj_required = 1
+        elif desc_lower.startswith("collapse "):
+            obj_type = "collapse"
+            obj_target = description[len("collapse "):]
+            obj_required = 1
+        elif desc_lower.startswith("protect "):
+            obj_type = "protect"
+            obj_target = description[len("protect "):]
+            obj_required = 1
+        elif desc_lower.startswith("retreat "):
+            obj_type = "retreat"
+            obj_target = description[len("retreat "):]
+            obj_required = 1
+        elif desc_lower.startswith("interrupt "):
+            obj_type = "interrupt"
+            obj_target = description[len("interrupt "):]
+            obj_required = 1
+        elif desc_lower.startswith("save at least "):
+            parts = description.split(" ", 3)
+            if len(parts) > 3 and parts[3].isdigit():
+                obj_type = "save"
+                obj_required = int(parts[3])
+                obj_target = parts[4] if len(parts) > 4 else ""
+            else:
+                obj_type = "save"
+                obj_target = description[len("save at least "):]
+                obj_required = 1
+        elif desc_lower.startswith("escort "):
+            obj_type = "escort"
+            obj_target = description[len("escort "):]
+            obj_required = 1
+        elif desc_lower.startswith("stabilize "):
+            obj_type = "stabilize"
+            obj_target = description[len("stabilize "):]
+            obj_required = 1
+        elif desc_lower.startswith("keep the signal alive "):
+            obj_type = "keep_alive"
+            obj_target = description[len("keep the signal alive "):]
+            obj_required = 1
+        elif desc_lower.startswith("activate "):
+            obj_type = "activate"
+            obj_target = description[len("activate "):]
+            obj_required = 1
+        elif desc_lower.startswith("face "):
+            obj_type = "face"
+            obj_target = description[len("face "):]
+            obj_required = 1
+        elif desc_lower.startswith("survive for "):
+            parts = description.split(" ", 3)
+            if len(parts) > 3 and parts[2].isdigit():
+                obj_type = "survive_time"
+                obj_required = int(parts[2])
+                obj_target = parts[3] if len(parts) > 3 else ""
+            else:
+                obj_type = "survive_time"
+                obj_target = description[len("survive for "):]
+                obj_required = 1
+        
+        return {
+            "type": obj_type,
+            "target": obj_target.strip(),
+            "count": obj_count,
+            "required": obj_required,
+            "description_original": description,
+            "completed_original": obj_data.get('completed_original', False) # Use completed_original from save data
+        }
+
+    def get_quest_by_name(self, quest_name):
+        for quest in self.all_quests:
+            if quest.name == quest_name:
+                return quest
+        return None
 class Quest:
-    def __init__(self, name, description, objectives, tilemap_scene_name=None):
+    def __init__(self, id, name, description, objectives, tilemap_scene_name=None):
+        self.id = id
         self.name = name
         self.description = description
         self.objectives = objectives  # A list of dictionaries, e.g., [{"type": "kill", "target": "Goblin", "count": 0, "required": 5}]
@@ -403,6 +628,12 @@ class Quest:
             else:
                 status.append(f"{obj['type'].capitalize()} {obj.get('target', '')}: {obj['count']}/{obj['required']}")
         return ", ".join(status)
+
+    def is_objective_completed(self, objective_description):
+        for obj in self.objectives:
+            if obj['description_original'].lower() == objective_description.lower():
+                return obj['count'] >= obj['required']
+        return False
 
 class QuestTrackerHUD:
     def __init__(self, quest_tracker):
@@ -470,7 +701,6 @@ class QuestTrackerHUD:
 
                     # Animated green text
                     draw_text(screen, animated_text, font_size, (0, 255, 0), center_x, center_y, alpha=alpha)
-
 
 
 

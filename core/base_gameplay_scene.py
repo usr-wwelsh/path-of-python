@@ -474,6 +474,13 @@ class BaseGameplayScene(BaseScene):
         if self.hud and self.hud.minimap:
             minimap_rect = self.hud.minimap.rect
             self.hud.minimap.handle_event(event, minimap_rect)
+    def enemy_killed(self, enemy):
+        """
+        Callback for when an enemy is killed.
+        Subclasses can override this to implement specific logic.
+        """
+        pass
+
     def update(self, dt, entities=None):
         if self.player:  # Only update player if player exists
             self.player.update(dt)

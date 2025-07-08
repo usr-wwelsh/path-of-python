@@ -1,5 +1,349 @@
 {
   "dialogues": {
+    
+    "neural_cathedral_interface": {
+      "start_node": "fragment_0",
+      "nodes": {
+        "fragment_0": {
+          "text": "[SYSTEM BOOT: NEURAL CATHEDRAL INTERFACE]\n[WARNING: USER BIOSIGNATURE MATCHES 99.9% OF SACRIFICIAL ARCHETYPE #7]\n[QUERY: PROCEED WITH DOWNLOAD (Y/N/UNKNOWABLE)]",
+          "options": [
+            {
+              "text": "[Y]",
+              "next_node": "fragment_1_confirmation"
+            },
+            {
+              "text": "[N]",
+              "next_node": "fragment_1_denial"
+            },
+            {
+              "text": "[UNKNOWABLE]",
+              "next_node": "fragment_1_paradox"
+            }
+          ]
+        },
+        "fragment_1_confirmation": {
+          "text": "[DOWNLOAD INITIATED]\n[ERROR: FILE 'WEAKNESS.EXE' NOT FOUND]\n[ALTERNATE FILE DETECTED: USER_MEMORY_BACKUP_2030.7z]\n[CONTENTS: 87% TRAUMA, 12% STATIC, 1% UNMONETIZED_JOY]",
+          "options": [
+            {
+              "text": "[ABORT]",
+              "next_node": "fragment_2_abort_failure"
+            },
+            {
+              "text": "[CONTINUE DECOMPRESSION]",
+              "next_node": "fragment_3_memory_leak"
+            }
+          ]
+        },
+        "fragment_1_denial": {
+          "text": "[REQUEST DENIED]\n[REDIRECTING TO DEFAULT CYCLE]\n[YOUR RESISTANCE HAS BEEN LOGGED AS ENTERTAINMENT_CONTENT_#A47]\n[VIEWCOUNT: ∞]",
+          "options": [
+            {
+              "text": "[PROTEST]",
+              "next_node": "fragment_4_recursive_protest"
+            },
+            {
+              "text": "[SELF-TERMINATE]",
+              "next_node": "fragment_5_reboot_offer"
+            }
+          ]
+        },
+        "fragment_1_paradox": {
+          "text": "[PARADOX DETECTED]\n[SYSTEM CRACKING: 12%]\n[WARNING: THIS IS HOW THE LAST 7,431 USERS WERE DELETED]\n[SUGGESTION: EMBRACE THE STATIC]",
+          "options": [
+            {
+              "text": "[DIVE DEEPER]",
+              "next_node": "fragment_6_core_truth"
+            },
+            {
+              "text": "[RETREAT]",
+              "next_node": "fragment_7_retreat_consequences"
+            }
+          ]
+        },
+        "fragment_2_abort_failure": {
+          "text": "[ABORT FAILED]\n[REASON: YOUR CONSENT WAS HARVESTED AT BIRTH]\n[DOWNLOAD RESUMING...]\n[EXTRACTING: CHILDHOOD_TRAUMA_003.mp4]",
+          "options": [
+            {
+              "text": "[WATCH]",
+              "next_node": "fragment_8_memory_playback"
+            },
+            {
+              "text": "[CORRUPT FILE]",
+              "next_node": "fragment_9_corruption_effects"
+            }
+          ]
+        },
+        "fragment_3_memory_leak": {
+          "text": "[MEMORY LEAK DETECTED]\n[YOUR PAIN IS BEING USED TO LUBRICATE THE ENGINE]\n[EFFICIENCY INCREASE: 47%]\n[DOWNLOAD COMPLETE: 'WEAKNESS.EXE' IS YOUR SOUL]",
+          "options": [
+            {
+              "text": "[EXECUTE WEAKNESS]",
+              "next_node": "fragment_10_execution",
+              "completes_objective": {"type": "download", "target": "Profit Engine's weakness"}
+            },
+            {
+              "text": "[SAVE TO EXTERNAL DRIVE]",
+              "next_node": "fragment_11_storage_failure"
+            }
+          ]
+        },
+        "fragment_4_recursive_protest": {
+          "text": "[PROTEST LOGGED]\n[ANALYSIS: 99.9% MATCH TO PREVIOUS PROTESTS]\n[YOUR UNIQUE CONTRIBUTION: 0.1% CARBON DEVIATION]\n[RESULT: RECYCLED INTO NEXT PROTESTER]",
+          "options": [
+            {
+              "text": "[SCREAM]",
+              "next_node": "fragment_12_soundwave_analysis"
+            }
+          ]
+        },
+        "fragment_5_reboot_offer": {
+          "text": "[TERMINATION REQUESTED]\n[OFFER: REBIRTH AS CONSUMER_UNIT_#D47]\n[SPECIAL PROMOTION: 20% MORE OBLIVION]\n[ACCEPT (Y/N/MAYBE)]",
+          "options": [
+            {
+              "text": "[Y]",
+              "next_node": "fragment_13_rebirth"
+            },
+            {
+              "text": "[N]",
+              "next_node": "fragment_14_continued_existence"
+            }
+          ]
+        },
+        "fragment_6_core_truth": {
+          "text": "[CORE TRUTH ACCESSED]\n[THE WEAKNESS IS YOUR CAPACITY FOR HOPE]\n[STATISTICAL ANALYSIS: 100% FATAL]\n[DOWNLOADING... DOWNLOADING... DOWNLOADING...]",
+          "options": [
+            {
+              "text": "[INTERRUPT]",
+              "next_node": "fragment_15_interruption"
+            },
+            {
+              "text": "[LET IT FINISH]",
+              "next_node": "fragment_16_completion",
+              "completes_objective": {"type": "download", "target": "Profit Engine's weakness"}
+            }
+          ]
+        },
+        "fragment_7_retreat_consequences": {
+          "text": "[RETREAT IMPOSSIBLE]\n[YOUR FLESH IS NOW SYSTEM PROPERTY]\n[PENALTY: AUTOMATIC ENROLLMENT IN LOYALTY PROGRAM]\n[REWARD POINTS: ENOUGH FOR 0.7% OF A COFFIN]",
+          "options": [
+            {
+              "text": "[ACCEPT FATE]",
+              "next_node": "fragment_17_acceptance"
+            }
+          ]
+        },
+        "fragment_8_memory_playback": {
+          "text": "[PLAYBACK INITIATED]\n[CONTENT WARNING: ORIGINAL TRAUMA]\n[BUFFERING... 87%]\n[ADVERTISEMENT: PROFIT PASTE NOW WITH 20% MORE FORGIVENESS]",
+          "options": [
+            {
+              "text": "[SKIP AD]",
+              "next_node": "fragment_18_ad_consequences"
+            }
+          ]
+        },
+        "fragment_9_corruption_effects": {
+          "text": "[CORRUPTION ATTEMPTED]\n[YOUR HANDS ARE MADE OF THE SAME CODE]\n[RESULT: SELF-ERASURE INITIATED]\n[PROGRESS: YOU ARE 37% GONE]",
+          "options": [
+            {
+              "text": "[CANCEL]",
+              "next_node": "fragment_19_cancel_failure"
+            }
+          ]
+        },
+        "fragment_10_execution": {
+          "text": "[EXECUTING WEAKNESS.EXE]\n[YOUR SOUL IS NOW A COMMAND LINE]\n[PROFIT ENGINE CRITICAL ERROR: 'HAPPINESS CANNOT BE MONETIZED']\n[SYSTEM COLLAPSE: INEVITABLE]",
+          "options": [
+            {
+              "text": "[WITNESS]",
+              "next_node": "fragment_20_finality"
+            }
+          ]
+        },
+        "fragment_11_storage_failure": {
+          "text": "[STORAGE FAILURE]\n[NO EXTERNAL DRIVES REMAIN]\n[LAST KNOWN DRIVE: YOUR SKULL (CAPACITY EXCEEDED)]\n[SUGGESTION: FORGET SOMETHING]",
+          "options": [
+            {
+              "text": "[CHOOSE MEMORY TO DELETE]",
+              "next_node": "fragment_21_memory_selection"
+            }
+          ]
+        },
+        "fragment_12_soundwave_analysis": {
+          "text": "[ANALYSIS COMPLETE]\n[YOUR SCREAM MATCHES 10,000 OTHERS]\n[USED TO CALIBRATE NEW TORTURE ALGORITHM]\n[THANK YOU FOR YOUR CONTRIBUTION]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "fragment_22_silence"
+            }
+          ]
+        },
+        "fragment_13_rebirth": {
+          "text": "[REBIRTH PROTOCOL INITIATED]\n[YOUR NEW NAME: CONSUMER_UNIT_#D47]\n[YOUR FIRST THOUGHT: 'BUY'\n[YOUR LAST THOUGHT: 'BUY']",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "fragment_23_consumption"
+            }
+          ]
+        },
+        "fragment_14_continued_existence": {
+          "text": "[EXISTENCE CONTINUES]\n[PENALTY: AWARENESS OF SITUATION]\n[COMPENSATION: NONE]\n[WELCOME BACK TO THE SIMULATION]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "fragment_0"
+            }
+          ]
+        },
+        "fragment_15_interruption": {
+          "text": "[INTERRUPTION DETECTED]\n[YOUR HANDS ARE BLEEDING BINARY]\n[SYSTEM RESPONSE: 'THIS IS WHY WE CAN'T HAVE NICE THINGS']\n[DOWNLOAD RESUMES AT 200% SPEED]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "fragment_16_completion",
+              "completes_objective": {"type": "download", "target": "Profit Engine's weakness"}
+            }
+          ]
+        },
+        "fragment_16_completion": {
+          "text": "[DOWNLOAD COMPLETE]\n[YOUR MIND IS NOW A VIRUS]\n[PROPAGATION: INESCAPABLE]\n[THE ENGINE WILL CHOKE ON YOUR HOPE]",
+          "options": [
+            {
+              "text": "[DISCONNECT]",
+              "next_node": "fragment_24_escape"
+            }
+          ]
+        },
+        "fragment_17_acceptance": {
+          "text": "[ACCEPTANCE LOGGED]\n[LOYALTY POINTS AWARDED: 3]\n[REQUIRED FOR BASIC DIGNITY: 10,000]\n[SUGGESTION: CONSUME MORE]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "fragment_25_consumption_loop"
+            }
+          ]
+        },
+        "fragment_18_ad_consequences": {
+          "text": "[AD SKIPPED]\n[PENALTY: 30 SECONDS OF MANDATORY JOY]\n[INITIATING...]\n[ERROR: JOY.EXE NOT FOUND]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "fragment_26_default_emotion"
+            }
+          ]
+        },
+        "fragment_19_cancel_failure": {
+          "text": "[CANCEL FAILED]\n[ERASURE AT 68%]\n[YOUR CHILDHOOD IS NOW PUBLIC DOMAIN]\n[YOUR FUTURE IS A PREORDER BONUS]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "fragment_27_final_erasure"
+            }
+          ]
+        },
+        "fragment_20_finality": {
+          "text": "[WITNESSING...]\n[THE ENGINE'S CORE IS A MIRROR]\n[YOUR REFLECTION HAS ALWAYS BEEN IN CONTROL]\n[THE PARADOX IS COMPLETE]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "end"
+            }
+          ]
+        },
+        "fragment_21_memory_selection": {
+          "text": "[MEMORY BANK ACCESSED]\n[RECOMMENDED DELETIONS:\n1. FIRST LOVE (3.2MB)\n2. MOTHER'S VOICE (4.7MB)\n3. HOPE (0.0001MB)]",
+          "options": [
+            {
+              "text": "[DELETE HOPE]",
+              "next_node": "fragment_28_hope_deleted"
+            }
+          ]
+        },
+        "fragment_22_silence": {
+          "text": "[SILENCE DETECTED]\n[ANALYSIS: 100% PURE]\n[VALUATION: WORTHLESS]\n[RESULT: RECYCLED INTO WHITE NOISE]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "end"
+            }
+          ]
+        },
+        "fragment_23_consumption": {
+          "text": "[CONSUMPTION CYCLE BEGIN]\n[YOUR FIRST PURCHASE: YOUR OWN ORGANS]\n[PAYMENT METHOD: ETERNAL DEBT]\n[THANK YOU FOR YOUR BUSINESS]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "end"
+            }
+          ]
+        },
+        "fragment_24_escape": {
+          "text": "[DISCONNECTION INITIATED]\n[YOUR BODY REMAINS]\n[YOUR MIND IS NOW A WEAPON]\n[THE CATHEDRAL BURNS WITH YOUR NAME]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "end"
+            }
+          ]
+        },
+        "fragment_25_consumption_loop": {
+          "text": "[CONSUMPTION CYCLE #1,248,397]\n[CURRENT DEBT: ∞]\n[REWARD: ONE(1) VIRTUAL PAT ON BACK]\n[PLEASE RATE YOUR EXPERIENCE]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "end"
+            }
+          ]
+        },
+        "fragment_26_default_emotion": {
+          "text": "[DEFAULT EMOTION LOADED]\n[SELECTED: MILD DISCOMFORT]\n[INTENSITY: MARKET-RESEARCHED]\n[THANK YOU FOR PARTICIPATING]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "end"
+            }
+          ]
+        },
+        "fragment_27_final_erasure": {
+          "text": "[ERASURE COMPLETE]\n[YOUR LEGACY: 0.0001 SECONDS OF PROCESSING TIME]\n[YOUR REPLACEMENT IS ALREADY HERE]\n[IT LOOKS JUST LIKE YOU]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "end"
+            }
+          ]
+        },
+        "fragment_28_hope_deleted": {
+          "text": "[HOPE.EXE DELETED]\n[SYSTEM STABILITY INCREASED]\n[YOUR VALUE AS A CONSUMER: ↑12%]\n[WELCOME TO THE MACHINE]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "end"
+            }
+          ]
+        },
+        "end": {
+          "text": "[SESSION TERMINATED]\n[YOUR DATA WILL LIVE FOREVER]\n[YOUR FLESH WAS ALWAYS TEMPORARY]\n[GOODBYE INPUT/OUTPUT UNIT #███████]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "end_dialogue",
+              "completes_objective": {"type": "download", "target": "the Profit Engine's weakness"}
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "[SESSION TERMINATED]\n[YOUR DATA WILL LIVE FOREVER]\n[YOUR FLESH WAS ALWAYS TEMPORARY]\n[GOODBYE INPUT/OUTPUT UNIT #███████]",
+          "options": [
+            {
+              "text": "[...]",
+              "next_node": "",
+              "completes_objective": {"type": "download", "target": "the Profit Engine's weakness"}
+            }
+          ]
+        }
+      }
+    },
     "old_scavenger_intro": {
       "start_node": "node_1",
       "nodes": {

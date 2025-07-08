@@ -27,7 +27,7 @@ class TeleporterMenu:
         self.dungeon_item_height = 40 # Height of each dungeon item (graphic + text)
         self.visible_items = 5 # Number of items visible at once for dungeons (approx for quests)
 
-        self.excluded_dungeons = ["vault", "bot", "third", "maze", "flesh_lab"] # List of dungeons to exclude
+        self.excluded_dungeons = ["vault", "bot", "third", "maze", "flesh_lab", "neural_cathedral", "firewall"] # List of dungeons to exclude
         self._load_tilemap_for_selection() # Load initial map visualizer - moved after excluded_dungeons definition
         self._load_scene_graphics()
 
@@ -277,10 +277,17 @@ class TeleporterMenu:
                         
                         if item_rect.collidepoint(event.pos) and content_rect.collidepoint(event.pos): # Ensure click is within menu content area
                             if quest_data.is_unlocked: # Only allow selection if unlocked
-                                self.selected_option = i
-                                self._load_tilemap_for_selection() # Update map visualizer
-                                self.is_open = False
-                                return quest_data.tilemap_scene_name
+                                teleportable = True
+                                if quest_data.name == "Silicon Communion":
+                                    if not quest_data.is_objective_completed("Talk to Alice in Spawn Town"):
+                                        teleportable = False
+                                        print("Objective 'Talk to Alice in Spawn Town' not completed.")
+
+                                if teleportable:
+                                    self.selected_option = i
+                                    self._load_tilemap_for_selection() # Update map visualizer
+                                    self.is_open = False
+                                    return quest_data.tilemap_scene_name
                             return None # Consume event
                         current_y_in_content_rect += item_height
                 
@@ -372,8 +379,16 @@ class TeleporterMenu:
                     filtered_quests = [quest for quest in all_quests if quest.is_unlocked or quest.is_completed]
                     if filtered_quests and filtered_quests[self.selected_option].is_unlocked: # Only allow action if unlocked
                         selected_quest = filtered_quests[self.selected_option]
-                        self.is_open = False
-                        return selected_quest.tilemap_scene_name
+                        
+                        teleportable = True
+                        if selected_quest.name == "Silicon Communion":
+                            if not selected_quest.is_objective_completed("Talk to Alice in Spawn Town"):
+                                teleportable = False
+                                print("Objective 'Talk to Alice in Spawn Town' not completed.")
+
+                        if teleportable:
+                            self.is_open = False
+                            return selected_quest.tilemap_scene_name
         return None
 
     def draw(self, screen):
@@ -472,9 +487,16 @@ class TeleporterMenu:
                     quest_description = quest_data.description
                     is_unlocked = quest_data.is_unlocked
 
+                    is_teleportable = True
+                    if quest_data.name == "Silicon Communion":
+                        if not quest_data.is_objective_completed("Talk to Alice in Spawn Town"):
+                            is_teleportable = False
+
                     text_color = (255, 255, 255)
                     if not is_unlocked:
                         text_color = (100, 100, 100) # Grey out if locked
+                    elif not is_teleportable:
+                        text_color = (150, 150, 150) # Not teleportable yet
                     elif i == self.selected_option and 0 <= self.selected_option < len(filtered_quests):
                         text_color = (255, 255, 0) # Highlight selected option if unlocked and selected
 

@@ -150,6 +150,11 @@
             "class": "core.dungeons.vault.vault",
             "dungeon_data_path": "data/dungeons/vault.json",
             "darkness": true
+        },
+        {
+            "name": "firewall",
+            "class": "core.dungeons.firewall.firewall",
+            "dungeon_data_path": "data/dungeons/firewall.json"
         }
     ]
 }

@@ -37,6 +37,9 @@ class NPC(pygame.sprite.Sprite):
         elif self.name == "Maze Wanderer":
             sprite_filename = "deep_elf_sorcerer.png"
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
+        elif self.name == "neural_bot":
+            sprite_filename = "giant_orange_brain.png"
+            sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
         else:
             # Load random merfolk sprite for other NPCs
             merfolk_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon", "cult")
@@ -86,5 +89,6 @@ class NPC(pygame.sprite.Sprite):
         # Placeholder for interaction logic (e.g., open dialogue, quest, shop)
         if self.dialogue_id:
             self.in_dialogue = True
+            print(f"NPC {self.name} interacting with dialogue_id: {self.dialogue_id}")
             self.game.dialogue_manager.start_dialogue(self.dialogue_id)
         # In a real game, this would trigger a dialogue UI

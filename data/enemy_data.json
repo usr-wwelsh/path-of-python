@@ -622,5 +622,17 @@
         "projectile_sprite_path": "graphics/dc-misc/num5.png",
         "ranged_attack_pattern": "single",
         "xp_value": 100000
+    },
+    "firewall": {
+        "name": "Firewall",
+        "health": 30000,
+        "damage": 500,
+        "speed": 700,
+        "sprite_path": "graphics/dc-misc/slot_eq_cursed.png",
+        "attack_range": 100,
+        "attack_cooldown": 3000,
+        "projectile_sprite_path": "graphics/dc-misc/error.png",
+        "ranged_attack_pattern": "burst",
+        "xp_value": 50000
     }
 }

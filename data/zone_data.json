@@ -136,6 +136,14 @@
                         5824
                     ],
                     "graphic": ""
+                },
+                {
+                    "target_scene": "firewall",
+                    "location": [
+                        384,
+                        1376
+                    ],
+                    "graphic": ""
                 }
             ],
             "map_width": 50,

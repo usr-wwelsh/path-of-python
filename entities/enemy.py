@@ -156,6 +156,7 @@ class Enemy(pygame.sprite.Sprite):
             self.game.player.gain_experience(xp_to_give) # Pass xp_value instead of level
             self.game.quest_tracker.update_quest_progress("kill", self.name)
             self.drop_paste()
+            self.game.current_scene.enemy_killed(self)
             self.kill()
 
     def calculate_paste_drop(self):

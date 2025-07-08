@@ -74,7 +74,7 @@ def create_npc(game, x, y, name, dialogue_id):
     return npc
 
 class SpawnTown(BaseGameplayScene):
-    def __init__(self, game, player=None, hud=None, friendly_entities=None):
+    def __init__(self, game, player=None, hud=None, friendly_entities=None, quest_tracker=None):
         # Load initial player position from zone_data.json
         initial_player_x = 0
         initial_player_y = 0
@@ -106,6 +106,7 @@ class SpawnTown(BaseGameplayScene):
         super().__init__(game, player, hud, tileset_name=tileset_name, friendly_entities=friendly_entities) # Pass player, hud, and friendly_entities to the base class
 
         self.name = "SpawnTown"
+        self.quest_tracker = quest_tracker if quest_tracker else QuestTracker()
 
         # Unlock starting skill
         self.player.unlocked_skills.append("neural_interface")
@@ -146,7 +147,6 @@ class SpawnTown(BaseGameplayScene):
         print(f"SpawnTown: Added {len(self.npcs)} NPCs to self.npcs group.")
         self.effects = pygame.sprite.Group() # Add effects group
 
-        self.quest_tracker = QuestTracker()
         # Determine dialogue IDs based on quest completion
         if self.quest_tracker.is_quest_completed("quest_005"):
             bob_dialogue_id = "bob_dialogue_post_quest_5"
@@ -211,6 +211,7 @@ class SpawnTown(BaseGameplayScene):
         self.teleporter_menu = None
         self.player.money = 100 # Starting money
         self.shop_message = None
+        self.quest_5_dialogue_set = False # Initialize flag for quest 5 dialogue
 
     def enter(self):
         self.game.logger.info("Entering SpawnTown.")
@@ -266,6 +267,7 @@ class SpawnTown(BaseGameplayScene):
             if self.game.dialogue_manager:
                 self.game.dialogue_manager.start_dialogue(self.charlie.dialogue_id)
         self.shop_message = None
+
 
     def add_ui_element(self, element):
         """Adds a UI element to the list of elements to be drawn."""
@@ -398,6 +400,24 @@ class SpawnTown(BaseGameplayScene):
         # Update NPCs and Effects
         self.npcs.update(dt)
         self.effects.update(dt)
+
+        # Check for quest completion and update NPC dialogues
+        if self.quest_tracker.is_quest_completed("quest_005") and not self.quest_5_dialogue_set:
+            print("Quest 5 completed! Updating NPC dialogues.")
+            for npc in self.npcs:
+                if npc.name == "Bob the Bold":
+                    npc.dialogue_id = "bob_dialogue_post_quest_5"
+                    if npc.in_dialogue:
+                        self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
+                elif npc.name == "Alice the Agile":
+                    npc.dialogue_id = "alice_dialogue_post_quest_5"
+                    if npc.in_dialogue:
+                        self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
+                elif npc.name == "Charlie the Calm":
+                    npc.dialogue_id = "charlie_dialogue_post_quest_5"
+                    if npc.in_dialogue:
+                        self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
+            self.quest_5_dialogue_set = True # Set flag to prevent repeated updates
 
         # Combine NPCs for the minimap
         all_entities = self.npcs.sprites()

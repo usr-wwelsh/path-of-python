@@ -240,10 +240,10 @@ class SaveMenu(BaseScene):
 
                 # Load active quests
                 for quest_data in active_quests_data:
-                    quest = QuestTracker().all_quests[QuestTracker().current_active_quest_index]
+                    quest = next((q for q in quest_tracker.all_quests if q.name == quest_data["name"]), None)
                     quest.name = quest_data["name"]
                     quest.description = quest_data["description"]
-                    quest.objectives = quest_data["objectives"]
+                    quest.objectives = [quest_tracker._parse_objective_data(obj) for obj in quest_data["objectives"]]
                     quest.tilemap_scene_name = quest_data["tilemap_scene_name"]
                     quest.is_completed = quest_data["is_completed"]
                     quest.is_unlocked = quest_data["is_unlocked"]
@@ -251,15 +251,15 @@ class SaveMenu(BaseScene):
 
                 # Load completed quests
                 for quest_data in completed_quests_data:
-                    for quest in quest_tracker.all_quests:
-                        if quest.name == quest_data["name"]:
-                            quest.name = quest_data["name"]
-                            quest.description = quest_data["description"]
-                            quest.objectives = quest_data["objectives"]
-                            quest.tilemap_scene_name = quest_data["tilemap_scene_name"]
-                            quest.is_completed = quest_data["is_completed"]
-                            quest.is_unlocked = quest_data["is_unlocked"]
-                            quest_tracker.completed_quests.append(quest)
+                    quest = next((q for q in quest_tracker.all_quests if q.name == quest_data["name"]), None)
+                    if quest:
+                        quest.name = quest_data["name"]
+                        quest.description = quest_data["description"]
+                        quest.objectives = [quest_tracker._parse_objective_data(obj) for obj in quest_data["objectives"]]
+                        quest.tilemap_scene_name = quest_data["tilemap_scene_name"]
+                        quest.is_completed = quest_data["is_completed"]
+                        quest.is_unlocked = quest_data["is_unlocked"]
+                        quest_tracker.completed_quests.append(quest)
 
             self.game.scene_manager.set_scene("spawn_town")
             self.game.logger.info(f"Game loaded from {filepath}")
