@@ -8,9 +8,9 @@ class LoadingScreen:
     def __init__(self, screen):
         self.screen = screen
         self.messages = [
-            "Preparing...",
+            "Deny... Defend... Depose.......",
             "The Profit Engine is rising...",
-            "Use the teleporter in spawn town...",
+            "The year is 2300 AD...",
             "Number keys for ALL dialog...",
             "We not pretending to load i promise..."
         ]
