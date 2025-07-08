@@ -12,7 +12,7 @@
 ![til](./example3.gif)
 ![til](./example.gif)
 ![til](./example6.gif)
-### Profit Paste Tree (Press P): MASSIVE UPDATE
+### Profit Paste Tree (Press P): 
 Harvest Profit Paste from elite enemies to unlock game-changing upgrades in your class's Paste Tree:
 
 Rewrite your combat DNA.
@@ -37,14 +37,14 @@ Rewrite your combat DNA.
 * 🌌 SINGULARITY CORE - "All damage has a 5% chance to collapse enemies into a micro-singularity"
 
 
-### Quest System: MASSIVE UPDATE
+### Quest System: 
 In a grim cyberpunk dystopia, players fight against the Profit Engine—a ruthless AI system that harvests humans for
 "Profit Paste" and enforces debt slavery through its Tithing Choir enforcers. Starting with rescuing a prisoner from
 processing, quests escalate to hacking corporate grids, raiding caravans, and stealing incriminating ledgers,
 revealing deeper layers of systemic horror. The story unfolds through sequential, objective-driven missions, pushing
 players toward an inevitable rebellion against the machine's cold, algorithmic oppression.
 
-### Character Classes: MASSIVE UPDATE
+### Character Classes:
 
 *   **Stalker:** A master of close combat, dealing devastating blows. (cleave and cyclone)
 *   **Technomancer:** Wields arcane energies to unleash powerful spells. (arc and ice nova)
@@ -66,7 +66,7 @@ The core gameplay experience is heavily inspired by "Path of Exile," focusing on
 
 ## Installation
 
-1.  Make sure you have Python installed (preferably Python 3.10.6).
+1.  Make sure you have Python installed 
 2.  Clone this repository.
 3.  Install the required dependencies using pip:
 
