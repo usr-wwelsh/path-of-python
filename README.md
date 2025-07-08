@@ -17,23 +17,23 @@ Harvest Profit Paste from elite enemies to unlock game-changing upgrades in your
 Rewrite your combat DNA.
 
 ### STALKER UPGRADES
-# ⚔️ EMPOWERED CLEAVE - "40% more blade in every swing" 
-# 🌀 REALITY CLEAVER - "Your 5th strike fractures spacetime"
-# ☄️ VOID EMBRACE - "Become smoke when death whispers"
-# 💀 ENTROPIC DECAY - "Enemies crumble in your shadow"
-# ⏳ PARADOX ARMOR - "Cheat death by 5 seconds"
+* ⚔️ EMPOWERED CLEAVE - "40% more blade in every swing" 
+* 🌀 REALITY CLEAVER - "Your 5th strike fractures spacetime"
+* ☄️ VOID EMBRACE - "Become smoke when death whispers"
+* 💀 ENTROPIC DECAY - "Enemies crumble in your shadow"
+* ⏳ PARADOX ARMOR - "Cheat death by 5 seconds"
 
 ### TECHNOMANCER UPGRADES
-# ⚡ GHOST ARC - "Lightning ignores walls (and mercy)"
-# 🕳️ SINGULARITY ARC - "Chain lightning becomes a black hole"
-# ❄️ OVERLOAD NOVA - "Double detonation + cryo minefield"
-# 🌀 QUANTUM ENTANGLEMENT - "15% chance to cast your spell's angry twin"
+* ⚡ GHOST ARC - "Lightning ignores walls (and mercy)"
+* 🕳️ SINGULARITY ARC - "Chain lightning becomes a black hole"
+* ❄️ OVERLOAD NOVA - "Double detonation + cryo minefield"
+* 🌀 QUANTUM ENTANGLEMENT - "15% chance to cast your spell's angry twin"
 
 ### HORDEMONGER UPGRADES
-# 🕷️ ARACHNOPHOBIA - "Spiders die screaming (and multiplying)"
-# ☣️ NECROTIC PLAGUE - "Your minions spread terminal debt"
-# 🦴 SKELETON OVERLORD - "Every 10th skeleton is a payroll nightmare"
-# 🌌 SINGULARITY CORE - "5% chance to turn enemies into gravity crimes"
+* 🕷️ ARACHNOPHOBIA - "Spiders die screaming (and multiplying)"
+* ☣️ NECROTIC PLAGUE - "Your minions spread terminal debt"
+* 🦴 SKELETON OVERLORD - "Every 10th skeleton is a payroll nightmare"
+* 🌌 SINGULARITY CORE - "5% chance to turn enemies into gravity crimes"
 
 
 ### Quest System: MASSIVE UPDATE
