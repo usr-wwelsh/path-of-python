@@ -312,6 +312,23 @@ class SpawnTown(BaseGameplayScene):
 
         super().handle_event(event) # Call base class event handler
 
+        # Handle teleporter menu events first if it's open
+        if self.teleporter_menu and self.teleporter_menu.is_open:
+            teleporter_action = self.teleporter_menu.handle_event(event)
+            if teleporter_action == "close":
+                self.close_teleporter_menu()
+                return # Consume event
+            elif teleporter_action:
+                # Teleport to the selected dungeon scene
+                self.game.scene_manager.set_scene(teleporter_action, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites())
+                return # Consume event
+            # If the teleporter menu is open and the event was a mouse click within its bounds,
+            # it should consume the event and prevent further processing.
+            # The teleporter_menu.handle_event already returns None if it doesn't result in an action,
+            # but we need to explicitly check if the click was within the menu's rect to consume it.
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.teleporter_menu.rect.collidepoint(event.pos):
+                    return # Consume event if click was on the open teleporter menu
         if self.shop_window and self.shop_window.is_open:
             shop_action = self.shop_window.handle_event(event) # Handle shop window events
             if shop_action == "close":
@@ -329,15 +346,7 @@ class SpawnTown(BaseGameplayScene):
                     else:
                         print("Not enough money!")
                         self.shop_message = "Not enough money!"
-        if self.teleporter_menu:
-            teleporter_action = self.teleporter_menu.handle_event(event)
-            if teleporter_action == "close":
-                self.close_teleporter_menu()
-                return
-            elif teleporter_action:
-                # Teleport to the selected dungeon scene
-                self.game.scene_manager.set_scene(teleporter_action, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites())
-                return
+    
 
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Left-click
@@ -375,7 +384,7 @@ class SpawnTown(BaseGameplayScene):
                     if target_scene == "teleporter_menu":
                         self.open_teleporter_menu()
                     else:
-                        self.game.scene_manager.set_scene(target_scene, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites())
+                        pass
                     return
 
         # Pass event to minimap

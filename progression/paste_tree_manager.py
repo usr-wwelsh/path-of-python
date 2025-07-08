@@ -34,9 +34,13 @@ class PasteTreeManager:
         if "paste_tree" in save_data:
             paste_tree_data = save_data["paste_tree"]
             if "acquired_paste_nodes" in paste_tree_data:
+                # Ensure player.acquired_paste_nodes is a set
+                if not hasattr(player, 'acquired_paste_nodes') or not isinstance(player.acquired_paste_nodes, set):
+                    player.acquired_paste_nodes = set(player.acquired_paste_nodes) if hasattr(player, 'acquired_paste_nodes') else set()
+                
                 for node_id in paste_tree_data["acquired_paste_nodes"]:
                     if node_id not in player.acquired_paste_nodes:
-                        player.acquired_paste_nodes.append(node_id)
+                        player.acquired_paste_nodes.add(node_id)
                         node_data = self.get_node_data(node_id)
                         if node_data:
                             self._apply_node_effect(player, node_data)
@@ -53,11 +57,16 @@ class PasteTreeManager:
 
     def acquire_node(self, player, node_id):
         node_data = self.get_node_data(node_id)
-        if node_data and node_id not in player.acquired_paste_nodes:
-            player.acquired_paste_nodes.append(node_id)
-            print(f"Player acquired node: {node_id}")
-            self._apply_node_effect(player, node_data)
-            return True
+        if node_data:
+            # Ensure player.acquired_paste_nodes is a set before attempting to add
+            if not hasattr(player, 'acquired_paste_nodes') or not isinstance(player.acquired_paste_nodes, set):
+                player.acquired_paste_nodes = set(player.acquired_paste_nodes) if hasattr(player, 'acquired_paste_nodes') else set()
+
+            if node_id not in player.acquired_paste_nodes:
+                player.acquired_paste_nodes.add(node_id)
+                print(f"Player acquired node: {node_id}")
+                self._apply_node_effect(player, node_data)
+                return True
         return False
 
     def _apply_node_effect(self, player, node_data):
