@@ -16,7 +16,7 @@ class CycloneSkill:
         self.hit_interval = 0.05 # From data/skills.json (seconds) - Decreased for faster hits
         self.last_hit_time = 0
         self.is_channeling = False
-        self.radius = TILE_SIZE * 3.375 # Area of effect for Cyclone, increased by 1.5x (2.25 * 1.5 = 3.375)
+        self.radius = TILE_SIZE * 3.375 * self.player.cyclone_radius_multiplier # Area of effect for Cyclone, increased by 1.5x (2.25 * 1.5 = 3.375)
 
         # Visual effect attributes
         self.cyclone_effect_sprites = pygame.sprite.Group() # Use a sprite group for multiple sprites

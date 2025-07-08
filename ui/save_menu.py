@@ -5,24 +5,25 @@ from core.scene_manager import BaseScene
 from config.settings import UI_FONT, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_BACKGROUND_COLOR
 from ui.menus import Button
 from progression.quest_tracker import QuestTracker
+from progression.paste_tree_manager import PasteTreeManager
 
 class SaveMenu(BaseScene):
     def __init__(self, game):
         super().__init__(game)
         self.text_color = UI_PRIMARY_COLOR
         self.font = pygame.font.SysFont(UI_FONT, UI_FONT_SIZE_DEFAULT)
-        
+
         # Initialize buttons without fixed positions, positions will be set in reposition_elements
         self.back_button = Button(0, 0, 200, 50, "Back", self.go_back)
         self.save_button = Button(0, 0, 200, 50, "Save Game", self.save_game)
         self.load_button = Button(0, 0, 200, 50, "Load Game", self.load_game)
-        
+
         self.save_files = self.load_save_files()
         self.selected_save = None
         self.previous_scene_name = None
-        
+
         # Store save file rects for collision detection
-        self.save_file_rects = [] 
+        self.save_file_rects = []
         self.title_rect = None # To store the rect for the "Save Menu" title
 
         # Initial positioning
@@ -50,10 +51,10 @@ class SaveMenu(BaseScene):
 
         # Determine the widest element for horizontal centering
         menu_center_x = current_screen_width // 2
-        
+
         # Calculate vertical positions for the main content block
         save_list_height = len(self.save_files) * 30
-        
+
         # Define vertical spacing
         spacing_title_to_list = 30
         spacing_list_to_save_btn = 30
@@ -62,7 +63,7 @@ class SaveMenu(BaseScene):
         # Calculate total height of the main interactive block (save list + save/load buttons)
         main_block_height = save_list_height + spacing_list_to_save_btn + self.save_button.rect.height + \
                             spacing_save_to_load_btn + self.load_button.rect.height
-        
+
         # Calculate the top-left y for the main block to be vertically centered
         # This will be the starting point for the save list
         main_block_start_y = (current_screen_height - main_block_height) // 2
@@ -80,7 +81,7 @@ class SaveMenu(BaseScene):
         for i, save_file in enumerate(self.save_files):
             save_rect = pygame.Rect(save_list_x, current_y + i * 30, max_save_file_width, 30)
             self.save_file_rects.append(save_rect)
-        
+
         current_y += save_list_height + spacing_list_to_save_btn
 
         # Position Save Game button
@@ -94,7 +95,6 @@ class SaveMenu(BaseScene):
         # Position Back button
         # Keep it near the bottom, but also horizontally centered
         self.back_button.rect.topleft = (menu_center_x - self.back_button.rect.width // 2, current_screen_height - 100)
-
 
     def handle_event(self, event):
         if event.type == pygame.VIDEORESIZE:
@@ -114,7 +114,7 @@ class SaveMenu(BaseScene):
 
     def draw(self, screen):
         screen.fill(UI_BACKGROUND_COLOR)
-        
+
         # Draw "Save Menu" title
         text_surface = self.font.render("Save Menu", True, self.text_color)
         screen.blit(text_surface, self.title_rect)
@@ -138,7 +138,12 @@ class SaveMenu(BaseScene):
             "skills": player.skills,
             "level": player.level,
             "x": player.rect.x,
-            "y": player.rect.y
+            "y": player.rect.y,
+            # Add paste tree data
+            "paste_tree": {
+                "acquired_paste_nodes": player.acquired_paste_nodes,
+                "paste": player.paste
+            }
         }
 
         # Save quest tracker data
@@ -168,7 +173,7 @@ class SaveMenu(BaseScene):
             ],
             "current_active_quest_index": quest_tracker.current_active_quest_index
         }
-        
+
         # Determine the next available save slot
         save_number = 1
         while os.path.exists(os.path.join("saves", f"save_{save_number}.json")):
@@ -177,8 +182,18 @@ class SaveMenu(BaseScene):
         filename = f"save_{save_number}.json"
         filepath = os.path.join("saves", filename)
         with open(filepath, "w") as f:
-            json.dump(save_data, f)
+            json.dump(self._convert_save_data(save_data), f)
         self.game.logger.info(f"Game saved to {filepath}")
+
+    def _convert_save_data(self, data):
+        if isinstance(data, set):
+            return list(data)
+        elif isinstance(data, dict):
+            return {key: self._convert_save_data(value) for key, value in data.items()}
+        elif isinstance(data, list):
+            return [self._convert_save_data(item) for item in data]
+        else:
+            return data
 
     def load_game(self):
         if self.selected_save:
@@ -194,8 +209,13 @@ class SaveMenu(BaseScene):
             player.apply_stats(save_data["stats"])
             player.skills = save_data["skills"]
             player.level = save_data["level"]
+            player.paste = save_data.get("paste_tree", {}).get("paste", 0)
             player.rect.x = save_data["x"]
             player.rect.y = save_data["y"]
+
+            # Load paste tree data
+            if "paste_tree" in save_data:
+                player.acquired_paste_nodes = save_data.get("paste_tree", {}).get("acquired_paste_nodes", [])
 
             # Ensure current life, mana, energy shield are capped at max
             player.current_life = min(player.current_life, player.max_life)

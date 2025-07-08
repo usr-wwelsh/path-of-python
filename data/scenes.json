@@ -135,11 +135,6 @@
             "dungeon_data_path": "data/dungeons/bot.json"
         },
         {
-            "name": "vault",
-            "class": "core.dungeons.vault.vault",
-            "dungeon_data_path": "data/dungeons/vault.json"
-        },
-        {
             "name": "flesh_lab",
             "class": "core.dungeons.flesh_lab.flesh_lab",
             "dungeon_data_path": "data/dungeons/flesh_lab.json",

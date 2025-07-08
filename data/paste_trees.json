@@ -5,32 +5,75 @@
       {
         "id": "cleave_empower",
         "name": "Empowered Cleave",
-        "description": "Cleave deals 40% more damage."
+        "description": "Cleave deals 40% more damage.",
+        "effect_type": "STAT_MODIFIER",
+        "effect_data": {
+            "stat": "cleave_damage_multiplier",
+            "value": 0.40,
+            "operation": "multiply"
+        }
       },
       {
         "id": "cyclone_range",
         "name": "Extended Cyclone",
-        "description": "Cyclone's radius is increased by 25%."
+        "description": "Doubles Cyclone Radius.",
+        "effect_type": "STAT_MODIFIER",
+        "effect_data": {
+            "stat": "cyclone_radius_multiplier",
+            "value": 2,
+            "operation": "multiply"
+        }
       },
       {
         "id": "cleave_reality",
         "name": "Reality Cleaver",
-        "description": "Cleave tears a rift in space every 5 hits, dealing 300% damage in a 10-tile cone and leaving a void that slows enemies by 70% for 3 seconds."
+        "description": "Cleave tears a rift in space every 5 hits, dealing 300% damage in a 10-tile cone and leaving a void that slows enemies by 70% for 3 seconds.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "cleave_reality",
+            "hits_required": 5,
+            "damage_multiplier": 3.0,
+            "cone_radius": 10,
+            "slow_percentage": 0.70,
+            "slow_duration": 3
+        }
       },
       {
         "id": "void_embrace",
         "name": "Void Embrace",
-        "description": "At 30% HP or below, you become intangible and regenerate 20% HP per second for 5 seconds (60s cooldown)."
+        "description": "At 30% HP or below, you become intangible and regenerate 20% HP per second for 5 seconds (120s cooldown).",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "void_embrace",
+            "hp_threshold": 0.30,
+            "regen_percentage": 0.20,
+            "duration": 5,
+            "cooldown": 120
+        }
       },
       {
         "id": "entropic_decay",
         "name": "Entropic Decay",
-        "description": "Enemies near you lose 5% max HP per second as pure damage. This effect stacks with itself every 10 seconds."
+        "description": "Enemies near you lose 5% max HP per second as pure damage. This effect stacks with itself every 10 seconds.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "entropic_decay",
+            "damage_percentage_per_second": 0.05,
+            "stack_interval": 10
+        }
       },
             {
         "id": "paradox_armor",
         "name": "Paradox Armor",
-        "description": "50% of damage taken is applied over 10 seconds instead. If you would die, revert 5 seconds in time (300s cooldown)."
+        "description": "50% of damage taken is applied over 10 seconds instead. If you would die, revert 5 seconds in time (300s cooldown).",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "paradox_armor",
+            "damage_delay_percentage": 0.50,
+            "damage_delay_duration": 10,
+            "time_revert_duration": 5,
+            "cooldown": 300
+        }
       }
 
     ]
@@ -41,32 +84,66 @@
       {
         "id": "arc_multishot",
         "name": "Arc Multishot",
-        "description": "Arc fires 2 additional projectiles."
+        "description": "Arc fires 2 additional projectiles.",
+        "effect_type": "STAT_MODIFIER",
+        "effect_data": {
+            "stat": "arc_max_initial_branches",
+            "value": 2,
+            "operation": "add"
+        }
       },
       {
-        "id": "ice_nova_freeze",
-        "name": "Freezing Nova",
-        "description": "Ice Nova has a 30% chance to freeze enemies for 5 second."
+        "id": "ghost_arc",
+        "name": "Ghost Arc",
+        "description": "Arc passes through walls.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "ghost_arc",
+            "ignore_walls": true
+        }
       },
       {
         "id": "arc_singularity",
         "name": "Singularity Arc",
-        "description": "Arc chains infinitely between enemies, growing 20% stronger with each jump. At 10+ chains, creates a black hole at the final target."
+        "description": "Arc chains infinitely between enemies, growing 20% stronger with each jump. At 10+ chains, creates a black hole at the final target.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "arc_singularity",
+            "damage_growth_per_chain": 0.20,
+            "black_hole_chain_threshold": 10
+        }
       },
       {
         "id": "nova_overload",
         "name": "Overload Nova",
-        "description": "Ice Nova now detonates twice and leaves behind cryo-mines that explode when enemies approach, freezing them for 5 seconds."
+        "description": "Ice Nova now detonates twice and leaves behind cryo-mines that explode when enemies approach, freezing them for 5 seconds.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "nova_overload",
+            "detonation_count": 2,
+            "cryo_mine_freeze_duration": 5
+        }
       },
       {
         "id": "quantum_entanglement",
         "name": "Quantum Entanglement",
-        "description": "Spells have a 15% chance to cast twice. Duplicate spells deal 50% more damage and apply all effects."
+        "description": "Spells have a 15% chance to cast twice. Duplicate spells deal 50% more damage and apply all effects.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "quantum_entanglement",
+            "chance_to_duplicate": 0.15,
+            "duplicate_damage_multiplier": 0.50
+        }
       },
       {
-        "id": "recursive_spell",
-        "name": "Recursive Spell",
-        "description": "Your spells echo 3 additional times at 50% effectiveness. Each echo has a 10% chance to trigger another full-power cast."
+        "id": "double_size_barrier",
+        "name": "Double Size Ice Barriers",
+        "description": "Makes the Ice Barriers from Ice Nova TWICE as big.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "double_size_barrier",
+            "barrier_size_multiplier": 2.0
+        }
       }
 
     ]
@@ -77,32 +154,69 @@
       {
         "id": "webweavers_wrath",
         "name": "Webweaver's Wrath",
-        "description": "Spiders create lingering webs on the ground that further slow and entangle enemies."
+        "description": "Spiders create lingering webs on the ground that further slow and entangle enemies.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "webweavers_wrath",
+            "slow_amount": 0.20,
+            "entangle_duration": 3
+        }
       },
       {
         "id": "skeleton_armor",
         "name": "Armored Skeletons",
-        "description": "Summoned skeletons gain 40% increased health."
+        "description": "Summoned skeletons gain 40% increased health.",
+        "effect_type": "STAT_MODIFIER",
+        "effect_data": {
+            "stat": "skeleton_health_multiplier",
+            "value": 0.40,
+            "operation": "multiply"
+        }
       },
       {
         "id": "arachnophobia",
         "name": "Arachnophobia",
-        "description": "Spiders now explode on death, dealing 300% of their base hp as damage in a 4-tile radius and spawning 3 smaller spiders."
+        "description": "Spiders now explode on death, dealing 300% of their base hp as damage in a 4-tile radius and spawning 3 smaller spiders.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "arachnophobia",
+            "damage_multiplier_on_death": 3.0,
+            "explosion_radius_tiles": 4,
+            "smaller_spiders_spawned": 3
+        }
       },
       {
         "id": "skeleton_overlord",
         "name": "Skeleton Overlord",
-        "description": "Every 10th skeleton summoned is an Overlord with 500% health, and 200% damage."
+        "description": "Every 10th skeleton summoned is an Overlord with 500% health, and 200% damage.",
+        "effect_type": "SKILL_GRANT",
+        "effect_data": {
+            "skill_id": "skeleton_overlord"
+        }
       },
       {
         "id": "necrotic_plague",
         "name": "Necrotic Plague",
-        "description": "Minion attacks have a 20% chance to inflict a stacking plague that deals 10% max HP per second and spreads to nearby enemies on death."
+        "description": "Minion attacks have a 20% chance to inflict a stacking plague that deals 10% max HP per second and spreads to nearby enemies on death.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "necrotic_plague",
+            "chance_to_inflict": 0.20,
+            "damage_percentage_per_second": 0.10
+        }
       },
       {
         "id": "singularity_core",
         "name": "Singularity Core",
-        "description": "All damage has a 5% chance to collapse enemies into a micro-singularity, pulling in nearby foes and dealing 1000% damage after 2 seconds."
+        "description": "All damage has a 5% chance to collapse enemies into a micro-singularity, pulling in nearby foes and dealing 1000% damage after 2 seconds.",
+        "effect_type": "PASSIVE_ABILITY",
+        "effect_data": {
+            "ability_id": "singularity_core",
+            "chance_to_trigger": 0.05,
+            "damage_multiplier": 10.0,
+            "pull_radius": 5,
+            "detonation_delay": 2
+        }
       }
     ]
   }

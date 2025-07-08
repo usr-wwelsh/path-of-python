@@ -26,6 +26,7 @@ class Enemy(pygame.sprite.Sprite):
         self.current_life = health # Initialize current_life
         self.damage_texts = pygame.sprite.Group() # Group to hold damage text pop-ups
         self.is_friendly = False # Initialize is_friendly to False by default
+        self.faction = "neutral" # Initialize faction to "neutral" by default
         self._scaled_image_cache = None
         self._last_zoom_level = 0
         self._last_scale_factor = 0
@@ -84,6 +85,7 @@ class Enemy(pygame.sprite.Sprite):
         self.corrupted_blood_damage_per_tick = 2
         self.corrupted_blood_tick_interval = 1000
         self.last_corrupted_blood_tick = 0
+        self.entropic_decay_debuffs = {} # Stores {source_id: {"stacks": X, "last_tick_time": Y, "applied_time": Z}}
  
         self.hexproof = False
         self.reflects_damage = False
@@ -135,6 +137,10 @@ class Enemy(pygame.sprite.Sprite):
             self.game.player.take_damage(reflected_damage)
             amount -= reflected_damage  # Reduce damage taken by reflected amount
  
+        # Apply Necrotic Plague
+        if hasattr(self.game.player, 'necrotic_plague_state') and self.game.player.necrotic_plague_state["active"] and self.faction == "player_minions":
+            if random.random() < self.game.player.necrotic_plague_state["chance_to_inflict"]:
+                self.apply_necrotic_plague(self.game.player.necrotic_plague_state["damage_percentage_per_second"])
         self.current_life -= amount
         # Create and add damage text
         damage_text = DamageText(str(int(amount)), self.rect.centerx, self.rect.top, (255, 0, 0))
@@ -144,6 +150,8 @@ class Enemy(pygame.sprite.Sprite):
             if self.modifiers:
                 xp_to_give *= 2  # Double XP if enemy has modifiers
             print(f"DEBUG: Enemy {self.name} died. Its xp_value is: {self.xp_value}. Player current XP: {self.game.player.experience}")
+        # Spread Necrotic Plague on death
+            self.spread_necrotic_plague()
             print(f"Enemy {self.name} died. Awarding {xp_to_give} XP to player.") # Debug print
             self.game.player.gain_experience(xp_to_give) # Pass xp_value instead of level
             self.game.quest_tracker.update_quest_progress("kill", self.name)
@@ -273,6 +281,89 @@ class Enemy(pygame.sprite.Sprite):
                 self.take_damage(self.poison_damage_per_tick)
                 self.last_poison_tick = current_time
                 print(f"Enemy {self.name} took {self.poison_damage_per_tick} poison damage.")
+    def apply_necrotic_plague(self, damage_percentage_per_second):
+        """Applies the Necrotic Plague effect to the enemy."""
+        # Check if the enemy is already plagued
+        if hasattr(self, 'is_plagued') and self.is_plagued:
+            return
+
+        # Create a new NecroticPlague instance and add it to the scene
+        from entities.necrotic_plague import NecroticPlague
+        plague = NecroticPlague(self.game, self, damage_percentage_per_second)
+        if not hasattr(self.game.current_scene, 'necrotic_plagues') or self.game.current_scene.necrotic_plagues is None:
+            self.game.current_scene.necrotic_plagues = pygame.sprite.Group()
+        self.game.current_scene.necrotic_plagues.add(plague)
+
+        # Set the enemy as plagued
+        self.is_plagued = True
+        print(f"Applied Necrotic Plague to {self.name}.")
+
+    def spread_necrotic_plague(self):
+        """Spreads the Necrotic Plague to nearby enemies."""
+        if not hasattr(self, 'is_plagued') or not self.is_plagued:
+            return
+
+        # Define the spread radius
+        spread_radius = TILE_SIZE * 5
+
+        # Find nearby enemies
+        nearby_enemies = []
+        for enemy in self.game.current_scene.enemies:
+            if enemy != self and not (hasattr(enemy, 'is_plagued') and enemy.is_plagued):
+                dx = enemy.rect.centerx - self.rect.centerx
+                dy = enemy.rect.centery - self.rect.centery
+                distance = math.hypot(dx, dy)
+                if distance <= spread_radius:
+                    nearby_enemies.append(enemy)
+
+        # Apply plague to nearby enemies
+        for enemy in nearby_enemies:
+            if hasattr(enemy, 'apply_necrotic_plague'):
+                enemy.apply_necrotic_plague(self.game.player.necrotic_plague_state["damage_percentage_per_second"])            
+    def apply_entropic_decay(self, source_id, damage_percentage, duration, max_stacks):
+        """Applies or stacks the Entropic Decay debuff to the enemy."""
+        if self.hexproof:
+            print(f"Enemy {self.name} is hexproof and resists Entropic Decay.")
+            return
+
+        current_time = pygame.time.get_ticks()
+        if source_id not in self.entropic_decay_debuffs:
+            self.entropic_decay_debuffs[source_id] = {
+                "stacks": 1,
+                "last_tick_time": current_time,
+                "applied_time": current_time,
+                "damage_percentage": damage_percentage,
+                "duration": duration * 1000, # Convert to ms
+                "max_stacks": max_stacks
+            }
+            print(f"Enemy {self.name} applied Entropic Decay from {source_id}. Stacks: 1")
+        else:
+            debuff_state = self.entropic_decay_debuffs[source_id]
+            if debuff_state["stacks"] < max_stacks:
+                debuff_state["stacks"] += 1
+                print(f"Enemy {self.name} gained Entropic Decay stack from {source_id}. Stacks: {debuff_state['stacks']}")
+            debuff_state["applied_time"] = current_time # Refresh duration
+            debuff_state["last_tick_time"] = current_time # Reset tick timer on new application
+    def _update_entropic_decay_effect(self):
+        """Updates the Entropic Decay debuff, applying damage over time and managing stacks."""
+        current_time = pygame.time.get_ticks()
+        debuffs_to_remove = []
+
+        for source_id, debuff_state in list(self.entropic_decay_debuffs.items()):
+            # Apply damage tick
+            if current_time - debuff_state["last_tick_time"] > debuff_state["tick_interval"]:
+                damage = self.max_life * debuff_state["damage_percentage"] * debuff_state["stacks"]
+                self.take_damage(damage)
+                debuff_state["last_tick_time"] = current_time
+                print(f"Enemy {self.name} took {damage:.2f} Entropic Decay damage from {source_id}. Stacks: {debuff_state['stacks']}")
+
+            # Check if duration has expired
+            if current_time - debuff_state["applied_time"] > debuff_state["duration"]:
+                debuffs_to_remove.append(source_id)
+                print(f"Entropic Decay from {source_id} wore off on {self.name}.")
+        
+        for source_id in debuffs_to_remove:
+            del self.entropic_decay_debuffs[source_id]
  
     def _perform_ranged_attack(self, target): # Modified to accept target
         current_time = pygame.time.get_ticks()
@@ -348,12 +439,18 @@ class Enemy(pygame.sprite.Sprite):
         from entities.summon_spiders import Spider # Import Spider here to avoid circular dependency
         nearest_minion = None
         min_distance = float('inf')
- 
+        # Update Necrotic Plague effects
+        if hasattr(self.game.current_scene, 'necrotic_plagues') and self.game.current_scene.necrotic_plagues is not None:
+            for plague in list(self.game.current_scene.necrotic_plagues):
+                if plague.target == self:
+                    plague.update(dt)
         # Iterate through all sprites in the enemies group
         for sprite in self.game.current_scene.enemies:
             # Check if the sprite is a Skeleton or Spider and is friendly
             if (isinstance(sprite, Skeleton) or isinstance(sprite, Spider)) and hasattr(sprite, 'is_friendly') and sprite.is_friendly:
                 # Calculate distance to the minion
+                # Update entropic decay effect
+                self._update_entropic_decay_effect()
                 dx, dy = sprite.rect.centerx - self.rect.centerx, sprite.rect.centery - self.rect.centery
                 dist = math.hypot(dx, dy)
  
@@ -381,7 +478,23 @@ class Enemy(pygame.sprite.Sprite):
         self._update_slow_effect()
         # Update poison effect
         self._update_poison_effect()
+        # Update entropic decay effect
+        self._update_entropic_decay_effect()
  
+        # Update Necrotic Plague effects
+        # Update Necrotic Plague effects
+        if hasattr(self.game.current_scene, 'necrotic_plagues') and self.game.current_scene.necrotic_plagues is not None:
+            for plague in list(self.game.current_scene.necrotic_plagues):
+                if plague.target == self:
+                    plague.update(dt)
+        # Update Necrotic Plague effects
+        if hasattr(self.game.current_scene, 'necrotic_plagues'):
+            for plague in list(self.game.current_scene.necrotic_plagues):
+                if plague.target == self:
+                    plague.update(dt)
+        for plague in list(self.game.current_scene.necrotic_plagues):
+            if plague.target == self:
+                plague.update(dt)
         # Update Hasted effect
         if self.hasted:
             if current_time - self.hasted_start_time > self.hasted_duration:

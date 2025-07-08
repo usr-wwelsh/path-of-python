@@ -4,15 +4,15 @@ import math
 import json
 import os
 import random
-# from core.pathfinding import Pathfinding # Removed pathfinding import
 from config.constants import TILE_SIZE, PLAYER_SPEED
 from entities.arc_skill import ArcSkill
-from entities.summon_skeletons import SummonSkeletons  # Import SummonSkeletons
-from entities.cleave_skill import CleaveSkill # Import CleaveSkill
-from entities.cyclone_skill import CycloneSkill # Import CycloneSkill
-from entities.fireball_skill import FireballSkill # Import FireballSkill
-from entities.summon_spiders import SummonSpiders # Import SummonSpiders
-from entities.ice_nova import IceNovaSkill # Import IceNovaSkill
+from entities.summon_skeletons import SummonSkeletons
+from entities.cleave_skill import CleaveSkill
+from entities.cyclone_skill import CycloneSkill
+from entities.fireball_skill import FireballSkill
+from entities.summon_spiders import SummonSpiders
+from entities.ice_nova import IceNovaSkill
+from progression.paste_tree_manager import PasteTreeManager # Import PasteTreeManager
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y, class_name="knight", initial_stats=None):
@@ -24,10 +24,18 @@ class Player(pygame.sprite.Sprite):
         self.speed = PLAYER_SPEED  # Adjust as needed
         self.velocity = pygame.math.Vector2(0, 0)
         self.target = None  # The target world coordinates the player is moving towards
-        # self.path = []  # Removed path attribute
         self.is_moving = False
         self.last_move_time = pygame.time.get_ticks()
         self.move_interval = 50  # milliseconds between sprite updates
+        # Webweavers Wrath state
+        self.webweavers_wrath_state = {
+            "active": False,
+            "duration": 0,
+            "cooldown": 0,
+            "max_cooldown": 10000,  # 10 seconds in milliseconds
+            "spider_count": 0,
+            "damage_boost": 1.5
+        }
 
         # Footstep attributes
         self.footstep_sprites = []
@@ -71,7 +79,11 @@ class Player(pygame.sprite.Sprite):
         self.evasion = 0.0
         self.stealth = 0.0
         self.paste = 0  # Initialize paste
-        self.acquired_paste_nodes = [] # Initialize acquired paste nodes
+        self.acquired_paste_nodes = set() # Changed to a set for faster lookup
+
+        # New stat multipliers for paste tree nodes
+        self.cleave_damage_multiplier = 1.0
+        self.cyclone_radius_multiplier = 1.0
 
         # Energy Shield Recharge attributes
         self.energy_shield_recharge_delay = 3000 # 3 seconds cooldown before recharge starts
@@ -95,6 +107,8 @@ class Player(pygame.sprite.Sprite):
             "max_energy_shield": self.max_energy_shield,
             "current_mana": self.current_mana,
             "max_mana": self.max_mana,
+            "cleave_damage_multiplier": self.cleave_damage_multiplier,
+            "cyclone_radius_multiplier": self.cyclone_radius_multiplier,
         }
 
         # Apply initial stats if provided
@@ -137,16 +151,96 @@ class Player(pygame.sprite.Sprite):
         self.corrupted_blood_expire_interval = 1000 # milliseconds
         self.last_corrupted_blood_expire = 0
 
-    def apply_stats(self, stats_dict):
-        """Applies a dictionary of stats to the player."""
-        for stat_key, value in stats_dict.items():
-            if hasattr(self, stat_key):
-                setattr(self, stat_key, value)
-                self.stats[stat_key] = value
+        # Initialize PasteTreeManager
+        self.paste_tree_manager = PasteTreeManager(game)
+        self._temp_paste_tree_modifiers = {} # Stores modifiers from paste tree nodes
+        self.active_passive_abilities = {} # Stores active passive abilities from paste tree nodes
+        self.is_intangible = False
+        # Initialize passive ability states with their full structure
+        self.void_embrace_state = {
+            "active": False,
+            "cooldown_start_time": 0,
+            "last_regen_tick": 0,
+            "cooldown_duration": 0,
+            "duration": 0,
+            "regen_percentage": 0,
+            "hp_threshold": 0
+        }
+        self.entropic_decay_state = {
+            "active": False,
+            "damage_percentage": 0,
+            "duration": 0,
+            "max_stacks": 0,
+            "tick_interval": 1000,
+            "enemies_debuffed": {}
+        }
+        self.paradox_armor_state = {
+            "active": False,
+            "cooldown_start_time": 0,
+            "cooldown_duration": 0,
+            "damage_delay_percentage": 0,
+            "damage_delay_duration": 0,
+            "time_revert_duration": 0,
+            "delayed_damage": [],
+            "last_life_snapshot": {"time": 0, "life": 0}
+        }
+        self.arc_singularity_state = {
+            "active": False,
+            "cooldown_start_time": 0,
+            "cooldown_duration": 0,
+            "damage_increase_percentage": 0,
+            "radius": 0,
+            "duration": 0,
+            "last_activation_time": 0
+        }
+        self.nova_overload_state = {
+            "active": True,
+            "radius_increase_percentage": 0,
+            "damage_increase_percentage": 0
+        }
+        self.quantum_entanglement_state = {
+            "active": False,
+            "chance_to_duplicate": 0,
+            "duplicate_damage_multiplier": 0,
+            "duplicate_next_spell": False
+        }
+        self.ghost_arc_state = {
+            "active": False,
+            "ignore_walls": False
+        }
+        self.double_size_barrier_state = {
+            "active": False,
+            "barrier_size_multiplier": 1.0
+        }
+        self.arc_max_initial_branches = 0
+
+    def apply_stats(self, stats_dict=None):
+        """Applies a dictionary of stats to the player, including paste tree modifiers."""
+        if stats_dict:
+            for stat_key, value in stats_dict.items():
+                if hasattr(self, stat_key):
+                    setattr(self, stat_key, value)
+                    self.stats[stat_key] = value
+        
+        # Apply paste tree modifiers
+        for stat, modifiers in self._temp_paste_tree_modifiers.items():
+            current_value = getattr(self, stat, 0)
+            for mod in modifiers:
+                value = mod["value"]
+                operation = mod["operation"]
+                if operation == "add":
+                    current_value += value
+                elif operation == "multiply":
+                    current_value *= (1 + value) # Apply as a percentage increase
+                elif operation == "set":
+                    current_value = value
+            setattr(self, stat, current_value)
+            self.stats[stat] = current_value
+
         # Ensure current life, mana, energy shield are capped at max
-        self.current_life = self.max_life
-        self.current_mana = self.max_mana
-        self.current_energy_shield = self.max_energy_shield
+        self.current_life = min(self.current_life, self.max_life)
+        self.current_mana = min(self.current_mana, self.max_mana)
+        self.current_energy_shield = min(self.current_energy_shield, self.max_energy_shield)
 
     def set_class(self, class_name, class_stats=None):
         """Sets the player's class and updates their sprites and initial skills."""
@@ -185,7 +279,6 @@ class Player(pygame.sprite.Sprite):
             if "key_binding" in skill and skill["id"] in self.unlocked_skills:
                 self.skill_key_bindings[skill["key_binding"]] = skill["id"]
 
-
     def load_skills(self, json_path):
         """Loads skill data from a JSON file."""
         try:
@@ -200,6 +293,17 @@ class Player(pygame.sprite.Sprite):
     def has_skill(self, skill_id):
         """Checks if the player has unlocked a specific skill."""
         return skill_id in self.unlocked_skills
+
+    def grant_skill(self, skill_id):
+        """Grants a skill to the player."""
+        if skill_id not in self.unlocked_skills:
+            self.unlocked_skills.append(skill_id)
+            print(f"Skill '{skill_id}' granted to player.")
+            # Optionally, update key bindings if the granted skill has one
+            for skill in self.skills:
+                if skill["id"] == skill_id and "key_binding" in skill:
+                    self.skill_key_bindings[skill["key_binding"]] = skill["id"]
+                    break
 
     def can_activate_skill(self, skill_id):
         """Checks if the player has the skill and enough mana to activate it."""
@@ -236,75 +340,132 @@ class Player(pygame.sprite.Sprite):
         if not self.can_activate_skill(skill_id):
             return False
 
+        # Quantum Entanglement check before initial skill activation
+        if "quantum_entanglement" in self.active_passive_abilities:
+            qe_state = self.quantum_entanglement_state
+            if qe_state["active"] and random.random() < qe_state["chance_to_duplicate"]:
+                qe_state["duplicate_next_spell"] = True
+                print("Quantum Entanglement: Next spell will be duplicated!")
+
+        activated = False
         if skill_id == "cleave":
             self.cleave_skill.activate()
-            return True
+            activated = True
         elif skill_id == "cyclone":
             self.cyclone_skill.activate()
-            return True
+            activated = True
         elif skill_id == "arc":
             self.arc_skill.activate()
-            return True
+            activated = True
         elif skill_id == "summon_skeleton":
             if mouse_pos:
                 self.summon_skeletons_skill.activate(mouse_pos[0], mouse_pos[1])
-            return True
+            activated = True
         elif skill_id == "fireball":
             if mouse_pos:
                 self.fireball_skill.activate(mouse_pos[0], mouse_pos[1])
-            return True
+            activated = True
         elif skill_id == "summon_spiders":
-            self.summon_spiders_skill.activate() # Removed mouse_pos arguments
-            return True
+            self.summon_spiders_skill.activate()
+            activated = True
         elif skill_id == "ice_nova":
             if mouse_pos and self.class_name == "technomancer":
                 self.ice_nova_skill.activate()
-            return True
+            activated = True
+        else:
+            # Fallback for skills not explicitly handled above (e.g., passive skills from skill_tree.json)
+            skill = next((s for s in self.skills if s['id'] == skill_id), None)
+            if skill is None:
+                return False
 
-        # Fallback for skills not explicitly handled above (e.g., passive skills from skill_tree.json)
-        skill = next((s for s in self.skills if s['id'] == skill_id), None)
-        if skill is None:
-            return False
+            # Deduct mana cost
+            self.current_mana -= skill['cost']
 
-        # Deduct mana cost
-        self.current_mana -= skill['cost']
+            # Apply skill effects
+            stat = skill.get('stat')
+            amount = skill.get('amount')
+            if stat and amount:
+                if stat in self.stats:
+                    self.stats[stat] += amount
+                    # Update the corresponding attribute
+                    setattr(self, stat, self.stats[stat])
+                else:
+                    print(f"Warning: Stat '{stat}' not found in player stats.")
 
-        # Apply skill effects
-        stat = skill.get('stat')
-        amount = skill.get('amount')
-        if stat and amount:
-            if stat in self.stats:
-                self.stats[stat] += amount
-                # Update the corresponding attribute
-                setattr(self, stat, self.stats[stat])
-            else:
-                print(f"Warning: Stat '{stat}' not found in player stats.")
+            stat2 = skill.get('stat2')
+            amount2 = skill.get('amount2')
+            if stat2 and amount2:
+                if stat2 in self.stats:
+                    self.stats[stat2] += amount2
+                    # Update the corresponding attribute
+                    setattr(self, stat2, self.stats[stat2])
+                else:
+                    print(f"Warning: Stat '{stat2}' not found in player stats.")
+            activated = True
+            print(f"Skill '{skill_id}' activated!")
 
-        stat2 = skill.get('stat2')
-        amount2 = skill.get('amount2')
-        if stat2 and amount2:
-            if stat2 in self.stats:
-                self.stats[stat2] += amount2
-                # Update the corresponding attribute
-                setattr(self, stat2, self.stats[stat2])
-            else:
-                print(f"Warning: Stat '{stat2}' not found in player stats.")
+            # Visual effect (placeholder)
+            effect_surface = pygame.Surface((50, 50))
+            effect_surface.fill((255, 255, 0)) # Yellow color
 
-        print(f"Skill '{skill_id}' activated!")
+            # Create a sprite for the effect
+            effect_sprite = pygame.sprite.Sprite()
+            effect_sprite.image = effect_surface
+            effect_sprite.rect = effect_sprite.image.get_rect(center=self.rect.center)
 
-        # Visual effect (placeholder)
-        effect_surface = pygame.Surface((50, 50))
-        effect_surface.fill((255, 255, 0)) # Yellow color
+            self.game.current_scene.effects.add(effect_sprite)
+        
+        # Quantum Entanglement: Duplicate spell if flag is set
+        if activated and "quantum_entanglement" in self.active_passive_abilities:
+            qe_state = self.quantum_entanglement_state
+            if qe_state["duplicate_next_spell"]:
+                qe_state["duplicate_next_spell"] = False # Reset the flag
+                print(f"Quantum Entanglement: Duplicating {skill_id}!")
 
-        # Create a sprite for the effect
-        effect_sprite = pygame.sprite.Sprite()
-        effect_sprite.image = effect_surface
-        effect_sprite.rect = effect_sprite.image.get_rect(center=self.rect.center)
+                # Temporarily modify skill damage for the duplicate cast
+                original_skill_damage_multipliers = {}
+                if skill_id == "arc":
+                    original_skill_damage_multipliers["base_damage"] = self.arc_skill.base_damage
+                    self.arc_skill.base_damage *= (1 + qe_state["duplicate_damage_multiplier"])
+                elif skill_id == "ice_nova":
+                    original_skill_damage_multipliers["base_damage_min"] = self.ice_nova_skill.base_damage_min
+                    original_skill_damage_multipliers["base_damage_max"] = self.ice_nova_skill.base_damage_max
+                    self.ice_nova_skill.base_damage_min *= (1 + qe_state["duplicate_damage_multiplier"])
+                    self.ice_nova_skill.base_damage_max *= (1 + qe_state["duplicate_damage_multiplier"])
+                # Add other skills here if they have damage attributes that need modification
+                # For skills without explicit damage attributes, this part might be skipped or handled differently
 
-        self.game.current_scene.effects.add(effect_sprite)
-        return True
+                # Recursively call activate_skill for the duplicate, but without mana cost
+                # and without re-triggering Quantum Entanglement for this duplicate cast
+                # To avoid infinite recursion, we need to ensure the duplicate cast doesn't re-trigger QE.
+                # This is handled by resetting `duplicate_next_spell` above.
+                if skill_id == "cleave":
+                    self.cleave_skill.activate(is_duplicate=True)
+                elif skill_id == "cyclone":
+                    self.cyclone_skill.activate(is_duplicate=True)
+                elif skill_id == "arc":
+                    self.arc_skill.activate(mouse_pos, is_duplicate=True)
+                elif skill_id == "summon_skeleton":
+                    if mouse_pos:
+                        self.summon_skeletons_skill.activate(mouse_pos[0], mouse_pos[1], is_duplicate=True)
+                elif skill_id == "fireball":
+                    if mouse_pos:
+                        self.fireball_skill.activate(mouse_pos[0], mouse_pos[1], is_duplicate=True)
+                elif skill_id == "summon_spiders":
+                    self.summon_spiders_skill.activate(is_duplicate=True)
+                elif skill_id == "ice_nova":
+                    if mouse_pos and self.class_name == "technomancer":
+                        self.ice_nova_skill.activate(is_duplicate=True)
+                # Restore original skill damage attributes
+                if skill_id == "arc":
+                    self.arc_skill.base_damage = original_skill_damage_multipliers["base_damage"]
+                elif skill_id == "ice_nova":
+                    self.ice_nova_skill.base_damage_min = original_skill_damage_multipliers["base_damage_min"]
+                    self.ice_nova_skill.base_damage_max = original_skill_damage_multipliers["base_damage_max"]
+        return activated
 
     def set_target(self, world_x, world_y):
+        """Sets the player's target coordinates for movement."""
         # Adjust target to be the center of the player sprite
         target_center_x = world_x - self.width // 2
         target_center_y = world_y - self.height // 2
@@ -325,9 +486,39 @@ class Player(pygame.sprite.Sprite):
             self.is_moving = False
             self.target = None
             
-    
     def take_damage(self, damage):
         """Reduces the player's current energy shield first, then life, and triggers a screen pulse."""
+        current_time = pygame.time.get_ticks()
+        
+        # Paradox Armor check
+        if "paradox_armor" in self.active_passive_abilities and not self.paradox_armor_state.get("active", False):
+            state = self.paradox_armor_state
+            delayed_damage_percentage = state.get("damage_delay_percentage", 0)
+            damage_delay_duration = state.get("damage_delay_duration", 0)
+
+            if delayed_damage_percentage > 0:
+                delayed_amount = damage * delayed_damage_percentage
+                instant_damage = damage * (1 - delayed_damage_percentage)
+                
+                state["delayed_damage"].append({
+                    "amount": delayed_amount,
+                    "apply_time": current_time + damage_delay_duration
+                })
+                print(f"Paradox Armor: {delayed_amount:.2f} damage delayed. Instant damage: {instant_damage:.2f}")
+                damage = instant_damage # Only apply instant portion now
+
+            # Check for time revert if player would die
+            if self.current_life - damage <= 0:
+                if current_time - state.get("cooldown_start_time", 0) > state.get("cooldown_duration", 0):
+                    print("Paradox Armor: Activating time revert!")
+                    self.current_life = state["last_life_snapshot"]["life"]
+                    # Optionally revert energy shield as well if it's part of the snapshot
+                    # self.current_energy_shield = state["last_energy_shield_snapshot"]["es"]
+                    state["active"] = True # Put on cooldown
+                    state["cooldown_start_time"] = current_time
+                    print(f"Player reverted to {self.current_life:.2f} life.")
+                    return # Damage is fully negated by time revert
+
         remaining_damage = damage
 
         # Apply damage to energy shield first
@@ -545,6 +736,7 @@ class Player(pygame.sprite.Sprite):
             if self.corrupted_blood_stacks < 0:
                 self.corrupted_blood_stacks = 0
 
+    
     def update(self, dt):
         # Get the tile_map and tile_size from the current scene
         tile_map = self.game.scene_manager.current_scene.tile_map
@@ -648,7 +840,11 @@ class Player(pygame.sprite.Sprite):
         # Update Corrupted Blood effect
         self._update_corrupted_blood(dt)
 
+        # Update passive abilities
+        self.paste_tree_manager.update_passive_abilities(self, dt)
+
     def create_footstep(self):
+        """Creates a visual footstep effect at the player's current position."""
         # Load a random cloud_magic_trail image
         footstep_image = self.footstep_image
         footstep_sprite = pygame.sprite.Sprite()
@@ -659,6 +855,7 @@ class Player(pygame.sprite.Sprite):
         self.game.current_scene.effects.add(footstep_sprite)
 
     def draw(self, screen):
+        """Draws the player sprite on the screen."""
         screen_x = (self.rect.x - self.game.current_scene.camera_x) * self.game.current_scene.zoom_level
         screen_y = (self.rect.y - self.game.current_scene.camera_y) * self.game.current_scene.zoom_level
         scaled_image = pygame.transform.scale(self.image, (int(self.width * self.game.current_scene.zoom_level), int(self.height * self.game.current_scene.zoom_level)))
@@ -669,7 +866,6 @@ class Player(pygame.sprite.Sprite):
             red_surface = pygame.Surface(screen.get_size())
             red_surface.fill((255, 0, 0))
             red_surface.set_alpha(100)  # Adjust alpha for desired intensity
-
         # Blit the red surface to the screen
             screen.blit(red_surface, (0, 0))
 
@@ -697,4 +893,3 @@ class Player(pygame.sprite.Sprite):
         """Deactivates the specified skill."""
         if skill_id == "cyclone":
             self.cyclone_skill.deactivate()
-        

@@ -2,6 +2,7 @@ import pygame
 import math
 import random
 from config.constants import TILE_SIZE
+from entities.enemy import Enemy # Import Enemy for type hinting and potential future use
 
 class CleaveSkill:
     def __init__(self, player):
@@ -23,6 +24,14 @@ class CleaveSkill:
         self.attack_range = TILE_SIZE * 6 # Attack range, 50% more than drawing range
 
         self.active_effects = pygame.sprite.Group() # To manage temporary visual effects
+
+        # Cleave Reality passive ability attributes
+        self.reality_hits_required = 5
+        self.reality_damage_multiplier = 3.0
+        self.reality_cone_radius = TILE_SIZE * 10 # Larger radius for reality effect
+        self.reality_slow_percentage = 0.70
+        self.reality_slow_duration = 3000 # milliseconds
+        self.current_hits = 0 # Counter for hits to trigger reality effect
 
     def can_cast(self):
         current_time = pygame.time.get_ticks()
@@ -71,8 +80,7 @@ class CleaveSkill:
         print(f"Cleave Attack Range: {self.attack_range}")
         print(f"Arc Angle (degrees): {math.degrees(self.arc_angle):.2f}")
         print(f"--- Enemy Hit Detection ---")
-
-
+        
         # Detect enemies within the cleave arc
         hit_enemies = set()
         player_center_world = self.player.rect.center # Player's world coordinates
@@ -101,8 +109,17 @@ class CleaveSkill:
 
         for enemy in hit_enemies:
             damage_amount = random.randint(self.base_damage["min"], self.base_damage["max"])
+            # Apply cleave_damage_multiplier from player stats
+            damage_amount *= self.player.cleave_damage_multiplier
             enemy.take_damage(damage_amount)
             print(f"Cleave hit {enemy.name} for {damage_amount} {self.base_damage['type']} damage!")
+            self.current_hits += 1 # Increment hit counter for Cleave Reality
+
+        # Check for Cleave Reality activation
+        if "cleave_reality" in self.player.active_passive_abilities and self.current_hits >= self.reality_hits_required:
+            print(f"Cleave Reality activated after {self.current_hits} hits!")
+            self._apply_reality_effect(center_angle)
+            self.current_hits = 0 # Reset hit counter
 
         # --- Visual effect for Cleave ---
         effect_size = int(self.drawing_range * 2.5) # Slightly larger surface to prevent clipping
@@ -160,6 +177,69 @@ class CleaveSkill:
         effect_sprite.duration = 250 # milliseconds for the effect to last and fade
         self.active_effects.add(effect_sprite) # Add to skill's own group
         self.game.current_scene.effects.add(effect_sprite) # Add to scene's effects group
+
+    def _apply_reality_effect(self, center_angle):
+        """Applies the special 'Cleave Reality' effect."""
+        reality_start_angle = center_angle - (self.arc_angle / 2)
+        reality_end_angle = center_angle + (self.arc_angle / 2)
+
+        player_center_world = self.player.rect.center
+        
+        # Detect enemies within the larger reality cone
+        reality_hit_enemies = set()
+        for enemy in self.game.current_scene.enemies:
+            enemy_vector = pygame.math.Vector2(enemy.rect.centerx - player_center_world[0],
+                                                -(enemy.rect.centery - player_center_world[1]))
+            
+            if enemy_vector.length() <= self.reality_cone_radius:
+                angle_to_enemy = math.atan2(enemy_vector.y, enemy_vector.x)
+                angle_diff = (angle_to_enemy - center_angle + math.pi) % (2 * math.pi) - math.pi
+
+                if abs(angle_diff) <= (self.arc_angle / 2): # Use the original arc angle for the reality cone's angular spread
+                    reality_hit_enemies.add(enemy)
+
+        for enemy in reality_hit_enemies:
+            # Apply increased damage
+            reality_damage = random.randint(self.base_damage["min"], self.base_damage["max"]) * self.reality_damage_multiplier
+            # Apply cleave_damage_multiplier from player stats
+            reality_damage *= self.player.cleave_damage_multiplier
+            enemy.take_damage(reality_damage)
+            print(f"Cleave Reality hit {enemy.name} for {reality_damage} {self.base_damage['type']} damage (Reality Effect)!")
+
+            # Apply slow effect
+            enemy.apply_slow(self.reality_slow_percentage, self.reality_slow_duration)
+            print(f"Applied {self.reality_slow_percentage*100}% slow to {enemy.name} for {self.reality_slow_duration/1000} seconds.")
+
+        # Visual effect for Cleave Reality (larger, distinct color)
+        effect_size = int(self.reality_cone_radius * 2.5)
+        reality_effect_surface = pygame.Surface((effect_size, effect_size), pygame.SRCALPHA)
+        surface_center = (effect_size // 2, effect_size // 2)
+
+        # Reality effect colors (e.g., blue/purple for a "reality shift" feel)
+        color_reality_outer = (0, 100, 255, 80) # Light blue, transparent
+        color_reality_inner = (50, 0, 150, 180) # Purple, less transparent
+        color_reality_core = (100, 0, 200, 220) # Deeper purple, almost opaque
+
+        pygame.draw.arc(reality_effect_surface, color_reality_outer,
+                        (surface_center[0] - self.reality_cone_radius * 1.3, surface_center[1] - self.reality_cone_radius * 1.3,
+                         self.reality_cone_radius * 2.6, self.reality_cone_radius * 2.6),
+                        reality_start_angle, reality_end_angle, int(TILE_SIZE * 0.2))
+        pygame.draw.arc(reality_effect_surface, color_reality_inner,
+                        (surface_center[0] - self.reality_cone_radius, surface_center[1] - self.reality_cone_radius,
+                         self.reality_cone_radius * 2, self.reality_cone_radius * 2),
+                        reality_start_angle, reality_end_angle, int(TILE_SIZE * 0.6))
+        pygame.draw.arc(reality_effect_surface, color_reality_core,
+                        (surface_center[0] - self.reality_cone_radius * 0.6, surface_center[1] - self.reality_cone_radius * 0.6,
+                         self.reality_cone_radius * 1.2, self.reality_cone_radius * 1.2),
+                        reality_start_angle, reality_end_angle, int(TILE_SIZE * 1.0))
+
+        reality_effect_sprite = pygame.sprite.Sprite()
+        reality_effect_sprite.image = reality_effect_surface
+        reality_effect_sprite.rect = reality_effect_sprite.image.get_rect(center=self.player.rect.center)
+        reality_effect_sprite.creation_time = pygame.time.get_ticks()
+        reality_effect_sprite.duration = 500 # Longer duration for reality effect
+        self.active_effects.add(reality_effect_sprite)
+        self.game.current_scene.effects.add(reality_effect_sprite)
 
     def update(self, dt):
         current_time = pygame.time.get_ticks()

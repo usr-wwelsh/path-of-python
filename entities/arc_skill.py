@@ -87,27 +87,50 @@ class ArcSkill:
             return False
         return True
 
-    def activate(self, mouse_pos=None): # Added mouse_pos parameter
+    def activate(self, mouse_pos=None, is_duplicate=False): # Added mouse_pos parameter and is_duplicate
         """Activates the Arc skill, creating initial projectiles that chain to strike multiple enemies."""
         print("ArcSkill.activate() called!") # Added print statement
         current_time = pygame.time.get_ticks()
-        if current_time - self.last_used < self.cooldown:
-            print("Arc skill is on cooldown!")
-            return
         
-        if not self.player.has_skill("arc"):
-            print("Cannot activate Arc skill: Skill not unlocked!")
-            return
+        if not is_duplicate: # Only apply cooldown and mana cost for original cast
+            if current_time - self.last_used < self.cooldown:
+                print("Arc skill is on cooldown!")
+                return
+            
+            if not self.player.has_skill("arc"):
+                print("Cannot activate Arc skill: Skill not unlocked!")
+                return
 
-        if self.player.current_mana < self.mana_cost:
-            print("Cannot activate Arc skill: Not enough mana!")
-            return
+            if self.player.current_mana < self.mana_cost:
+                print("Cannot activate Arc skill: Not enough mana!")
+                return # Return False if not enough mana
+
+            # Deduct mana cost only if there are initial targets
+            self.player.current_mana -= self.mana_cost
+            self.last_used = current_time
+
+        # Check for Arc Singularity passive ability
+        if "arc_singularity" in self.player.active_passive_abilities:
+            arc_singularity_state = self.player.arc_singularity_state
+            arc_singularity_effect_data = self.player.active_passive_abilities["arc_singularity"]
+            
+            if not arc_singularity_state["active"] and \
+               (current_time - arc_singularity_state["cooldown_start_time"] > arc_singularity_state["cooldown_duration"]):
+                
+                arc_singularity_state["active"] = True
+                arc_singularity_state["last_activation_time"] = current_time
+                print("Arc Singularity activated!")
 
         # Clear the set of damaged enemies for this new skill activation
         self.enemies_damaged_in_current_cast.clear()
 
         # Start the chain from the player
         start_x, start_y = self.player.rect.center
+
+        # Determine effective chain range, considering Arc Singularity
+        effective_chain_range = self.chain_range
+        if "arc_singularity" in self.player.active_passive_abilities and self.player.arc_singularity_state["active"]:
+            effective_chain_range += self.player.active_passive_abilities["arc_singularity"].get("radius", 0)
 
         # Find all initial targets within range
         initial_targets = []
@@ -117,20 +140,16 @@ class ArcSkill:
             if isinstance(enemy, WraithEffect) or enemy.name == "Skeleton":
                 continue
             distance = math.hypot(enemy.rect.centerx - start_x, enemy.rect.centery - start_y)
-            if distance < self.chain_range:
+            if distance < effective_chain_range:
                 initial_targets.append(enemy)
         
         if not initial_targets:
             print("No enemies in range for Arc skill.")
             return
 
-        # Deduct mana cost only if there are initial targets
-        self.player.current_mana -= self.mana_cost
-        self.last_used = current_time
-
         # Shuffle and pick a few initial targets to branch out from the player
         random.shuffle(initial_targets)
-        num_initial_chains = min(len(initial_targets), self.max_initial_branches)
+        num_initial_chains = min(len(initial_targets), self.max_initial_branches + self.player.arc_max_initial_branches)
 
         for i in range(num_initial_chains):
             target_enemy = initial_targets[i]
@@ -156,9 +175,16 @@ class ArcSkill:
             print(f"Arc skill activated. Initial target: {target_enemy.name}")
 
     def calculate_damage(self):
-        """Calculates damage with variation and player level scaling."""
+        """Calculates damage with variation and player level scaling, considering Arc Singularity."""
         level_bonus = self.player.level * 2
         damage = self.base_damage + random.randint(-self.damage_variation, self.damage_variation) + level_bonus
+        
+        # Apply Arc Singularity damage increase
+        if "arc_singularity" in self.player.active_passive_abilities and self.player.arc_singularity_state["active"]:
+            damage_increase_percentage = self.player.active_passive_abilities["arc_singularity"].get("damage_increase_percentage", 0)
+            damage *= (1 + damage_increase_percentage)
+            print(f"Arc Singularity: Damage increased by {damage_increase_percentage*100:.0f}% to {damage:.2f}")
+        
         return damage
 
     def trigger_chain_reaction_from_enemy(self, current_target, current_chain_count, previous_target):
@@ -166,6 +192,12 @@ class ArcSkill:
         print(f"Chain reaction triggered from {current_target.name} (Chain count: {current_chain_count})!")
         
         eligible_enemies = []
+        
+        # Determine effective chain range, considering Arc Singularity
+        effective_chain_range = self.chain_range
+        if "arc_singularity" in self.player.active_passive_abilities and self.player.arc_singularity_state["active"]:
+            effective_chain_range += self.player.active_passive_abilities["arc_singularity"].get("radius", 0)
+
         for sprite in self.player.game.current_scene.enemies:
             enemy = sprite
             # Exclude skeletons and wraiths
@@ -177,7 +209,7 @@ class ArcSkill:
                 continue
 
             distance = math.hypot(enemy.rect.centerx - current_target.rect.centerx, enemy.rect.centery - current_target.rect.centery)
-            if distance < self.chain_range:
+            if distance < effective_chain_range:
                 eligible_enemies.append((distance, enemy)) # Store distance for sorting
 
         eligible_enemies.sort(key=lambda x: x[0]) # Sort by distance
@@ -231,9 +263,10 @@ class ArcProjectile(Projectile):
         self.rect.y += self.dy * self.speed * dt
 
         # Check for collision with solid tiles (walls)
-        if self._check_collision(tile_map, tile_size):
-            self.kill() # Remove projectile on wall hit
-            return
+        if not self.arc_skill.player.ghost_arc_state["ignore_walls"]: # Added Ghost Arc check
+            if self._check_collision(tile_map, tile_size):
+                self.kill() # Remove projectile on wall hit
+                return
 
         # Check for collision with enemies
         # Iterate over a copy of the enemies group to avoid issues if enemies are removed
@@ -300,7 +333,6 @@ class ArcProjectile(Projectile):
                 t = i / num_segments
                 target_segment_x = start_screen_x + (end_screen_x - start_screen_x) * t
                 target_segment_y = start_screen_y + (end_screen_y - start_screen_y) * t
-
                 # Add random offset for jaggedness, perpendicular to the line
                 angle = math.atan2(end_screen_y - start_screen_y, end_screen_x - start_screen_x)
                 perp_angle = angle + math.pi / 2 # Perpendicular angle

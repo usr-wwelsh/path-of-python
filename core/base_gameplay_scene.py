@@ -98,6 +98,7 @@ class BaseGameplayScene(BaseScene):
             {"name": "Old Scavenger", "tile_x": 10, "tile_y": 10, "dialogue_id": "old_scavenger_intro"}
         ]
         self.paste = pygame.sprite.Group()  # Initialize paste group
+        self.necrotic_plagues = pygame.sprite.Group()  # Initialize the necrotic_plagues group
 
         # If dungeon_data is provided, attempt to load enemies
         if self.dungeon_data:

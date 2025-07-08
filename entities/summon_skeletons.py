@@ -5,6 +5,9 @@ import random
 import json
 from config.constants import TILE_SIZE
 from entities.enemy import Enemy
+from entities.necrotic_plague import NecroticPlague  # Import the NecroticPlague class
+from entities.singularity_core import SingularityCore  # Import the SingularityCore class
+
 
 class SummonSkeletons:
     def __init__(self, player):
@@ -19,6 +22,7 @@ class SummonSkeletons:
         self.last_used = 0
         self.cooldown = 500  # .5 second cooldown
         # self.active_skeletons = [] # Removed: Keep track of active skeletons - now managed by scene's friendly_entities
+        self.skeleton_count = 0 # Initialize skeleton count
 
         # Load skill data from JSON
         self._load_skill_data()
@@ -117,21 +121,38 @@ class SummonSkeletons:
     def _summon_skeleton(self, x, y):
         """Summons a single skeleton at the specified location."""
 
+        # Increment skeleton count
+        self.skeleton_count += 1
+
         # Create a skeleton enemy
         # Calculate scaled stats based on player level
         player_level = self.player.level
         scaled_health = self.skeleton_health + (player_level - 1) * 5  # Example: +5 health per level
-        scaled_damage = self.skeleton_damage + (player_level - 1) * 20  # Example: +10 damage per level
+        scaled_damage = self.skeleton_damage + (player_level - 1) * 50  # Example: +10 damage per level
         scaled_speed = self.skeleton_speed + (player_level - 2) * 10  # Example: +5 speed per level (start scaling from level 2)
         
+        # Apply skeleton armor bonus if the player has the skill
+        if self.player.has_skill("skeleton_armor"):
+            scaled_health *= 1.4  # Apply 40% increased health
+
+        is_overlord = False
+        overlord_scale = 1.0
+        # Check if it's time to summon an Overlord
+        if self.player.has_skill("skeleton_overlord") and self.skeleton_count % 10 == 0:
+            # Apply Overlord stats
+            scaled_health *= 5.0
+            scaled_damage *= 2.0
+            is_overlord = True
+            overlord_scale = 2.0
+            print("Summoned a Skeleton Overlord!")
+
         # Ensure stats don't go below base values for level 1
         scaled_health = max(self.skeleton_health, scaled_health)
         scaled_damage = max(self.skeleton_damage, scaled_damage)
         scaled_speed = max(self.skeleton_speed, scaled_speed)
 
-        # Create a skeleton enemy with scaled stats
-        skeleton = Skeleton(self.player.game, x, y, scaled_health, scaled_damage, scaled_speed, self.skeleton_image_path, self, player_level=player_level) # Pass self (SummonSkeletons instance) as owner
-    # Debug prints to verify player level and scaled stats
+        skeleton = Skeleton(self.player.game, x, y, scaled_health, scaled_damage, scaled_speed, self.skeleton_image_path, self, player_level=player_level, is_overlord=is_overlord, player=self.player, scale=overlord_scale) # Pass self (SummonSkeletons instance) as owner
+# Debug prints to verify player level and scaled stats
         print(f"Summoning skeleton at player level {player_level}")
         print(f"Scaled stats: health={scaled_health}, damage={scaled_damage}, speed={scaled_speed}")
         # Add skeleton to the scene's friendly_entities group
@@ -158,7 +179,7 @@ class SummonSkeletons:
 
 
 class Skeleton(Enemy):
-    def __init__(self, game, x, y, health, damage, speed, sprite_path, owner, player_level):
+    def __init__(self, game, x, y, health, damage, speed, sprite_path, owner, player_level, is_overlord=False, player=None, scale=1.0):
         super().__init__(game, x, y, "Skeleton", health, damage, speed, sprite_path)
         self.player_level = player_level
         # Calculate scale factor based on player level
@@ -169,8 +190,8 @@ class Skeleton(Enemy):
         
         # Load and scale the sprite image
         original_image = pygame.image.load(os.path.join(os.getcwd(), sprite_path)).convert_alpha()
-        new_width = int(original_image.get_width() * self.scale_factor)
-        new_height = int(original_image.get_height() * self.scale_factor)
+        new_width = int(original_image.get_width() * self.scale_factor * scale)
+        new_height = int(original_image.get_height() * self.scale_factor * scale)
         self.image = pygame.transform.scale(original_image, (new_width, new_height))
         self.rect = self.image.get_rect(center=(x, y)) # Update rect after scaling
         self.owner = owner  # The SummonSkeletons instance that summoned this skeleton
@@ -184,9 +205,44 @@ class Skeleton(Enemy):
         self.circle_angle = random.uniform(0, 2 * math.pi)  # Initial random angle for circling
         self.circle_speed = random.uniform(0.5, 1.5)  # Random speed for circling
         self.circle_radius = random.uniform(TILE_SIZE * 1.5, TILE_SIZE * 2.5)  # Random radius for circling
+        self.is_overlord = is_overlord
+        self.necrotic_plagues = []  # List to store active necrotic plagues
+        self.player = player # Store the player object
+
+    def apply_necrotic_plague(self, target):
+        """Applies the necrotic plague effect to the target."""
+        # Check if the target is a valid object with status_effects attribute
+        if not hasattr(target, 'status_effects'):
+         print(f"Error: Target is not a valid object with status_effects attribute. Target: {target}")
+         return
+
+    # Check if the target already has a necrotic plague from this source
+        for plague in self.necrotic_plagues:
+            if plague.target == target:
+             # Increase the stack count of the existing plague
+                plague.increase_stack()
+                return
+
+    # Create a new NecroticPlague object and add it to the target's status effects
+        necrotic_plague = NecroticPlague(target, self)
+        self.game.current_scene.necrotic_plagues.add(necrotic_plague)
+        self.necrotic_plagues.append(necrotic_plague)
+        target.status_effects.append(necrotic_plague)
+        print(f"Applying necrotic plague to {target.name}!")
+
+    def apply_singularity_core(self, target):
+        """Applies the singularity core effect to the target."""
+        # Create a new SingularityCore object and add it to the scene
+        singularity_core = SingularityCore(target, self)
+        self.game.current_scene.enemies.add(singularity_core)
+        print(f"Applying singularity core to {target.name}!")
 
     def take_damage(self, amount):
         """Overrides Enemy.take_damage to handle removal from active_skeletons list."""
+        # Check if the player has the singularity_core skill and the chance is met
+        if self.player.has_skill("singularity_core") and random.random() < 0.05:
+            self.apply_singularity_core(self)
+
         # Call the parent class's take_damage method
         super().take_damage(amount)
 
@@ -216,6 +272,11 @@ class Skeleton(Enemy):
                 nearest_enemy.take_damage(self.damage)
                 self.last_attack_time = current_time
                 print(f"Skeleton attacked {nearest_enemy.name} for {self.damage} damage.")
+
+                # Apply necrotic plague if the player has the skill and the chance is met
+                if player.has_skill("necrotic_plague") and random.random() < 0.2:
+                    self.apply_necrotic_plague(nearest_enemy)
+
             # Move towards the nearest enemy
             elif dist > 0:
                 # Normalize direction vector
@@ -246,6 +307,12 @@ class Skeleton(Enemy):
             if dist > 0 and dist < self.following_range:
                 self._circle_around_player(dt, player, tile_map, tile_size)
 
+        # Update necrotic plagues
+        for plague in self.necrotic_plagues[:]:  # Iterate over a copy of the list
+            plague.update(dt)
+            if not plague.alive():
+                self.necrotic_plagues.remove(plague)
+
     def _find_nearest_enemy(self, player, finding_range):
         """Find the nearest enemy (that is not a skeleton) to attack within the finding range."""
         nearest_enemy = None
@@ -254,7 +321,8 @@ class Skeleton(Enemy):
         # Iterate over all enemies in the current scene
         for sprite in self.game.current_scene.enemies:
             # Ensure it's an Enemy and not a friendly skeleton
-            if isinstance(sprite, Enemy) and not isinstance(sprite, Skeleton):
+            #if isinstance(sprite, Enemy) and not isinstance(sprite, Skeleton):
+            if isinstance(sprite, Enemy) and sprite.faction != "player_minions":
                 # Calculate distance to the enemy
                 dx, dy = sprite.rect.centerx - self.rect.centerx, sprite.rect.centery - self.rect.centery
                 dist = math.hypot(dx, dy)
@@ -319,6 +387,9 @@ class Skeleton(Enemy):
         self.rect.y = new_y - self.rect.height / 2
         if self._check_collision(tile_map, tile_size):
             self.rect.y = original_y  # Rollback if collision
+
+    def draw(self, screen, camera_x, camera_y, zoom_level):
+        super().draw(screen, camera_x, camera_y, zoom_level)
 
 class WraithEffect(pygame.sprite.Sprite):
     def __init__(self, game, x, y, image_path, scale=1):

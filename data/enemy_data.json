@@ -610,5 +610,17 @@
         "projectile_sprite_path": "graphics/dc-misc/num5.png",
         "ranged_attack_pattern": "circle",
         "xp_value": 5000
+    },
+    "xp_bot": {
+        "name": "XP Bot",
+        "health": 100,
+        "damage": 0,
+        "speed": 0,
+        "sprite_path": "graphics/dc-mon/bot.png",
+        "attack_range": 10,
+        "attack_cooldown": 3000,
+        "projectile_sprite_path": "graphics/dc-misc/num5.png",
+        "ranged_attack_pattern": "single",
+        "xp_value": 100000
     }
 }

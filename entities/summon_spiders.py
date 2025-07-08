@@ -5,6 +5,7 @@ import random
 import json
 from config.constants import TILE_SIZE
 from entities.enemy import Enemy
+from entities.web_effect import WebEffect
 
 class SummonSpiders:
     def __init__(self, player):
@@ -129,7 +130,7 @@ class SummonSpiders:
 
         spider = Spider(self.player.game, x, y, scaled_health, scaled_damage, scaled_speed, selected_sprite_path, self, player_level,
                         self.minion_attack_slow_duration, self.minion_attack_slow_amount,
-                        self.minion_poison_duration, self.minion_poison_damage)
+                        self.minion_poison_duration, self.minion_poison_damage, self.player)
         self.player.game.current_scene.friendly_entities.add(spider)
         self.player.game.current_scene.enemies.add(spider)  # Add spider to enemies group so they can be targeted
         print("Summoned a spider!")
@@ -147,11 +148,14 @@ class SummonSpiders:
 
 class Spider(Enemy):
     def __init__(self, game, x, y, health, damage, speed, sprite_path, owner, player_level,
-                 slow_duration, slow_amount, poison_duration, poison_damage):
+                 slow_duration, slow_amount, poison_duration, poison_damage, player):
+        self.is_exploding = False  # Add this flag to prevent recursive explosions
+        self.player = player
         super().__init__(game, x, y, "Spider", health, damage, speed, sprite_path)
         self.player_level = player_level
         # Increased base scale factor for better visibility
-        self.scale_factor = 2.0 + (self.player_level - 1) * 0.1 # Base scale 2.0, smaller increment
+        self.scale_factor = 1.0 + (self.player_level - 1) * 0.01 # Base scale 2.0, smaller increment
+        self.base_health = health # Store base health for explosion damage calculation
 
         original_image = pygame.image.load(os.path.join(os.getcwd(), sprite_path)).convert_alpha()
         new_width = int(original_image.get_width() * self.scale_factor)
@@ -177,17 +181,19 @@ class Spider(Enemy):
 
     def take_damage(self, amount):
         super().take_damage(amount)
-        if self.current_life <= 0:
+        if self.current_life <= 0 and not self.is_exploding:
+            self.is_exploding = True
             if self.owner:
                 self.owner.remove_spider(self)
+            self._explode()
 
     def update(self, dt, player, tile_map, tile_size):
-        if not player:
+        if not self.player:
             return
 
         current_time = pygame.time.get_ticks()
 
-        nearest_enemy = self._find_nearest_enemy(player, self.enemy_finding_range)
+        nearest_enemy = self._find_nearest_enemy(self.enemy_finding_range)
 
         if nearest_enemy:
             dx, dy = nearest_enemy.rect.centerx - self.rect.centerx, nearest_enemy.rect.centery - self.rect.centery
@@ -198,6 +204,11 @@ class Spider(Enemy):
                 # Apply slow
                 nearest_enemy.apply_slow(self.slow_amount, self.slow_duration)
                 # Apply poison
+                if hasattr(self.player, 'webweavers_wrath_state') and self.player.webweavers_wrath_state["active"]:
+                    web_slow_amount = self.player.webweavers_wrath_state["slow_amount"]
+                    web_entangle_duration = self.player.webweavers_wrath_state["entangle_duration"]
+                    WebEffect(self.game, nearest_enemy.rect.centerx, nearest_enemy.rect.centery, web_slow_amount, web_entangle_duration)
+                    print(f"Spider created WebEffect at ({nearest_enemy.rect.centerx}, {nearest_enemy.rect.centery})")
                 nearest_enemy.apply_poison(self.poison_damage["min"], self.poison_duration) # Corrected to use min damage for poison
                 self.last_attack_time = current_time
                 print(f"Spider attacked {nearest_enemy.name} for {self.damage} damage, applied slow and poison.")
@@ -222,12 +233,13 @@ class Spider(Enemy):
             if dist > 0 and dist < self.following_range:
                 self._circle_around_player(dt, player, tile_map, tile_size)
 
-    def _find_nearest_enemy(self, player, finding_range):
+    def _find_nearest_enemy(self, finding_range):
         nearest_enemy = None
         min_distance = float('inf')
 
         for sprite in self.game.current_scene.enemies:
-            if isinstance(sprite, Enemy) and not isinstance(sprite, Spider):
+            #if isinstance(sprite, Enemy) and not isinstance(sprite, Spider) and not isinstance(sprite, Skeleton):
+            if isinstance(sprite, Enemy) and sprite.faction != "player_minions":
                 dx, dy = sprite.rect.centerx - self.rect.centerx, sprite.rect.centery - self.rect.centery
                 dist = math.hypot(dx, dy)
 
@@ -278,3 +290,37 @@ class Spider(Enemy):
         self.rect.y = new_y - self.rect.height / 2
         if self._check_collision(tile_map, tile_size):
             self.rect.y = original_y
+
+    def _explode(self):
+        """Explodes the spider, dealing damage and spawning smaller spiders."""
+        # Default values if arachnophobia skill not unlocked
+        explosion_radius_tiles = getattr(self.player, "arachnophobia_state", {}).get("explosion_radius_tiles", 2)
+        damage_multiplier_on_death = getattr(self.player, "arachnophobia_state", {}).get("damage_multiplier_on_death", 0.5)
+        smaller_spiders_spawned = getattr(self.player, "arachnophobia_state", {}).get("smaller_spiders_spawned", 0)
+
+        # Calculate explosion damage
+        explosion_damage = self.base_health * damage_multiplier_on_death
+
+        # Deal damage to enemies in the explosion radius
+        for enemy in self.game.current_scene.enemies:
+            if enemy != self and hasattr(enemy, 'take_damage') and not isinstance(enemy, Spider):
+                # Check if any part of the enemy's rectangle is within the explosion radius
+                if (self.rect.centerx - explosion_radius_tiles * TILE_SIZE < enemy.rect.right and
+                    self.rect.centerx + explosion_radius_tiles * TILE_SIZE > enemy.rect.left and
+                    self.rect.centery - explosion_radius_tiles * TILE_SIZE < enemy.rect.bottom and
+                    self.rect.centery + explosion_radius_tiles * TILE_SIZE > enemy.rect.top):
+                    enemy.take_damage(explosion_damage)
+
+        # Spawn smaller spiders
+        for _ in range(smaller_spiders_spawned):
+            # Calculate spawn position with a small random offset
+            offset_x = random.randint(-TILE_SIZE, TILE_SIZE)
+            offset_y = random.randint(-TILE_SIZE, TILE_SIZE)
+            spawn_x = self.rect.centerx + offset_x
+            spawn_y = self.rect.centery + offset_y
+
+            # Summon a smaller spider
+            self.owner._summon_spider(spawn_x, spawn_y)
+
+        # Remove the spider
+        self.kill()

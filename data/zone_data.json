@@ -122,14 +122,6 @@
                     "graphic": ""
                 },
                 {
-                    "target_scene": "vault",
-                    "location": [
-                        3936,
-                        3808
-                    ],
-                    "graphic": ""
-                },
-                {
                     "target_scene": "flesh_lab",
                     "location": [
                         992,

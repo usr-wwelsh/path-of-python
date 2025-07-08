@@ -104,6 +104,7 @@ class BaseScene:
     """Base class for all game scenes."""
     def __init__(self, game):
         self.game = game
+        self.necrotic_plagues = pygame.sprite.Group()
 
     def enter(self):
         """Called when the scene is entered."""

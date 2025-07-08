@@ -67,6 +67,11 @@ class IceNovaSkill:
             200: {"min": 4000, "max": 5000}
         }
 
+        # Nova Overload passive ability
+        self.effective_max_radius = self.max_radius
+        self.effective_base_damage_min = self.base_damage_min
+        self.effective_base_damage_max = self.base_damage_max
+
     def _calculate_damage(self):
         """Calculate damage based on player level using piecewise linear interpolation."""
         player_level = self.player.level
@@ -74,41 +79,65 @@ class IceNovaSkill:
         # Find the two breakpoints that the current player level falls between
         levels = sorted(self.damage_breakpoints.keys())
         
+        # Apply Nova Overload damage increase
+        if "nova_overload" in self.player.active_passive_abilities:
+            nova_overload_effect_data = self.player.active_passive_abilities["nova_overload"]
+            damage_increase_percentage = nova_overload_effect_data.get("damage_increase_percentage", 0)
+            
+            # Temporarily adjust base damage for calculation
+            original_base_damage_min = self.base_damage_min
+            original_base_damage_max = self.base_damage_max
+            self.base_damage_min *= (1 + damage_increase_percentage)
+            self.base_damage_max *= (1 + damage_increase_percentage)
+
         # Handle levels below the first breakpoint
         if player_level <= levels[0]:
-            return {"min": self.damage_breakpoints[levels[0]]["min"], 
-                    "max": self.damage_breakpoints[levels[0]]["max"], 
-                    "type": self.damage_type}
+            calculated_damage = {"min": self.damage_breakpoints[levels[0]]["min"], 
+                                 "max": self.damage_breakpoints[levels[0]]["max"], 
+                                 "type": self.damage_type}
         
         # Handle levels above the last breakpoint
-        if player_level >= levels[-1]:
-            return {"min": self.damage_breakpoints[levels[-1]]["min"], 
-                    "max": self.damage_breakpoints[levels[-1]]["max"], 
-                    "type": self.damage_type}
+        elif player_level >= levels[-1]:
+            calculated_damage = {"min": self.damage_breakpoints[levels[-1]]["min"], 
+                                 "max": self.damage_breakpoints[levels[-1]]["max"], 
+                                 "type": self.damage_type}
 
         # Perform linear interpolation between two breakpoints
-        for i in range(len(levels) - 1):
-            level1 = levels[i]
-            level2 = levels[i+1]
+        else:
+            for i in range(len(levels) - 1):
+                level1 = levels[i]
+                level2 = levels[i+1]
+                
+                if level1 <= player_level <= level2:
+                    # Calculate interpolation factor
+                    factor = (player_level - level1) / (level2 - level1)
+                    
+                    min_dmg1 = self.damage_breakpoints[level1]["min"]
+                    max_dmg1 = self.damage_breakpoints[level1]["max"]
+                    min_dmg2 = self.damage_breakpoints[level2]["min"]
+                    max_dmg2 = self.damage_breakpoints[level2]["max"]
+                    
+                    interpolated_min_dmg = min_dmg1 + (min_dmg2 - min_dmg1) * factor
+                    interpolated_max_dmg = max_dmg1 + (max_dmg2 - max_dmg1) * factor
+                    
+                    calculated_damage = {"min": interpolated_min_dmg, 
+                                         "max": interpolated_max_dmg, 
+                                         "type": self.damage_type}
+                    break
+            else: # Fallback (should not be reached if logic is correct)
+                calculated_damage = {"min": self.base_damage_min, "max": self.base_damage_max, "type": self.damage_type}
+
+        # Revert base damage to original values after calculation
+        if "nova_overload" in self.player.active_passive_abilities:
+            self.base_damage_min = original_base_damage_min
+            self.base_damage_max = original_base_damage_max
             
-            if level1 <= player_level <= level2:
-                # Calculate interpolation factor
-                factor = (player_level - level1) / (level2 - level1)
-                
-                min_dmg1 = self.damage_breakpoints[level1]["min"]
-                max_dmg1 = self.damage_breakpoints[level1]["max"]
-                min_dmg2 = self.damage_breakpoints[level2]["min"]
-                max_dmg2 = self.damage_breakpoints[level2]["max"]
-                
-                interpolated_min_dmg = min_dmg1 + (min_dmg2 - min_dmg1) * factor
-                interpolated_max_dmg = max_dmg1 + (max_dmg2 - max_dmg1) * factor
-                
-                return {"min": interpolated_min_dmg, 
-                        "max": interpolated_max_dmg, 
-                        "type": self.damage_type}
-        
-        # Fallback (should not be reached if logic is correct)
-        return {"min": self.base_damage_min, "max": self.base_damage_max, "type": self.damage_type}
+            # Apply damage increase to the calculated damage
+            calculated_damage["min"] *= (1 + damage_increase_percentage)
+            calculated_damage["max"] *= (1 + damage_increase_percentage)
+            print(f"Nova Overload: Damage increased by {damage_increase_percentage*100:.0f}% to min {calculated_damage['min']:.2f}, max {calculated_damage['max']:.2f}")
+
+        return calculated_damage
 
     def can_cast(self):
         current_time = pygame.time.get_ticks()
@@ -120,13 +149,21 @@ class IceNovaSkill:
             return False
         return True
 
-    def activate(self):
-        if not self.can_cast():
-            return
+    def activate(self, is_duplicate=False): # Added is_duplicate parameter
+        if not is_duplicate: # Only apply cooldown and mana cost for original cast
+            if not self.can_cast():
+                return
+            print(f"IceNovaSkill.activate() called. Casting single nova.")
+            self.player.current_mana -= self.mana_cost # Deduct initial mana
+            self.last_cast_time = pygame.time.get_ticks() # Set last cast time for cooldown
         
-        print(f"IceNovaSkill.activate() called. Casting single nova.")
-        self.player.current_mana -= self.mana_cost # Deduct initial mana
-        self.last_cast_time = pygame.time.get_ticks() # Set last cast time for cooldown
+        # Apply Nova Overload radius increase
+        self.effective_max_radius = self.max_radius
+        if "nova_overload" in self.player.active_passive_abilities:
+            nova_overload_effect_data = self.player.active_passive_abilities["nova_overload"]
+            radius_increase_percentage = nova_overload_effect_data.get("radius_increase_percentage", 0)
+            self.effective_max_radius = self.max_radius * (1 + radius_increase_percentage)
+            print(f"Nova Overload: Max radius increased by {radius_increase_percentage*100:.0f}% to {self.effective_max_radius:.2f}")
 
         # Create a new nova instance for each click
         new_nova = _NovaInstance(self.player, self.game, self)
@@ -136,7 +173,7 @@ class IceNovaSkill:
         new_barrier = _IceNovaBarrier(
             self.game, 
             self.player.rect.center, 
-            self.barrier_radius, 
+            self.barrier_radius * self.player.double_size_barrier_state["barrier_size_multiplier"], 
             self.barrier_color, 
             self.barrier_duration,
             self # Pass skill_parent for damage/slow calculation
@@ -192,7 +229,7 @@ class _NovaInstance(pygame.sprite.Sprite): # Inherit from Sprite to use .image a
         self.game = game
         self.skill_parent = skill_parent # Reference to IceNovaSkill for shared properties/methods
 
-        self.max_radius = skill_parent.max_radius
+        self.max_radius = skill_parent.effective_max_radius # Use effective_max_radius
         self.min_radius = skill_parent.pulsation_min_radius # Minimum radius for pulsation
         self.pulsation_speed = skill_parent.pulsation_speed # Speed for both expansion and contraction
         self.pulsation_hit_interval = skill_parent.pulsation_hit_interval # How often a hit occurs
@@ -307,11 +344,11 @@ class _NovaInstance(pygame.sprite.Sprite): # Inherit from Sprite to use .image a
 
 
 class _IceNovaBarrier(pygame.sprite.Sprite):
-    def __init__(self, game, position, radius, color, duration, skill_parent):
+    def __init__(self, game, position, radius, color, duration, skill_parent, barrier_size_multiplier=1.0):
         super().__init__()
         self.game = game
         self.position = position
-        self.radius = radius
+        self.radius = radius * barrier_size_multiplier
         self.base_color = color # Base dark blue
         self.duration = duration
         self.skill_parent = skill_parent # Reference to IceNovaSkill for damage/slow
@@ -377,6 +414,8 @@ class _IceNovaBarrier(pygame.sprite.Sprite):
         self.flicker_timer += dt * 1000 # Convert dt to milliseconds
         if self.flicker_timer >= self.flicker_interval:
             flicker_offset = random.choice([-1, 0, 1]) if random.random() < 0.3 else 0 # 30% chance to flicker
+            # Re-evaluate radius based on current player state before redrawing
+            self.radius = self.skill_parent.barrier_radius * self.skill_parent.player.double_size_barrier_state["barrier_size_multiplier"]
             self._draw_barrier_image(flicker_offset)
             self.flicker_timer = 0
         

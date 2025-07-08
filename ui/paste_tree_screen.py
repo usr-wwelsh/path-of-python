@@ -6,6 +6,7 @@ import math
 from core.scene_manager import BaseScene
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, UI_FONT, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_SECONDARY_COLOR, UI_BACKGROUND_COLOR
 from core.utils import draw_text
+from progression.paste_tree_manager import PasteTreeManager
 
 class PasteTreeScreen(BaseScene):
     def __init__(self, game, player, hud, friendly_entities=None):
@@ -24,6 +25,7 @@ class PasteTreeScreen(BaseScene):
         self.background_chars = []
         self.generate_node_positions()
         self.generate_background_chars()
+        self.paste_tree_manager = PasteTreeManager(game) # Initialize PasteTreeManager
 
     def load_paste_tree_data(self):
         paste_tree_path = os.path.join(os.getcwd(), "data", "paste_trees.json")
@@ -79,7 +81,8 @@ class PasteTreeScreen(BaseScene):
         if self.player.paste >= node_cost:
             if node_id not in self.player.acquired_paste_nodes:
                 self.player.paste -= node_cost
-                self.player.acquired_paste_nodes.append(node_id)
+                # Use the PasteTreeManager to acquire the node
+                self.paste_tree_manager.acquire_node(self.player, node_id)
                 # Add a glorious visual effect for acquisition
             else:
                 print(f"Player already has paste node: {node_id}")
