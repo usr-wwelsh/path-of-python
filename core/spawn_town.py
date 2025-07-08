@@ -218,6 +218,7 @@ class SpawnTown(BaseGameplayScene):
         self.player.money = 100 # Starting money
         self.shop_message = None
         self.quest_5_dialogue_set = False # Initialize flag for quest 5 dialogue
+        self.quest_6_dialogue_set = False # Initialize flag for quest 5 dialogue
 
     def enter(self):
         self.game.logger.info("Entering SpawnTown.")
@@ -424,6 +425,23 @@ class SpawnTown(BaseGameplayScene):
                     if npc.in_dialogue:
                         self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
             self.quest_5_dialogue_set = True # Set flag to prevent repeated updates
+        
+        if self.quest_tracker.is_quest_completed("quest_006") and not self.quest_6_dialogue_set:
+            print("Quest 6 completed! Updating NPC dialogues.")
+            for npc in self.npcs:
+                if npc.name == "Bob the Bold":
+                    npc.dialogue_id = "bob_dialogue_post_quest_6"
+                    if npc.in_dialogue:
+                        self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
+                elif npc.name == "Alice the Agile":
+                    npc.dialogue_id = "alice_dialogue_post_quest_6"
+                    if npc.in_dialogue:
+                        self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
+                elif npc.name == "Charlie the Calm":
+                    npc.dialogue_id = "charlie_dialogue_post_quest_6"
+                    if npc.in_dialogue:
+                        self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
+            self.quest_6_dialogue_set = True # Set flag to prevent repeated updates
 
         # Combine NPCs for the minimap
         all_entities = self.npcs.sprites()
