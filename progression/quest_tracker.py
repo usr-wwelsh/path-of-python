@@ -28,6 +28,18 @@ class QuestTracker:
         self.quest_completed_display_timer = 0
         self.QUEST_COMPLETED_DISPLAY_DURATION = 3000 # Milliseconds
         self._initialized = True
+        
+    def reset(self):
+        """Resets the quest tracker to its initial state for a new game."""
+        print("Resetting QuestTracker for a new game.")
+        self.all_quests = []
+        self.active_quests = []
+        self.completed_quests = []
+        self.current_active_quest_index = -1
+        self._load_quests("data/quests.json")
+        self._set_initial_active_quest()
+        self.quest_completed_display_active = False
+        self.quest_completed_display_timer = 0
 
     def _load_quests(self, filepath):
         try:
@@ -324,10 +336,39 @@ class QuestTracker:
         print("No more uncompleted and unlocked quests to activate.")
 
     def update_quest_progress(self, objective_type, target, amount=1):
-        print(f"Attempting to update quest progress: type='{objective_type}', target='{target}', amount={amount}") # Debug print
+        print(f"Attempting to update quest progress: type='{objective_type}', target='{target}', amount={amount}")
+
+        if objective_type.lower() == 'accept':
+            quest_name = target
+            if quest_name.lower().endswith(" quest"):
+                quest_name = quest_name[:-6].strip()
+
+            print(f"Attempting to accept quest: '{quest_name}'")
+            quest_to_accept = self.get_quest_by_name(quest_name)
+            
+            if quest_to_accept:
+                if quest_to_accept.is_completed:
+                    print(f"Quest '{quest_name}' has already been completed.")
+                    return
+                if quest_to_accept in self.active_quests:
+                    print(f"Quest '{quest_name}' is already active.")
+                    return
+                
+                try:
+                    quest_index = self.all_quests.index(quest_to_accept)
+                    self.current_active_quest_index = quest_index
+                    self.active_quests = [quest_to_accept]
+                    quest_to_accept.is_unlocked = True
+                    print(f"Quest '{quest_name}' accepted and is now active.")
+                except ValueError:
+                    print(f"Error: Quest '{quest_name}' found but could not determine its index.")
+            else:
+                print(f"Could not find a quest with the name '{quest_name}' to accept.")
+            return
+
         if self.active_quests:
             current_quest = self.active_quests[0]
-            print(f"Current active quest: '{current_quest.name}'") # Debug print
+            print(f"Current active quest: '{current_quest.name}'")
             if current_quest.update_objective(objective_type, target, amount):
                 if current_quest.is_completed:
                     self.complete_quest(current_quest)
@@ -339,12 +380,13 @@ class QuestTracker:
         return self.active_quests
 
     def get_quest_status(self, quest_name):
-        if self.active_quests and self.active_quests[0].name == quest_name:
+        if self.active_quests and self.active_quests[0].name.lower() == quest_name.lower():
             return f"Active: {self.active_quests[0].get_progress_status()}"
         for quest in self.completed_quests:
-            if quest.name == quest_name:
+            if quest.name.lower() == quest_name.lower():
                 return "Completed"
         return "Quest not found."
+
     def is_quest_completed(self, quest_id):
         """Checks if a specific quest is completed."""
         for quest in self.all_quests:
@@ -565,7 +607,7 @@ class QuestTracker:
 
     def get_quest_by_name(self, quest_name):
         for quest in self.all_quests:
-            if quest.name == quest_name:
+            if quest.name.lower() == quest_name.lower():
                 return quest
         return None
 class Quest:

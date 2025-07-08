@@ -2,6 +2,7 @@ import pygame
 import json
 import random
 from core.scene_manager import BaseScene
+from progression.quest_tracker import QuestTracker
 from config.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ui.menus import Button # Import Button class
 
@@ -274,6 +275,7 @@ class CharacterSelectionScene(BaseScene):
                 if self.game.player:
                     selected_class_data = self.classes[self.selected_class]
                     self.game.player.set_class(self.selected_class, selected_class_data.get("stats", {}))
+                    QuestTracker().reset()
                 self.game.scene_manager.set_scene("intro_scene")
 
             # New flickering light effect logic

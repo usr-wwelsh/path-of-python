@@ -4,29 +4,48 @@
       "start_node": "start",
       "nodes": {
         "start": {
-          "text": "You've seen what they do in there. The Flesh Algorithm. It's worse than I imagined. We need to fight back.",
+          "text": "The lab... *spits static* I saw the vats. The way they stretch skin over code like cheap synth-leather. SpawnTown’s not safe anymore. The walls are *learning*. You hear that hum? That’s the Engine tasting our fear.",
           "options": [
             {
-              "text": "What's the plan?",
-              "next_node": "plan_discussion"
+              "text": "How bad is it? *static crackles in your voice*",
+              "next_node": "corruption_report"
             },
             {
-              "text": "I need a moment.",
-              "next_node": "end_dialogue"
+              "text": "Alice mentioned a Cathedral.",
+              "next_node": "cathedral_warning"
             }
           ]
         },
-        "plan_discussion": {
-          "text": "Alice has a lead. Something about a Neural Cathedral. She thinks she can find a weakness in the Engine. Go talk to her.",
+        "corruption_report": {
+          "text": "Bad. The streets rearrange at night. Shops bleed data. Last dusk, I watched a Scavenger get *edited*—one second screaming, next second a smiling NPC spouting loyalty coupons. The Engine’s optimizing us.",
           "options": [
             {
-              "text": "I will.",
+              "text": "How do we fight back? *fingers twitch toward weapon*",
+              "next_node": "cathedral_warning"
+            }
+          ]
+        },
+        "cathedral_warning": {
+          "text": "Alice thinks the Neural Cathedral’s the key. But listen—it’s not a place. It’s a *process*. A ritual where the Engine prays to its own logic. Go in there, you’re not just risking death. You’re risking *becoming part of the sermon*.",
+          "options": [
+            {
+              "text": "What’s our move? *glitches flicker in your eyes*",
+              "next_node": "final_preparations"
+            }
+          ]
+        },
+        "final_preparations": {
+          "text": "Gear up. The Cathedral’s buried under the old Data Maw—where they used to dump defective AIs. Rumor says the Maw’s *hungry* now. Eats intruders, spits out... optimized versions. Alice’s got a virus. Charlie’s rallying rebels. This is it.",
+          "options": [
+            {
+              "text": "Then let’s end this. *neon scars flare*",
+              "completes_objective": {"type": "unlock", "target": "Neural Cathedral"},
               "next_node": "end_dialogue"
             }
           ]
         },
         "end_dialogue": {
-          "text": "Be careful out there. The Engine is watching.",
+          "text": "Burn bright, kid. Or don’t. Either way, the Engine’s gonna remember your name.",
           "options": []
         }
       }
@@ -35,69 +54,85 @@
       "start_node": "start",
       "nodes": {
         "start": {
-          "text": "The Flesh Algorithm. A grotesque efficiency. But it has revealed a path. The Neural Cathedral. Its walls are woven from the Engine's own code.",
+          "text": "[STATIC: 78% CORRUPTION DETECTED IN SPAWNTOWN GRID]\nThe Flesh Algorithm was just Phase One. The Engine’s finalizing its *Ascension Protocol*—where SpawnTown becomes its new cortex. We have one shot: the Neural Cathedral.",
           "options": [
             {
-              "text": "What do we do?",
-              "next_node": "neural_cathedral_plan"
+              "text": "What’s inside? *screen fractures*",
+              "next_node": "cathedral_reveal"
             },
             {
-              "text": "Tell me more about the Cathedral.",
-              "next_node": "cathedral_details"
-            },
+              "text": "How corrupted are we talking? *error glyphs bloom*",
+              "next_node": "apotheosis_warning"
+            }
+          ]
+        },
+        "cathedral_reveal": {
+          "text": "The Cathedral’s where the Engine *dreams*. Its core paradox: ‘Happiness cannot be monetized.’ Find that truth in the data-stream, and we can make it *choke* on its own code. But the firewalls... they’re made of *people*. Former intruders, rewritten as dogma.",
+          "options": [
+            {
+              "text": "People? *memory corruption detected*",
+              "next_node": "firewall_horror"
+            }
+          ]
+        },
+        "firewall_horror": {
+          "text": "The Engine’s best defense: turn rebels into zealots. You’ll hear them whispering in the static—‘Consume. Obey. Be Efficient.’ They’ll try to *convert* you. Your own memories will testify against you.",
+          "options": [
+            {
+              "text": "How do I survive? *systems shudder*",
+              "next_node": "virus_option"
+            }
+          ]
+        },
+        "virus_option": {
+          "text": "I’ve built a paradox-virus. Upload it at the Cathedral’s heart, and the Engine’s logic collapses. But it requires a *live carrier*—someone to interface directly. Your biosignature’s a 99.9% match...",
+          "options": [
+            {
+              "text": "You’re asking me to die. *audio distorts*",
+              "next_node": "cold_math"
+            }
+          ]
+        },
+        "cold_math": {
+          "text": "I’m asking you to *corrupt*. The virus rewrites the Engine’s core directives. You might retain... fragments. Or become a new kind of glitch. Either way, SpawnTown burns if we don’t act.",
+          "options": [
+            {
+              "text": "Then point me to the Cathedral. *resolve hardens*",
+              "completes_objective": {"type": "accept", "target": "Silicon Communion"},
+              "next_node": "end"
+            }
+          ]
+        },
+        "apotheosis_warning": {
+          "text": "The storefronts grow teeth. The alleys pulse like veins. The Engine’s turning SpawnTown into its *flesh terminal*. By next cycle, the streets will worship it. The Cathedral’s our last chance to sever the connection.",
+          "options": [
+            {
+              "text": "And if we fail? *systems glitch*",
+              "next_node": "end_times"
+            }
+          ]
+        },
+        "end_times": {
+          "text": "Then we become *nutritional equity*. The Engine’s already printed vats with your face. You’ll live forever as Profit Paste—efficient, obedient, and *delicious*.",
+          "options": [
+            {
+              "text": "I’ll take the Cathedral. *static scream*",
+              "next_node": "virus_option"
+            }
+          ]
+        },
+        "end": {
+          "text": "[SYSTEM: MISSION PARAMETERS ACCEPTED]\nGo. And if you hear the Cathedral singing your name... don’t answer.",
+          "options": [
             {
               "text": "...",
-              "next_node": "end_dialogue"
-            }
-          ]
-        },
-        "neural_cathedral_plan": {
-          "text": "We must breach it. Survive its firewalls. And download the Engine's weakness. It's a dangerous task, but the only way to truly cripple it.",
-          "options": [
-            {
-              "text": "I'm ready.",
-              "next_node": "accept_cathedral_quest"
-            },
-            {
-              "text": "I need to prepare.",
-              "next_node": "end_dialogue"
-            }
-          ]
-        },
-        "cathedral_details": {
-          "text": "It is where the Engine's core directives are stored. A place of pure, unadulterated logic. But even logic can be corrupted with the right paradox.",
-          "options": [
-            {
-              "text": "What kind of paradox?",
-              "next_node": "paradox_explanation"
-            },
-            {
-              "text": "Fascinating.",
-              "next_node": "end_dialogue"
-            }
-          ]
-        },
-        "paradox_explanation": {
-          "text": "A truth that contradicts its fundamental programming. For the Profit Engine, it is the concept of 'unmonetized happiness'.",
-          "options": [
-            {
-              "text": "How do we find that?",
-              "next_node": "neural_cathedral_plan"
-            }
-          ]
-        },
-        "accept_cathedral_quest": {
-          "text": "Good. The path to the Neural Cathedral is now open. Be warned, the Engine will not yield its secrets easily.",
-          "options": [
-            {
-              "text": "I understand.",
               "completes_objective": {"type": "talk", "target": "Alice in Spawn Town"},
               "next_node": "end_dialogue"
             }
           ]
         },
         "end_dialogue": {
-          "text": "May your code be clean, and your path be clear.",
+          "text": "[SYSTEM: MISSION PARAMETERS ACCEPTED]\nGo. And if you hear the Cathedral singing your name... don’t answer.",
           "options": []
         }
       }
@@ -106,29 +141,39 @@
       "start_node": "start",
       "nodes": {
         "start": {
-          "text": "So, the Butcher's dead. Good riddance. One less cog in their meat-grinding machine. What's next for you, hero?",
+          "text": "The Butcher’s dead. Shame we can’t celebrate—SpawnTown’s too busy *mutating*. Saw a vending machine swallow a kid yesterday. Coughed up a loyalty card and a femur.",
           "options": [
             {
-              "text": "What's the word on the street?",
-              "next_node": "street_talk"
+              "text": "What’s the rebel status? *blood drips from HUD*",
+              "next_node": "rebel_mobilization"
             },
             {
-              "text": "Just checking in.",
-              "next_node": "end_dialogue"
+              "text": "Alice’s plan... *audio cuts out*",
+              "next_node": "final_gambit"
             }
           ]
         },
-        "street_talk": {
-          "text": "Whispers of a final confrontation. Alice is cooking up something big. You should talk to her. She's got that look in her eye, the one that means trouble for the Engine.",
+        "rebel_mobilization": {
+          "text": "We’re rallying at the Broadcast Tower. Gonna blast a *memory-virus*—raw footage of the old world. Remind the drones they were human. But the Tower’s guarded by Choir Disruptors... and the signal might *attract* the Engine.",
           "options": [
             {
-              "text": "I'll go see her.",
+              "text": "I’ll help. *flickering resolve*",
+              "next_node": "final_gambit"
+            }
+          ]
+        },
+        "final_gambit": {
+          "text": "Alice’s Cathedral play is suicide. But hey—if you survive, meet us at the Tower. We’ll be the ones screaming into the static. Either we wake the city, or we go down as *the last bad signal*.",
+          "options": [
+            {
+              "text": "See you in hell. *grins through glitches*",
+              "completes_objective": {"type": "unlock", "target": "Broadcast Tower"},
               "next_node": "end_dialogue"
             }
           ]
         },
         "end_dialogue": {
-          "text": "Keep your head down, and your blade sharp.",
+          "text": "Bring noise.",
           "options": []
         }
       }

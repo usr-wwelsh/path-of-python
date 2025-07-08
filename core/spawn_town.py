@@ -128,7 +128,7 @@ class SpawnTown(BaseGameplayScene):
 
         # Determine the seed for map generation based on quest completion
         if self.quest_tracker.is_quest_completed("quest_005"):
-            seed = None  # Use a random seed if quest 5 is completed
+            seed = 1  # Use a random seed if quest 5 is completed
         else:
             seed = 47  # Use the fixed seed otherwise
 
