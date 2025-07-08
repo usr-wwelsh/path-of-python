@@ -63,7 +63,7 @@ class neural_cathedral(BaseGameplayScene):
     def _calculate_rect_position(self):
         """Calculate and store the rectangle's world position"""
         tile_size = 64
-        rect_size = 500
+        rect_size = 2000
 
         # Calculate position at bottom-right of the map in world coordinates
         rect_world_x = (self.map_width * tile_size // 2)

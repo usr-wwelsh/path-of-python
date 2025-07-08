@@ -126,8 +126,14 @@ class SpawnTown(BaseGameplayScene):
         self.message4_start_time = 0
         self.message4_duration = 8000  # 8 seconds
 
+        # Determine the seed for map generation based on quest completion
+        if self.quest_tracker.is_quest_completed("quest_005"):
+            seed = None  # Use a random seed if quest 5 is completed
+        else:
+            seed = 47  # Use the fixed seed otherwise
+
         # Instantiate MapGenerator and then generate the map
-        map_generator = SpawnTownMapGenerator(100, 100, seed=47) # Create an instance with desired width and height
+        map_generator = SpawnTownMapGenerator(100, 100, seed=seed) # Create an instance with desired width and height
         all_map_data = map_generator.generate_all()
         self.tile_map = all_map_data['map']
 
