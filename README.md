@@ -17,23 +17,23 @@ Harvest Profit Paste from elite enemies to unlock game-changing upgrades in your
 Rewrite your combat DNA.
 
 ### STALKER UPGRADES
-* ⚔️ EMPOWERED CLEAVE - "40% more blade in every swing" 
-* 🌀 REALITY CLEAVER - "Your 5th strike fractures spacetime"
+* ⚔️ EMPOWERED CLEAVE - "Cleave deals 40% more damage." 
+* 🌀 REALITY CLEAVER - "Cleave tears a rift in space every 5 hits, dealing 300% damage in a 10-tile cone and leaving a void that slows enemies by 70% for 3 seconds."
 * ☄️ VOID EMBRACE - "Become smoke when death whispers"
 * 💀 ENTROPIC DECAY - "Enemies crumble in your shadow"
 * ⏳ PARADOX ARMOR - "Cheat death by 5 seconds"
 
 ### TECHNOMANCER UPGRADES
 * ⚡ GHOST ARC - "Lightning ignores walls (and mercy)"
-* 🕳️ SINGULARITY ARC - "Chain lightning becomes a black hole"
+* 🕳️ SINGULARITY ARC - "Arc chains infinitely between enemies, growing 20% stronger with each jump."
 * ❄️ OVERLOAD NOVA - "Double detonation + cryo minefield"
-* 🌀 QUANTUM ENTANGLEMENT - "15% chance to cast your spell's angry twin"
+* 🌀 QUANTUM ENTANGLEMENT - "15% chance to spell echo"
 
 ### HORDEMONGER UPGRADES
-* 🕷️ ARACHNOPHOBIA - "Spiders die screaming (and multiplying)"
+* 🕷️ WEBWEAVER'S WRATH - "Spiders create lingering webs on the ground that further slow and entangle enemies"
 * ☣️ NECROTIC PLAGUE - "Your minions spread terminal debt"
-* 🦴 SKELETON OVERLORD - "Every 10th skeleton is a payroll nightmare"
-* 🌌 SINGULARITY CORE - "5% chance to turn enemies into gravity crimes"
+* 🦴 SKELETON OVERLORD - "Every 10th skeleton summoned is an Overlord with 500% health, and 200% damage."
+* 🌌 SINGULARITY CORE - "All damage has a 5% chance to collapse enemies into a micro-singularity"
 
 
 ### Quest System: MASSIVE UPDATE
