@@ -89,7 +89,7 @@
       "description": "The Profit Engine initiates its final harvest. Among the prisoners: another version of you.",
       "objectives": [
         {"description": "Interrupt the Sacrificial Algorithm", "completed": false},
-        {"description": "Kill the High Comptroller", "completed": false},
+        {"description": "Kill 4 High Comptroller", "completed": false},
         {"description": "Save at least 5 prisoners", "completed": false}
       ],
       "rewards": {"scrap": 500, "exp": 25000, "item": "comptroller_key"},

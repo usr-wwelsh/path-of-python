@@ -88,7 +88,16 @@ class SpawnTown(BaseGameplayScene):
             # Load portals from zone data
             self.portals = spawn_town_data.get("portals", [])
             # Get tileset name from zone data
-            tileset_name = spawn_town_data.get("tile_set", "default")
+           # Initialize quest tracker
+            self.quest_tracker = quest_tracker if quest_tracker is not None else QuestTracker()
+
+# Set default tileset
+            tileset_name = "default_tileset"
+
+# Only override with corrupted tileset if quest is completed
+            if self.quest_tracker.is_quest_completed("quest_005"):
+                tileset_name = "corrupted_tileset"
+
              # Remove suffix
         except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
             print(f"SpawnTown: Warning: Could not load initial player position, or portals from zone_data.json: {e}")
@@ -128,12 +137,14 @@ class SpawnTown(BaseGameplayScene):
 
         # Determine the seed for map generation based on quest completion
         if self.quest_tracker.is_quest_completed("quest_005"):
-            seed = 1  # Use a random seed if quest 5 is completed
+            seed = None  # Use a random seed if quest 5 is completed
+            map_generator = SpawnTownMapGenerator(30, 17, seed=seed)
         else:
             seed = 47  # Use the fixed seed otherwise
+            map_generator = SpawnTownMapGenerator(100, 100, seed=seed)
 
         # Instantiate MapGenerator and then generate the map
-        map_generator = SpawnTownMapGenerator(100, 100, seed=seed) # Create an instance with desired width and height
+         # Create an instance with desired width and height
         all_map_data = map_generator.generate_all()
         self.tile_map = all_map_data['map']
 

@@ -10,7 +10,7 @@ from ui.damage_text import DamageText
 # Removed: from entities.summon_skeletons import Skeleton # Import Skeleton class
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, name, health, damage, speed, sprite_path, attack_range=0, attack_cooldown=0, projectile_sprite_path=None, ranged_attack_pattern="single", level=1, xp_value=0):
+    def __init__(self, game, x, y, name, health, damage, speed, sprite_path, attack_range=0, attack_cooldown=0, projectile_sprite_path=None, ranged_attack_pattern="single", level=1, xp_value=0, scale_factor=1.0):
         super().__init__()
         self.game = game
         self.name = name # Initialize the name attribute
@@ -30,7 +30,15 @@ class Enemy(pygame.sprite.Sprite):
         self._scaled_image_cache = None
         self._last_zoom_level = 0
         self._last_scale_factor = 0
- 
+        self.base_scale_factor = scale_factor # Store the base scale factor
+
+
+
+        self.spawn_on_cooldown = False
+        self.spawn_cooldown = 0
+        self.last_spawn_time = 0
+        self.enemies_to_spawn = []
+        self.max_spawned_enemies = 0
         self.attack_range = attack_range # Distance within which enemy can perform ranged attack
         self.attack_cooldown = attack_cooldown # Time in milliseconds between ranged attacks
         self.last_attack_time = pygame.time.get_ticks() # Last time a ranged attack was performed
@@ -158,13 +166,13 @@ class Enemy(pygame.sprite.Sprite):
             self.drop_paste()
             self.game.current_scene.enemy_killed(self)
             self.kill()
-
+ 
     def calculate_paste_drop(self):
         """Calculates the amount of paste to drop based on the enemy's XP."""
         # Simple linear relationship: paste drop = XP / 10 (adjust as needed)
         paste_amount = self.xp_value / 10
         return int(paste_amount)
-
+ 
     def drop_paste(self):
         """Handles the dropping of paste when the enemy dies."""
         paste_amount = self.calculate_paste_drop()
@@ -172,7 +180,7 @@ class Enemy(pygame.sprite.Sprite):
         # Create a paste entity and add it to the game world (implementation in the next steps)
         paste = Paste(self.rect.centerx, self.rect.centery, paste_amount)
         self.game.current_scene.paste.add(paste)
-
+ 
     def apply_modifiers(self, modifiers):
         """Applies the given modifiers to the enemy."""
         for modifier in modifiers:
@@ -287,26 +295,26 @@ class Enemy(pygame.sprite.Sprite):
         # Check if the enemy is already plagued
         if hasattr(self, 'is_plagued') and self.is_plagued:
             return
-
+ 
         # Create a new NecroticPlague instance and add it to the scene
         from entities.necrotic_plague import NecroticPlague
         plague = NecroticPlague(self.game, self, damage_percentage_per_second)
         if not hasattr(self.game.current_scene, 'necrotic_plagues') or self.game.current_scene.necrotic_plagues is None:
             self.game.current_scene.necrotic_plagues = pygame.sprite.Group()
         self.game.current_scene.necrotic_plagues.add(plague)
-
+ 
         # Set the enemy as plagued
         self.is_plagued = True
         print(f"Applied Necrotic Plague to {self.name}.")
-
+ 
     def spread_necrotic_plague(self):
         """Spreads the Necrotic Plague to nearby enemies."""
         if not hasattr(self, 'is_plagued') or not self.is_plagued:
             return
-
+ 
         # Define the spread radius
         spread_radius = TILE_SIZE * 5
-
+ 
         # Find nearby enemies
         nearby_enemies = []
         for enemy in self.game.current_scene.enemies:
@@ -316,7 +324,7 @@ class Enemy(pygame.sprite.Sprite):
                 distance = math.hypot(dx, dy)
                 if distance <= spread_radius:
                     nearby_enemies.append(enemy)
-
+ 
         # Apply plague to nearby enemies
         for enemy in nearby_enemies:
             if hasattr(enemy, 'apply_necrotic_plague'):
@@ -326,7 +334,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.hexproof:
             print(f"Enemy {self.name} is hexproof and resists Entropic Decay.")
             return
-
+ 
         current_time = pygame.time.get_ticks()
         if source_id not in self.entropic_decay_debuffs:
             self.entropic_decay_debuffs[source_id] = {
@@ -349,7 +357,7 @@ class Enemy(pygame.sprite.Sprite):
         """Updates the Entropic Decay debuff, applying damage over time and managing stacks."""
         current_time = pygame.time.get_ticks()
         debuffs_to_remove = []
-
+ 
         for source_id, debuff_state in list(self.entropic_decay_debuffs.items()):
             # Apply damage tick
             if current_time - debuff_state["last_tick_time"] > debuff_state["tick_interval"]:
@@ -357,7 +365,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.take_damage(damage)
                 debuff_state["last_tick_time"] = current_time
                 print(f"Enemy {self.name} took {damage:.2f} Entropic Decay damage from {source_id}. Stacks: {debuff_state['stacks']}")
-
+ 
             # Check if duration has expired
             if current_time - debuff_state["applied_time"] > debuff_state["duration"]:
                 debuffs_to_remove.append(source_id)
@@ -365,6 +373,50 @@ class Enemy(pygame.sprite.Sprite):
         
         for source_id in debuffs_to_remove:
             del self.entropic_decay_debuffs[source_id]
+ 
+    def _handle_spawning(self):
+        print(f"DEBUG: _handle_spawning called for {self.name}. spawn_on_cooldown: {self.spawn_on_cooldown}")
+        """Handles the spawning of new enemies by this enemy."""
+        if not self.spawn_on_cooldown:
+            return
+        current_time = pygame.time.get_ticks()
+        print(f"DEBUG: {self.name} - Current Time: {current_time}, Last Spawn Time: {self.last_spawn_time}, Cooldown: {self.spawn_cooldown}")
+
+        if current_time - self.last_spawn_time >= self.spawn_cooldown:
+            print(f"DEBUG: {self.name} - Cooldown met. Checking spawned minions.")
+            if hasattr(self, 'spawned_minions'):
+                self.spawned_minions = [minion for minion in self.spawned_minions if minion.alive()]
+            else:
+                self.spawned_minions = []
+            print(f"DEBUG: {self.name} - Current spawned minions: {len(self.spawned_minions)}, Max allowed: {self.max_spawned_enemies}")
+            if len(self.spawned_minions) < self.max_spawned_enemies:
+                print(f"DEBUG: {self.name} - Spawning new enemies. Enemies to spawn: {self.enemies_to_spawn}")
+                for enemy_type_to_spawn in self.enemies_to_spawn:
+                    print(f"DEBUG: {self.name} - Attempting to spawn {enemy_type_to_spawn}")
+                    if hasattr(self.game, 'enemy_factory') and self.game.enemy_factory:
+                        print(f"DEBUG: {self.name} - Enemy factory accessible.")
+                        offset_x = random.randint(-TILE_SIZE, TILE_SIZE)
+                        offset_y = random.randint(-TILE_SIZE, TILE_SIZE)
+                        new_enemy = self.game.enemy_factory.create_enemy(
+                            enemy_type_to_spawn,
+                            self.rect.centerx + offset_x,
+                            self.rect.centery + offset_y
+                        )
+                        if new_enemy:
+                            print(f"DEBUG: {self.name} - Successfully created {new_enemy.name}. Adding to scene enemies.")
+                            self.game.current_scene.enemies.add(new_enemy)
+                            self.spawned_minions.append(new_enemy)
+                            print(f"{self.name} spawned a {new_enemy.name} at ({new_enemy.rect.x}, {new_enemy.rect.y})")
+                        else:
+                            print(f"DEBUG: {self.name} - Failed to create {enemy_type_to_spawn}.")
+                    else:
+                        print(f"DEBUG: {self.name} - Enemy factory NOT accessible.")
+            else:
+                print(f"DEBUG: {self.name} - Max spawned enemies reached ({len(self.spawned_minions)}/{self.max_spawned_enemies}). Not spawning.")
+            self.last_spawn_time = current_time # Moved this line
+            print(f"DEBUG: {self.name} - Last spawn time updated to {self.last_spawn_time}")
+        else:
+            print(f"DEBUG: {self.name} - Cooldown not met. Remaining: {self.spawn_cooldown - (current_time - self.last_spawn_time)}")
  
     def _perform_ranged_attack(self, target): # Modified to accept target
         current_time = pygame.time.get_ticks()
@@ -472,6 +524,8 @@ class Enemy(pygame.sprite.Sprite):
             return
  
         current_time = pygame.time.get_ticks()
+        # Handle enemy spawning
+        self._handle_spawning()
  
         # Update ignite effect
         self._update_ignite_effect()
@@ -690,11 +744,15 @@ class Enemy(pygame.sprite.Sprite):
  
     def draw(self, screen, camera_x, camera_y, zoom_level):
         # Calculate the enemy's position on the screen relative to the camera and zoom
-        scale_factor = 1.0
+        scale_factor = self.base_scale_factor # Use the base_scale_factor from initialization
         if self.name == "profit_scribe":
             scale_factor = 3.0
-        elif self.modifiers:
-            scale_factor = 1.0 + (len(self.modifiers) * 0.5)
+        if self.name == "lead_butcher":
+            scale_factor = 3.0
+        if self.name == "high_comptroller":
+            scale_factor = 4.0
+        if self.modifiers:
+            scale_factor = scale_factor + (len(self.modifiers) * 0.5)
  
         # Cache scaled image
         if self._scaled_image_cache is None or zoom_level != self._last_zoom_level or scale_factor != self._last_scale_factor:

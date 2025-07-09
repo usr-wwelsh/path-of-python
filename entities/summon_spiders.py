@@ -19,7 +19,7 @@ class SummonSpiders:
         ]
         self.summon_range = 5 * TILE_SIZE  # Increased range for spiders
         self.max_spiders = 30
-        self.spider_health = 15  # Low health
+        self.spider_health = 1500  # Low health
         self.spider_damage = 3
         self.bonus_spider_damage = 0
         self.spider_speed = 280 # Increased spider speed (70 * 4 = 280)
@@ -165,6 +165,7 @@ class Spider(Enemy):
         self.rect = self.image.get_rect(center=(x, y))
         self.owner = owner
         self.is_friendly = True
+        self.entity_type = "spider"
         self.faction = "player_minions"
         self.attack_range = TILE_SIZE * 1.0 # Melee range
         self.attack_cooldown = 750 # Faster attack cooldown
@@ -180,7 +181,22 @@ class Spider(Enemy):
         self.poison_duration = poison_duration
         self.poison_damage = poison_damage
 
+    def block_projectile(self, projectile):
+        """Block a projectile and absorb its damage."""
+        if hasattr(projectile, 'damage'):
+            # Absorb 50% of the projectile's damage
+            absorbed_damage = projectile.damage * 0.5
+            self.current_life = min(self.max_life, self.current_life + absorbed_damage)
+            print(f"Spider absorbed {absorbed_damage} damage from projectile.")
+            return True
+        return False
+
     def take_damage(self, amount):
+        # Check if damage is from a projectile
+        if isinstance(amount, dict) and amount.get('source') == 'projectile':
+            if self.block_projectile(amount):
+                return
+
         super().take_damage(amount)
         if self.current_life <= 0 and not self.is_exploding:
             self.is_exploding = True

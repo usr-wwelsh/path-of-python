@@ -1,0 +1,7 @@
+{
+  "floor": "graphics/dc-misc/cursor_green.png",
+  "wall": "graphics/dc-misc/slot_eq_cursed.png",
+  "portal": "graphics/dc-misc/num2.png",
+  "decoration": "graphics/dc-misc/num3.png",
+  "unknown": "graphics/dc-misc/num4.png"
+}

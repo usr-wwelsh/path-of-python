@@ -44,7 +44,22 @@ class Projectile(pygame.sprite.Sprite):
             return dx / dist, dy / dist
         return 0, 0
 
-    def update(self, dt, player, tile_map, tile_size):
+    def _check_entity_collision(self, entities):
+        """Checks for collision with entities that can block projectiles."""
+        for entity in entities:
+            if self.rect.colliderect(entity.rect):
+                if hasattr(entity, 'can_block_projectiles') and entity.can_block_projectiles:
+                    return entity
+                # Check if entity is a spider or skeleton
+                if hasattr(entity, 'entity_type'):
+                    if entity.entity_type in ['spider', 'skeleton']:
+                        return entity
+        return None
+
+    def update(self, dt, player, tile_map, tile_size, entities=None):
+        if entities is None:
+            entities = []
+
         # Move the projectile
         self.rect.x += self.dx * self.speed * dt
         self.rect.y += self.dy * self.speed * dt
@@ -55,6 +70,17 @@ class Projectile(pygame.sprite.Sprite):
             if self.apply_corrupted_blood:
                 player.apply_corrupted_blood() # Apply corrupted blood effect
             self.kill() # Remove projectile on hit
+
+        # Check for collision with entities that can block projectiles
+        blocking_entity = self._check_entity_collision(entities)
+        if blocking_entity:
+            # If it's a spider or skeleton, they absorb half the damage
+            if hasattr(blocking_entity, 'entity_type') and blocking_entity.entity_type in ['spider', 'skeleton']:
+                blocking_entity.take_damage(self.damage * 0.5) # Absorb half damage
+            else:
+                blocking_entity.take_damage(self.damage)
+            self.kill()
+            return
 
         # Check for collision with solid tiles (walls)
         if self._check_collision(tile_map, tile_size):

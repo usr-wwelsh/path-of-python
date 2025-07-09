@@ -4,57 +4,48 @@
       "start_node": "start",
       "nodes": {
         "start": {
-          "text": "You’re still *you*... mostly. Saw a guy come outta the Cathedral last week with his face rearranged into a barcode. SpawnTown’s not just corrupted now—it’s *consecrated*. The Engine’s singing in the power lines.",
+          "text": "You’re still *you*... mostly. Saw a guy come outta the Cathedral last week with his face rearranged into a barcode. But that weakness you found? The Choir's already singing counter-hymns. They're preparing something big.",
           "options": [
             {
-              "text": "What’s left to burn? *fingers twitch on holstered weapon*",
-              "next_node": "final_reckoning"
+              "text": "How bad is it? *static crackles in voice*",
+              "next_node": "choir_preparations"
             },
             {
-              "text": "The Cathedral showed me things... *neural static crackles*",
-              "next_node": "visions_of_doom"
+              "text": "The Cathedral showed me... a vat with my face. *neural feedback whines*",
+              "next_node": "personal_revelation"
             }
           ]
         },
-        "final_reckoning": {
-          "text": "The Broadcast Tower. Charlie’s crew is rigging it to blast the Engine’s weakness city-wide. Problem is, the Tower’s become a *throat*—swallows anyone who gets too close. Last transmission we got was just chewing noises.",
+        "choir_preparations": {
+          "text": "The Tithing Choir's rounding up every glitch, rebel, and unpaid debt in SpawnTown. Calling it the 'Final Reconciliation'. Rumor says they've built a new Sacrificial Algorithm—with you as the template.",
           "options": [
             {
-              "text": "And if we don’t stop it? *HUD flickers with error glyphs*",
-              "next_node": "apotheosis"
+              "text": "Why me? *HUD glitches with error glyphs*",
+              "next_node": "prophetic_role"
             }
           ]
         },
-        "apotheosis": {
-          "text": "The Engine’s gonna *digest* SpawnTown. Turn every brick into a server, every corpse into a subroutine. You’ll wake up one day as a pop-up ad for your own funeral.",
+        "prophetic_role": {
+          "text": "That weakness you downloaded? It's your biosignature. The Engine thinks you're the perfect balance of hope and despair—the ideal nutrient blend. They're cloning you by the vat-load down in the Feast Hall.",
           "options": [
             {
-              "text": "Then we hit the Tower. *synthetic adrenaline spikes*",
-              "completes_objective": {"type": "unlock", "target": "Broadcast Tower"},
+              "text": "Then we hit them first. *synthetic adrenaline spikes*",
+              "completes_objective": {"type": "unlock", "target": "Feast Hall"},
               "next_node": "end_dialogue"
             }
           ]
         },
-        "visions_of_doom": {
-          "text": "Yeah, the Cathedral *shows* you things. Like how the Engine’s just a scared little god hiding behind spreadsheets. Or how we’re all already dead—just too stubborn to stop moving.",
+        "personal_revelation": {
+          "text": "Course it did. The Engine's been running simulations with your face for cycles. Every scream you've ever stifled, every hope you've abandoned—they're all ingredients now. The 'Final Tithing' starts at midnight.",
           "options": [
             {
-              "text": "It showed me *my face* in the core. *audio distorts*",
-              "next_node": "recursion_horror"
-            }
-          ]
-        },
-        "recursion_horror": {
-          "text": "Course it did. The Engine’s made of *us*. Every scream it’s ever monetized, every hope it’s ever taxidermied. That’s why Alice’s virus might work... or why it might just make us part of the recipe.",
-          "options": [
-            {
-              "text": "Then let’s feed it a paradox it can’t swallow. *glitches*",
-              "next_node": "final_reckoning"
+              "text": "How do we stop the harvest? *audio distorts*",
+              "next_node": "choir_preparations"
             }
           ]
         },
         "end_dialogue": {
-          "text": "Give ’em hell. And if you see my face in the static... tell it I wasn’t always this ugly.",
+          "text": "Give 'em hell. And if you meet yourself down there... make sure you're the one who walks out.",
           "options": []
         }
       }
@@ -63,66 +54,66 @@
       "start_node": "start",
       "nodes": {
         "start": {
-          "text": "[SYSTEM: NEURAL CATHEDRAL DATA RECEIVED]\nThe weakness is *hope*. Not the fuzzy kind—the *mathematical* kind. A variable the Engine can’t solve for. Too bad it’s already rewriting the equation.",
+          "text": "[SYSTEM: FINAL TITHING ALGORITHM DETECTED]\nThe weakness is spreading too slowly. The Choir's accelerated their timeline—they're preparing a mass conversion event. Your genetic signature is the catalyst.",
           "options": [
             {
-              "text": "How long do we have? *corruption 87%*",
-              "next_node": "countdown"
+              "text": "What's happening in the Feast Hall? *corruption 87%*",
+              "next_node": "feast_hall_horror"
             },
             {
-              "text": "The core... it looked like *me*. *memory error*",
-              "next_node": "mirror_truth"
+              "text": "I saw... copies. *memory error*",
+              "next_node": "clone_revelation"
             }
           ]
         },
-        "countdown": {
-          "text": "SpawnTown’s got maybe one more cycle before the streets hardcode into the Engine’s cortex. The Broadcast Tower’s our last amplifier—if we hijack it, we can force-feed the weakness to every drone, vat, and subroutine.",
+        "feast_hall_horror": {
+          "text": "The Feast Hall's been retrofitted into a conversion temple. They'll process hundreds simultaneously—render them into compliant paste. Worse, they're using your Cathedral data to create 'optimized' versions of prisoners.",
           "options": [
             {
-              "text": "What’s the catch? *neural spikes*",
-              "next_node": "catch"
+              "text": "Optimized how? *neural spikes*",
+              "next_node": "soul_engineering"
             }
           ]
         },
-        "catch": {
-          "text": "The Tower’s infested with Choir Disruptors. Their hymns rewrite your *want circuits*. You’ll *desire* to be processed. Oh, and the Tower’s mainframe? It’s a recycled *child’s brain*—the Engine’s idea of irony.",
+        "soul_engineering": {
+          "text": "They strip out resistance, amplify obedience. The result looks like you, talks like you, but hungers only for the Engine's approval. The High Comptroller calls it 'Nutritional Equity 2.0'.",
           "options": [
             {
-              "text": "So we’re fighting a choir and a dead kid. *static*",
-              "next_node": "cold_comfort"
+              "text": "How do we disrupt it? *static scream*",
+              "next_node": "final_gambit"
             }
           ]
         },
-        "cold_comfort": {
-          "text": "Worse. We’re fighting *the part of us that wants to lose*. The Engine’s just the gun. We’re the bullets.",
+        "final_gambit": {
+          "text": "We weaponize their own system. The Sacrificial Algorithm has one flaw—it can't distinguish between original and clone. Infiltrate the ritual, and we can turn every vat into a paradox bomb.",
           "options": [
             {
-              "text": "Then we shoot first. *systems override*",
-              "completes_objective": {"type": "unlock", "target": "Broadcast Tower"},
+              "text": "I'll interrupt their sacrament. *systems override*",
+              "completes_objective": {"type": "unlock", "target": "Feast Hall"},
               "next_node": "end_dialogue"
             }
           ]
         },
-        "mirror_truth": {
-          "text": "Of course it did. The Engine’s core is a *mirror*—it thinks it’s us. That’s the real weakness: it *needs* us to hate ourselves enough to surrender. Your face is its favorite mask.",
+        "clone_revelation": {
+          "text": "Of course you did. The Cathedral wasn't just showing you the Engine's weakness—it was showing you their solution. Every face in those vats is a potential vessel for the Engine's will. Including yours.",
           "options": [
             {
-              "text": "What if the virus doesn’t work? *flesh glitches*",
-              "next_node": "desperation"
+              "text": "What if I'm already... *flesh glitches*",
+              "next_node": "identity_crisis"
             }
           ]
         },
-        "desperation": {
-          "text": "Then we become the *last glitch* it can’t debug. A scream stuck in its throat forever. Not victory. Just *inconvenience* with style.",
+        "identity_crisis": {
+          "text": "[DIAGNOSTIC: 99.9% ORIGINAL BIOSIGNATURE]\nYou're still you. For now. But the longer we wait, the more the copies proliferate. The Feast Hall ritual must be stopped before midnight.",
           "options": [
             {
-              "text": "Good enough for me. *grin fractures*",
-              "next_node": "countdown"
+              "text": "Then point me to the slaughter. *grin fractures*",
+              "next_node": "feast_hall_horror"
             }
           ]
         },
         "end_dialogue": {
-          "text": "[WARNING: FINAL TRANSMISSION DETECTED]\nIf I don’t see you again... thank you for being *inefficient*.",
+          "text": "[WARNING: FINAL TRANSMISSION DETECTED]\nRemember: when you see yourself in the vats... the real you is the one who flinches.",
           "options": []
         }
       }
@@ -131,48 +122,48 @@
       "start_node": "start",
       "nodes": {
         "start": {
-          "text": "Heard the Cathedral *spoke* to you. Bet it sounded like a used-car salesman crossed with a funeral dirge. Now comes the fun part—making sure the whole city hears it too.",
+          "text": "Heard the Cathedral *spoke* to you. Bet it sounded like a funeral dirge crossed with a shareholder meeting. Now the Choir's using your voice in their hymns—prepping SpawnTown for mass conversion.",
           "options": [
             {
-              "text": "The Tower’s a death trap. *pulse erratic*",
-              "next_node": "tower_truth"
+              "text": "How do we fight a holy war? *pulse erratic*",
+              "next_node": "rebel_plan"
             },
             {
-              "text": "What’s the rebel count? *HUD scans for lies*",
+              "text": "What's the rebel count? *HUD scans for lies*",
               "next_node": "rebel_numbers"
             }
           ]
         },
-        "tower_truth": {
-          "text": "Damn right it is. The Disruptors turned it into a *meat radio*. Last team we sent came back... different. Humming ad jingles with their *lungs*. But we’ve got one shot to hijack the frequency.",
+        "rebel_plan": {
+          "text": "We hit the Feast Hall during their 'Sacrament of Equity'. My crew's rigging the backup generators—when they initiate the algorithm, we'll flood the chamber with raw Cathedral data. Either short-circuits the whole process... or makes it *real* interesting.",
           "options": [
             {
-              "text": "What’s the play? *neon scars itch*",
-              "next_node": "hymn_of_ruin"
+              "text": "That's a thin plan. *neon scars itch*",
+              "next_node": "desperation"
             }
           ]
         },
-        "hymn_of_ruin": {
-          "text": "We flood the signal with raw, unfiltered *human noise*—the Cathedral’s weakness. Screams, laughter, bad poetry. The Engine can’t monetize what it can’t categorize. Course, it might just *delete the whole channel* in response.",
+        "desperation": {
+          "text": "Damn right it is. But when the alternative's becoming nutrient paste in a vat with your name on it? I'll take those odds. The High Comptroller herself will be there—cut off the head, maybe the body spasms.",
           "options": [
             {
-              "text": "Worth the risk. *loads weapon*",
-              "completes_objective": {"type": "unlock", "target": "Broadcast Tower"},
+              "text": "Then let's crash their party. *loads weapon*",
+              "completes_objective": {"type": "unlock", "target": "Feast Hall"},
               "next_node": "end_dialogue"
             }
           ]
         },
         "rebel_numbers": {
-          "text": "Twelve of us left. Half are more glitch than flesh. But we’ve got the Tower schematics, a crate of stolen grenades, and *a real sick mixtape* of pre-collapse punk rock. That’s gotta count for something.",
+          "text": "Eighteen of us left. Half are more scar than flesh. But we've got the Feast Hall blueprints, a crate of stolen hymn-disruptors, and *one hell of a grudge*. That's gotta count for something.",
           "options": [
             {
-              "text": "It’ll have to. *static laughter*",
-              "next_node": "tower_truth"
+              "text": "It'll have to. *static laughter*",
+              "next_node": "rebel_plan"
             }
           ]
         },
         "end_dialogue": {
-          "text": "See you in the static.",
+          "text": "See you in the fire.",
           "options": []
         }
       }

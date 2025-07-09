@@ -16,7 +16,7 @@ class SummonSkeletons:
         self.wraith_image_path = "graphics/dc-mon/undead/shadow_wraith.png"  # Path to the wraith image
         self.summon_range = 2 * TILE_SIZE
         # self.max_skeletons = 50  # Maximum number of skeletons
-        self.skeleton_health = 30
+        self.skeleton_health = 3000
         self.skeleton_damage = 5
         self.bonus_skeleton_damage = 0
         self.skeleton_speed = 50
@@ -197,6 +197,7 @@ class Skeleton(Enemy):
         self.rect = self.image.get_rect(center=(x, y)) # Update rect after scaling
         self.owner = owner  # The SummonSkeletons instance that summoned this skeleton
         self.is_friendly = True  # Skeletons are friendly to the player
+        self.entity_type = "skeleton"
         self.faction = "player_minions"  # Set skeleton's faction
         self.attack_range = TILE_SIZE * 1.5 # Melee range
         self.attack_cooldown = 1000 # 1 second cooldown
@@ -238,7 +239,22 @@ class Skeleton(Enemy):
         self.game.current_scene.enemies.add(singularity_core)
         print(f"Applying singularity core to {target.name}!")
 
+    def block_projectile(self, projectile):
+        """Block a projectile and absorb its damage."""
+        if hasattr(projectile, 'damage'):
+            # Absorb 50% of the projectile's damage
+            absorbed_damage = projectile.damage * 0.5
+            self.current_life = min(self.max_life, self.current_life + absorbed_damage)
+            print(f"Skeleton absorbed {absorbed_damage} damage from projectile.")
+            return True
+        return False
+
     def take_damage(self, amount):
+        # Check if damage is from a projectile
+        if isinstance(amount, dict) and amount.get('source') == 'projectile':
+            if self.block_projectile(amount):
+                return
+    
         """Overrides Enemy.take_damage to handle removal from active_skeletons list."""
         # Check if the player has the singularity_core skill and the chance is met
         if self.player.has_skill("singularity_core") and random.random() < 0.05:

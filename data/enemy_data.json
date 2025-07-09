@@ -549,7 +549,12 @@
         "attack_cooldown": 300,
         "projectile_sprite_path": "graphics/dc-misc/travel_exclusion_centre.png",
         "ranged_attack_pattern": "spiral",
-        "xp_value": 50000
+        "xp_value": 50000,
+        "spawn_on_cooldown": true,
+        "spawn_cooldown": 2000,
+        "enemies_to_spawn": ["profit_tracker"],
+        "max_spawned_enemies": 20,
+        "scale_factor": 4.0
     },
     "prototype_vat": {
         "name": "Prototype Vat",
@@ -634,5 +639,22 @@
         "projectile_sprite_path": "graphics/dc-misc/error.png",
         "ranged_attack_pattern": "burst",
         "xp_value": 50000
+    },
+    "high_comptroller": {
+        "name": "High Comptroller",
+        "health": 200000,
+        "damage": 700,
+        "speed": 150,
+        "sprite_path": "graphics/dc-mon/undead/simulacrum_large.png",
+        "attack_range": 1500,
+        "attack_cooldown": 50,
+        "projectile_sprite_path": "graphics/dc-misc/error.png",
+        "ranged_attack_pattern": "circle",
+        "xp_value": 50000,
+        "spawn_on_cooldown": true,
+        "spawn_cooldown": 1000,
+        "enemies_to_spawn": ["firewall"],
+        "max_spawned_enemies": 15,
+        "scale_factor": 4.0
     }
 }

@@ -19,16 +19,18 @@ from entities.enemy import Enemy # Import the Enemy class
 from entities.projectile import Projectile # Import the Projectile class
 from entities.npc import NPC
 from entities.paste import Paste  # Import the Paste class
+from combat.enemy_factory import EnemyFactory
 
 # Removed: from core.boss_system_manager import BossSystemManager # Import BossSystemManager
 class BaseGameplayScene(BaseScene):
     def __init__(self, game, player=None, hud=None, tileset_name="default", dungeon_data=None, friendly_entities=None, map_width=None, map_height=None, is_dark=False):
+        super().__init__(game) # Moved to the beginning
         # Moved import here to avoid circular dependency
         self.music_manager = MusicManager()
         self.music_manager.play_random_song()
         from core.boss_system_manager import BossSystemManager
+        self.game.enemy_factory = EnemyFactory(self.game) # Assign to game object
         self.boss_system_manager = BossSystemManager(game) # Instantiate BossSystemManager
-        super().__init__(game)
         if map_width is not None:
             self.map_width = map_width
         if map_height is not None:
@@ -154,6 +156,7 @@ class BaseGameplayScene(BaseScene):
             config = all_enemy_configs.get(enemy.name, {})
             if config:
                 enemy.xp_value = config.get('xp_value', 0)
+                
                 print(f"Updated XP value for {enemy.name} to {enemy.xp_value}")
 
     def _load_tile_images(self):
@@ -250,51 +253,17 @@ class BaseGameplayScene(BaseScene):
 
         # Do NOT clear self.enemies here, as it might contain friendly entities
         # self.enemies.empty() 
-        # Load enemy data from enemy_data.json
-        enemy_config_path = os.path.join(os.getcwd(), "data", "enemy_data.json")
-        try:
-            with open(enemy_config_path, "r") as f:
-                all_enemy_configs = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            print(f"Error loading enemy configuration from {enemy_config_path}: {e}")
-            all_enemy_configs = {}
-
         for enemy_info in enemies_data:
             enemy_type = enemy_info.get('type')
-            config = all_enemy_configs.get(enemy_type, {})
-
-            if not config:
-                print(f"Warning: No config found for enemy type: {enemy_type}")
-                continue
-
-            # Use config values directly
-            health = config.get('health', 10)
-            damage = config.get('damage', 1)
-            speed = config.get('speed', 50)
-            sprite_path = config.get('sprite_path', 'graphics/dc-mon/misc/demon_small.png')
-            attack_range = config.get('attack_range', 0)
-            attack_cooldown = config.get('attack_cooldown', 0)
-            projectile_sprite_path = config.get('projectile_sprite_path')
-            ranged_attack_pattern = config.get('ranged_attack_pattern', 'single')
-            xp_value = config.get('xp_value', 0)
-
-            enemy = Enemy(
-                self.game,
+            
+            enemy = self.game.enemy_factory.create_enemy( # Use self.game.enemy_factory
+                enemy_type,
                 enemy_info['x'] * self.tile_size,
-                enemy_info['y'] * self.tile_size,
-                enemy_type, # Pass the enemy_type as the name
-                health,
-                damage,
-                speed,
-                sprite_path,
-                attack_range,
-                attack_cooldown,
-                projectile_sprite_path,
-                ranged_attack_pattern,
-                xp_value
+                enemy_info['y'] * self.tile_size
             )
-            self.enemies.add(enemy)       
-            self.enemies_loaded = True
+            if enemy: # Ensure enemy was successfully created
+                self.enemies.add(enemy)       
+        self.enemies_loaded = True
         print(f"BaseGameplayScene: Loaded {len(self.enemies)} enemies.")
     def load_decorations(self, decorations_data):
         """Loads decorations from the dungeon data."""
@@ -517,7 +486,7 @@ class BaseGameplayScene(BaseScene):
             pass
 
         # Update projectiles
-        self.projectiles.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
+        self.projectiles.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size, entities=self.friendly_entities)
         
         # Update paste
         for p in self.paste:

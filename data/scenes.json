@@ -159,6 +159,16 @@
             "name": "firewall",
             "class": "core.dungeons.firewall.firewall",
             "dungeon_data_path": "data/dungeons/firewall.json"
+        },
+        {
+            "name": "feast_hall",
+            "class": "core.dungeons.feast_hall.feast_hall",
+            "dungeon_data_path": "data/dungeons/feast_hall.json"
+        },
+        {
+            "name": "feast_hall2",
+            "class": "core.dungeons.feast_hall2.feast_hall2",
+            "dungeon_data_path": "data/dungeons/feast_hall2.json"
         }
     ]
 }

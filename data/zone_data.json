@@ -3,7 +3,7 @@
         "spawn_town": {
             "name": "Spawn Town",
             "description": "The starting town for new adventurers.",
-            "tile_set": "default_tileset",
+            "tile_set": "",
             "initial_player_position": [
                 550,
                 400
@@ -144,6 +144,22 @@
                         1376
                     ],
                     "graphic": ""
+                },
+                {
+                    "target_scene": "feast_hall",
+                    "location": [
+                        544,
+                        1184
+                    ],
+                    "graphic": ""
+                },
+                {
+                    "target_scene": "feast_hall2",
+                    "location": [
+                        672,
+                        672
+                    ],
+                    "graphic": ""
                 }
             ],
             "map_width": 50,
@@ -180,7 +196,24 @@
         "swamp_cave_tileset": {},
         "grassland_tileset": {},
         "ice_cave_tileset": {},
-        "sandstone_tileset": {}
+        "sandstone_tileset": {},
+        "corrupted_tileset": {
+            "grass": "graphics/gui/tab_label_monster.png",
+            "sand": "graphics/gui/tab_label_monster.png",
+            "water": "graphics/gui/tab_label_monster.png",
+            "forest": "graphics/gui/tab_label_monster.png",
+            "building": "graphics/gui/tab_label_monster.png",
+            "street": "graphics/dc-misc/cursor_green.png",
+            "rubble": "graphics/gui/tab_label_monster.png",
+            "path": "graphics/gui/tab_label_monster.png",
+            "cobblestone": "graphics/gui/tab_label_monster.png",
+            "mountain": "graphics/gui/tab_label_monster.png",
+            "market": "graphics/gui/tab_label_monster.png",
+            "house": "graphics/gui/tab_label_monster.png",
+            "shop": "graphics/gui/tab_label_monster.png",
+            "garden": "graphics/gui/tab_label_monster.png",
+            "well": "graphics/gui/tab_label_monster.png"
+        }
     },
     "assets": {
         "portals": {

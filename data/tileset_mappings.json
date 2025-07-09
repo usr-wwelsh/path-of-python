@@ -70,5 +70,11 @@
         "wall": "wall",
         "portal": "portal",
         "decoration": "decoration"
+    },
+    "corrupt": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
     }
 }
