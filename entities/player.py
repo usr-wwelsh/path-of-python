@@ -65,9 +65,11 @@ class Player(pygame.sprite.Sprite):
         self.level = 1
         self.experience = 0
         self.skill_points = 10 # Starting skill points
+        self.spent_level_points = 0
         self.base_strength = 10
         self.base_dexterity = 10
         self.base_intelligence = 10
+        self.base_damage = 0 # Initialize base damage
         self.base_vitality = 10
         self.current_life = 100
         self.max_life = 100
@@ -109,6 +111,7 @@ class Player(pygame.sprite.Sprite):
             "max_mana": self.max_mana,
             "cleave_damage_multiplier": self.cleave_damage_multiplier,
             "cyclone_radius_multiplier": self.cyclone_radius_multiplier,
+            "base_damage": self.base_damage,
         }
 
         # Apply initial stats if provided
@@ -893,3 +896,27 @@ class Player(pygame.sprite.Sprite):
         """Deactivates the specified skill."""
         if skill_id == "cyclone":
             self.cyclone_skill.deactivate()
+
+    @property
+    def total_damage(self):
+        """Calculates the player's total damage, including base damage and skill damages."""
+        total_damage = self.base_damage
+        
+        if not hasattr(self, "unlocked_skills"):
+            return total_damage
+
+        for skill_id in self.unlocked_skills:
+            if skill_id == "arc" and hasattr(self, "arc_skill"):
+                total_damage += self.arc_skill.base_damage + self.arc_skill.bonus_damage
+            elif skill_id == "cleave" and hasattr(self, "cleave_skill"):
+                total_damage += (self.cleave_skill.base_damage["min"] + self.cleave_skill.base_damage["max"]) / 2 + self.cleave_skill.bonus_damage_min # Assuming bonus_damage_min is representative
+            elif skill_id == "cyclone" and hasattr(self, "cyclone_skill"):
+                total_damage += (self.cyclone_skill.base_damage["min"] + self.cyclone_skill.base_damage["max"]) / 2 + self.cyclone_skill.bonus_damage_min # Assuming bonus_damage_min is representative
+            elif skill_id == "ice_nova" and hasattr(self, "ice_nova_skill"):
+                total_damage += (self.ice_nova_skill.base_damage_min + self.ice_nova_skill.base_damage_max) / 2 + self.ice_nova_skill.bonus_damage_min # Assuming bonus_damage_min is representative
+            elif skill_id == "summon_skeleton" and hasattr(self, "summon_skeletons_skill"):
+                total_damage += self.summon_skeletons_skill.skeleton_damage + self.summon_skeletons_skill.bonus_skeleton_damage
+            elif skill_id == "summon_spiders" and hasattr(self, "summon_spiders_skill"):
+                total_damage += self.summon_spiders_skill.spider_damage + self.summon_spiders_skill.bonus_spider_damage
+                
+        return total_damage

@@ -13,6 +13,8 @@ class CleaveSkill:
         self.description = "A wide, sweeping attack that damages enemies in an arc."
         self.mana_cost = 7 # From data/skills.json
         self.base_damage = {"min": 50, "max": 200, "type": "physical"} # From data/skills.json
+        self.bonus_damage_min = 0
+        self.bonus_damage_max = 0
         self.cooldown = 0 # From data/skills.json
         self.attack_speed_multiplier = 1.0 # From data/skills.json
         self.last_cast_time = 0
@@ -108,7 +110,7 @@ class CleaveSkill:
                     hit_enemies.add(enemy)
 
         for enemy in hit_enemies:
-            damage_amount = random.randint(self.base_damage["min"], self.base_damage["max"])
+            damage_amount = random.randint(self.base_damage["min"] + self.bonus_damage_min, self.base_damage["max"] + self.bonus_damage_max)
             # Apply cleave_damage_multiplier from player stats
             damage_amount *= self.player.cleave_damage_multiplier
             enemy.take_damage(damage_amount)

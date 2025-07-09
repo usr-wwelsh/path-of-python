@@ -18,6 +18,7 @@ class SummonSkeletons:
         # self.max_skeletons = 50  # Maximum number of skeletons
         self.skeleton_health = 30
         self.skeleton_damage = 5
+        self.bonus_skeleton_damage = 0
         self.skeleton_speed = 50
         self.last_used = 0
         self.cooldown = 500  # .5 second cooldown
@@ -128,7 +129,7 @@ class SummonSkeletons:
         # Calculate scaled stats based on player level
         player_level = self.player.level
         scaled_health = self.skeleton_health + (player_level - 1) * 5  # Example: +5 health per level
-        scaled_damage = self.skeleton_damage + (player_level - 1) * 50  # Example: +10 damage per level
+        scaled_damage = self.skeleton_damage + self.bonus_skeleton_damage + (player_level - 1) * 50  # Example: +10 damage per level
         scaled_speed = self.skeleton_speed + (player_level - 2) * 10  # Example: +5 speed per level (start scaling from level 2)
         
         # Apply skeleton armor bonus if the player has the skill

@@ -17,6 +17,7 @@ class ArcSkill:
         self.last_used = 0
         self.damage_variation = 5
         self.stun_chance = 0.15
+        self.bonus_damage = 0
         self.arc_width = TILE_SIZE // 2
         self.lightning_color = (173, 216, 230) # Light blue
         self.lightning_glow_color = (100, 149, 237) # Cornflower blue
@@ -177,7 +178,7 @@ class ArcSkill:
     def calculate_damage(self):
         """Calculates damage with variation and player level scaling, considering Arc Singularity."""
         level_bonus = self.player.level * 2
-        damage = self.base_damage + random.randint(-self.damage_variation, self.damage_variation) + level_bonus
+        damage = self.base_damage + random.randint(-self.damage_variation, self.damage_variation) + level_bonus + self.bonus_damage
         
         # Apply Arc Singularity damage increase
         if "arc_singularity" in self.player.active_passive_abilities and self.player.arc_singularity_state["active"]:

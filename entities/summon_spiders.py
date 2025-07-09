@@ -21,6 +21,7 @@ class SummonSpiders:
         self.max_spiders = 30
         self.spider_health = 15  # Low health
         self.spider_damage = 3
+        self.bonus_spider_damage = 0
         self.spider_speed = 280 # Increased spider speed (70 * 4 = 280)
         self.last_used = 0
         self.cooldown = 10000  # 10 second cooldown
@@ -118,7 +119,7 @@ class SummonSpiders:
         """Summons a single spider at the specified location."""
         player_level = self.player.level
         scaled_health = self.spider_health + (player_level - 1) * 2  # Example scaling
-        scaled_damage = self.spider_damage + (player_level - 1) * 0.5 # Example scaling
+        scaled_damage = self.spider_damage + self.bonus_spider_damage + (player_level - 1) * 0.5 # Example scaling
         scaled_speed = self.spider_speed + (player_level - 1) * 1 # Example scaling
 
         scaled_health = max(self.spider_health, scaled_health)

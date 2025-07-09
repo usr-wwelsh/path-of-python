@@ -471,9 +471,13 @@ class BaseGameplayScene(BaseScene):
                     pygame.mixer.music.queue(os.path.join(os.getcwd(), "data", "boss.mp3"))  # Play the boss music in a loop
                     return  # Interact with only one portal at a time
         # Pass event to minimap
+        # Pass event to HUD
+        if self.hud:
+            self.hud.handle_event(event)
         if self.hud and self.hud.minimap:
             minimap_rect = self.hud.minimap.rect
             self.hud.minimap.handle_event(event, minimap_rect)
+
     def enemy_killed(self, enemy):
         """
         Callback for when an enemy is killed.

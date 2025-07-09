@@ -13,6 +13,10 @@
             "class": "ui.title_screen.InfoScreen"
         },
         {
+            "name": "level_up_screen",
+            "class": "ui.level_up_screen.LevelUpScreen"
+        },
+        {
             "name": "spawn_town",
             "class": "core.spawn_town.SpawnTown"
         },

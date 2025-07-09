@@ -18,6 +18,8 @@ class CycloneSkill:
         self.is_channeling = False
         self.radius = TILE_SIZE * 3.375 * self.player.cyclone_radius_multiplier # Area of effect for Cyclone, increased by 1.5x (2.25 * 1.5 = 3.375)
 
+        self.bonus_damage_min = 0
+        self.bonus_damage_max = 0
         # Visual effect attributes
         self.cyclone_effect_sprites = pygame.sprite.Group() # Use a sprite group for multiple sprites
         self.rotation_angle = 0
@@ -157,6 +159,6 @@ class CycloneSkill:
             print("Cyclone _perform_hit(): No enemies in range.")
 
         for enemy in hit_enemies:
-            damage_amount = random.randint(self.base_damage["min"], self.base_damage["max"])
+            damage_amount = random.randint(self.base_damage["min"] + self.bonus_damage_min, self.base_damage["max"] + self.bonus_damage_max)
             enemy.take_damage(damage_amount)
             print(f"Cyclone hit {enemy.name} for {damage_amount} {self.base_damage['type']} damage!")

@@ -19,6 +19,8 @@ class IceNovaSkill:
         self.max_damage = 5000
         self.damage_type = "cold"
         
+        self.bonus_damage_min = 0
+        self.bonus_damage_max = 0
         self.cooldown = 0.5 # Cooldown for click-based activation
         self.last_cast_time = 0 # Track last cast time for cooldown
         self.cast_time = 0.8 # This might be less relevant for continuous channeling
@@ -136,7 +138,8 @@ class IceNovaSkill:
             calculated_damage["min"] *= (1 + damage_increase_percentage)
             calculated_damage["max"] *= (1 + damage_increase_percentage)
             print(f"Nova Overload: Damage increased by {damage_increase_percentage*100:.0f}% to min {calculated_damage['min']:.2f}, max {calculated_damage['max']:.2f}")
-
+        calculated_damage["min"] += self.bonus_damage_min
+        calculated_damage["max"] += self.bonus_damage_max
         return calculated_damage
 
     def can_cast(self):

@@ -29,6 +29,7 @@ class HUD:
         self.last_paste_count = 0
         self.show_prompt = False
         self.prompt_start_time = 0
+        self.level_up_button_rect = pygame.Rect(0, 0, 0, 0)
 
     def load_skill_tree_data(self):
         skill_tree_path = os.path.join(os.getcwd(), "data", "skill_tree.json")
@@ -84,6 +85,11 @@ class HUD:
             self.minimap.draw(screen)
         # Draw Level/Experience Gauge
         self._draw_experience_gauge(screen, width_scale, height_scale)
+        
+        # Draw Level Up Button if player has skill points
+        if self.player.level - self.player.spent_level_points > 0:
+            self._draw_level_up_button(screen, width_scale, height_scale)
+
         # Draw Summon Spiders Cooldown Gauge only if player has the skill
         if self.player.has_skill("summon_spiders"):
             self._draw_skill_cooldown_gauge(screen, self.player.summon_spiders_skill, "Summon Spiders", current_screen_width // 2 - (150 * width_scale), current_screen_height - (100 * height_scale), width_scale, height_scale)
@@ -244,3 +250,22 @@ class HUD:
 
         if self.player.has_skill("summon_skeleton"):
             draw_text(screen, f"Skeletons: {skeleton_count}", UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, minion_count_x, minion_count_y, align="bottomright")
+
+    def _draw_level_up_button(self, screen, width_scale, height_scale):
+        current_screen_width, current_screen_height = screen.get_size()
+        button_x = current_screen_width // 2 + (160 * width_scale)  # Position to the right of the level bar
+        button_y = 10 * height_scale  # Same Y as the level bar
+        button_size = int(25 * height_scale)
+
+        # White background
+        pygame.draw.rect(screen, (255, 255, 255), (button_x, button_y, button_size, button_size))
+        # Green plus sign
+        pygame.draw.line(screen, (0, 255, 0), (button_x + button_size // 2, button_y + button_size // 4), (button_x + button_size // 2, button_y + button_size * 3 // 4), 3)
+        pygame.draw.line(screen, (0, 255, 0), (button_x + button_size // 4, button_y + button_size // 2), (button_x + button_size * 3 // 4, button_y + button_size // 2), 3)
+
+        self.level_up_button_rect = pygame.Rect(button_x, button_y, button_size, button_size)
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.player.skill_points > 0 and self.level_up_button_rect.collidepoint(event.pos):
+                self.player.game.scene_manager.set_scene("level_up_screen", self.player, self)

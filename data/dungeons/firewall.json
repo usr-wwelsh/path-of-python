@@ -1,7 +1,7 @@
 {
     "width": 50,
     "height": 50,
-    "tileset": "crystal_cave",
+    "tileset": "code",
     "tile_map": [
         [
             "floor",
