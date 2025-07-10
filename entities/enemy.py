@@ -488,31 +488,24 @@ class Enemy(pygame.sprite.Sprite):
  
     def _find_nearest_friendly_minion(self, finding_range):
         """Find the nearest friendly minion (skeleton or spider) to attack within the finding range."""
-        from entities.summon_skeletons import Skeleton # Import Skeleton here to avoid circular dependency
-        from entities.summon_spiders import Spider # Import Spider here to avoid circular dependency
+        from entities.summon_skeletons import Skeleton
+        from entities.summon_spiders import Spider
+        
         nearest_minion = None
-        min_distance = float('inf')
-        # Update Necrotic Plague effects
-        if hasattr(self.game.current_scene, 'necrotic_plagues') and self.game.current_scene.necrotic_plagues is not None:
-            for plague in list(self.game.current_scene.necrotic_plagues):
-                if plague.target == self:
-                    plague.update(dt)
+        min_dist_sq = finding_range ** 2
+
         # Iterate through all sprites in the enemies group
         for sprite in self.game.current_scene.enemies:
             # Check if the sprite is a Skeleton or Spider and is friendly
-            if (isinstance(sprite, Skeleton) or isinstance(sprite, Spider)) and hasattr(sprite, 'is_friendly') and sprite.is_friendly:
-                # Calculate distance to the minion
-                # Update entropic decay effect
-                self._update_entropic_decay_effect()
-                dx, dy = sprite.rect.centerx - self.rect.centerx, sprite.rect.centery - self.rect.centery
-                dist = math.hypot(dx, dy)
- 
+            if (isinstance(sprite, (Skeleton, Spider))) and getattr(sprite, 'is_friendly', False):
+                dx = sprite.rect.centerx - self.rect.centerx
+                dy = sprite.rect.centery - self.rect.centery
+                dist_sq = dx*dx + dy*dy
+
                 # Check if the minion is within the finding range and is closer than the current nearest
-                if dist < min_distance and dist <= finding_range:
-                    min_distance = dist
-                    nearest_minion = sprite
- 
-        # Return the nearest friendly minion found, or None if none are within range
+                if dist_sq < min_dist_sq:
+                    min_dist_sq = dist_sq
+                    nearest_minion = sprite       
         return nearest_minion
  
     def update(self, dt, player, tile_map, tile_size): # Removed nearest_skeleton parameter
@@ -522,171 +515,83 @@ class Enemy(pygame.sprite.Sprite):
  
         if not player:
             return
- 
+    def update(self, dt, player, tile_map, tile_size):
+        dt = min(dt, 0.1)
+        if not player:
+            return
+
         current_time = pygame.time.get_ticks()
-        # Handle enemy spawning
+        self_rect = self.rect  # Cache self.rect to reduce property accesses
+
+        # --- STATUS EFFECT UPDATES ---
         self._handle_spawning()
- 
-        # Update ignite effect
         self._update_ignite_effect()
-        # Update slow effect
         self._update_slow_effect()
-        # Update poison effect
         self._update_poison_effect()
-        # Update entropic decay effect
         self._update_entropic_decay_effect()
- 
-        # Update Necrotic Plague effects
-        # Update Necrotic Plague effects
-        if hasattr(self.game.current_scene, 'necrotic_plagues') and self.game.current_scene.necrotic_plagues is not None:
-            for plague in list(self.game.current_scene.necrotic_plagues):
-                if plague.target == self:
-                    plague.update(dt)
-        # Update Necrotic Plague effects
         if hasattr(self.game.current_scene, 'necrotic_plagues'):
             for plague in list(self.game.current_scene.necrotic_plagues):
                 if plague.target == self:
                     plague.update(dt)
-        for plague in list(self.game.current_scene.necrotic_plagues):
-            if plague.target == self:
-                plague.update(dt)
-        # Update Hasted effect
-        if self.hasted:
-            if current_time - self.hasted_start_time > self.hasted_duration:
-                self.hasted = False
-                self.speed /= self.hasted_speed_multiplier
-                self.attack_cooldown /= self.hasted_attack_speed_multiplier
-                print(f"Enemy {self.name} hasted effect wore off.")
- 
-        # Update Frenzied effect
+        if self.hasted and current_time - self.hasted_start_time > self.hasted_duration:
+            self.hasted = False
+            self.speed /= self.hasted_speed_multiplier
+            self.attack_cooldown /= self.hasted_attack_speed_multiplier
         if self.frenzied and current_time - self.frenzy_start_time > self.frenzy_duration:
             self.frenzied = False
             self.damage /= self.frenzy_damage_multiplier
             self.attack_cooldown /= self.frenzy_attack_speed_multiplier
-            print(f"Enemy {self.name} frenzy wore off.")
-        elif self.frenzied == True and current_time - self.frenzy_start_time < self.frenzy_duration:
-            pass
-        elif self.frenzied:
-            self.frenzy_start_time = current_time
-            self.damage *= self.frenzy_damage_multiplier
-            self.attack_cooldown *= self.frenzy_attack_speed_multiplier
-            print(f"Enemy {self.name} became frenzied!")
- 
-        # Update Corrupted Blood effect - moved to projectile and player take_damage
- 
-        # Handle burst attack sequence
+
+        # --- BURST ATTACK LOGIC ---
         if self._is_bursting:
             if self._burst_projectiles_fired < self.burst_projectile_count:
                 if current_time - self._last_burst_shot_time > self.burst_delay:
-                    # Target the player during burst, or potentially the nearest skeleton if implemented
                     self._shoot_projectile(player.rect.centerx, player.rect.centery)
                     self._burst_projectiles_fired += 1
                     self._last_burst_shot_time = current_time
             else:
                 self._is_bursting = False
-                self.last_attack_time = current_time # Reset main cooldown after burst finishes
- 
-        # Update damage texts
+                self.last_attack_time = current_time
+
         self.damage_texts.update(dt)
- 
-        # Find nearest friendly minion within a certain range (e.g., enemy's attack_range or a dedicated targeting range)
-        # Assuming enemies have a targeting range, let's use attack_range for now
-        targeting_range = self.attack_range if self.attack_range > 0 else TILE_SIZE * 15 # Use attack range or a default
+
+        # --- TARGETING LOGIC ---
+        targeting_range = self.attack_range if self.attack_range > 0 else TILE_SIZE * 15
         nearest_minion = self._find_nearest_friendly_minion(targeting_range)
- 
-        # Determine the target: prioritize nearest minion if found, otherwise target the player
         target = nearest_minion if nearest_minion else player
- 
-        # Calculate distance to the determined target
-        dx, dy = target.rect.centerx - self.rect.centerx, target.rect.centery - self.rect.centery
-        dist = math.hypot(dx, dy)
- 
-        # Melee attack logic
-        # Check if the target is within melee range and attack cooldown is met
-        if dist <= self.melee_range and current_time - self.last_melee_attack_time > self.melee_cooldown:
+        target_rect = target.rect # Cache target's rect
+
+        dx = target_rect.centerx - self_rect.centerx
+        dy = target_rect.centery - self_rect.centery
+        dist_sq = dx*dx + dy*dy # Use squared distance for performance
+
+        # --- ATTACK LOGIC ---
+        # Melee attack
+        if dist_sq <= self.melee_range**2 and current_time - self.last_melee_attack_time > self.melee_cooldown:
             target.take_damage(self.damage)
             self.last_melee_attack_time = current_time
-            # Debug prints for ranged attack
-            if self.attack_range > 0:
-                print(f"Enemy {self.name} - Dist: {dist:.2f}, Attack Range: {self.attack_range}, Cooldown: {self.attack_cooldown}, Time since last attack: {current_time - self.last_attack_time}")
-            # print(f"Enemy performed melee attack on player for {self.damage} damage.") # Debug print
- 
-        # Ranged attack logic (only if not in melee range or if ranged attack is preferred)
-        # Prioritize ranged attack if within range and off cooldown, otherwise move or melee
-        # Only trigger new ranged attack if not currently bursting and target is within attack range
-        if not self._is_bursting and self.attack_range > 0 and dist <= self.attack_range and current_time - self.last_attack_time > self.attack_cooldown:
-            self._perform_ranged_attack(target) # Pass the determined target
-        elif dist > self.melee_range: # Only move if not in melee range
-            # Simple AI: Move towards the target if not in attack range or no ranged attack
-            if dist > 0:
-                # Normalize direction vector
-                dx, dy = dx / dist, dy / dist
- 
-                # Calculate potential movement
-                move_x = dx * self.speed * dt
-                move_y = dy * self.speed * dt
- 
-                # Store original position for collision rollback
-                original_x, original_y = self.rect.x, self.rect.y
- 
-                # Attempt to move horizontally
-                self.rect.x += move_x
-                collision = self._check_collision(tile_map, tile_size)
-                if collision:
-                    self.rect.x = original_x  # Rollback if collision
-                    # If collision, try moving vertically instead
-                    self.rect.y += move_y
-                    if self._check_collision(tile_map, tile_size):
-                        self.rect.y = original_y # Rollback vertical movement as well
-                        # If both horizontal and vertical movements are blocked, try diagonal movements
-                        # Try top-left
-                        self.rect.x -= move_x
-                        self.rect.y -= move_y
-                        if self._check_collision(tile_map, tile_size):
-                            self.rect.x = original_x
-                            self.rect.y = original_y
-                        else:
-                            # Top-left movement was successful
-                            pass
-                    else:
-                        # Vertical movement was successful
-                        pass
-                else:
-                    # Horizontal movement was successful, continue
-                    pass
- 
-                # Attempt to move vertically
-                self.rect.y += move_y
-                collision = self._check_collision(tile_map, tile_size)
-                if collision:
-                    self.rect.y = original_y  # Rollback if collision
-                    # If collision, try moving horizontally instead
-                    self.rect.x += move_x
-                    if self._check_collision(tile_map, tile_size):
-                        self.rect.x = original_x # Rollback horizontal movement as well
-                        # If both horizontal and vertical movements are blocked, try diagonal movements
-                        # Try bottom-right
-                        self.rect.x += move_x
-                        self.rect.y += move_y
-                        if self._check_collision(tile_map, tile_size):
-                            self.rect.x = original_x
-                            self.rect.y = original_y
-                        else:
-                            # Bottom-right movement was successful
-                            pass
-                    else:
-                        # Horizontal movement was successful
-                        pass
-                else:
-                    # Vertical movement was successful, continue
-                    pass
- 
-        # Store current position for next update
-        self.last_x = self.rect.x
-        self.last_y = self.rect.y
- 
-        # print(f"Enemy at ({self.rect.x}, {self.rect.y}) updated. Player at ({player.rect.centerx}, {player.rect.centery}).") # Debug print
- 
+        # Ranged attack
+        elif not self._is_bursting and self.attack_range > 0 and dist_sq <= self.attack_range**2 and current_time - self.last_attack_time > self.attack_cooldown:
+            self._perform_ranged_attack(target)
+        # --- MOVEMENT LOGIC ---
+        elif dist_sq > self.melee_range**2: # Only move if not in melee range
+            dist = math.sqrt(dist_sq) # Calculate sqrt only when needed
+            dx, dy = dx / dist, dy / dist
+            move_x = dx * self.speed * dt
+            move_y = dy * self.speed * dt
+
+            original_x, original_y = self_rect.x, self_rect.y
+            self_rect.x += move_x
+            if self._check_collision(tile_map, tile_size):
+                self_rect.x = original_x
+
+            self_rect.y += move_y
+            if self._check_collision(tile_map, tile_size):
+                self_rect.y = original_y
+
+        self.last_x = self_rect.x
+        self.last_y = self_rect.y
+        
     def _check_collision(self, tile_map, tile_size):
         """Checks for collision with solid tiles, allowing movement through single-tile gaps."""
         # Get the tile coordinates the enemy is currently occupying

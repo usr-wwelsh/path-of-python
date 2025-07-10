@@ -160,6 +160,30 @@
                         672
                     ],
                     "graphic": ""
+                },
+                {
+                    "target_scene": "feast_hall3",
+                    "location": [
+                        544,
+                        9312
+                    ],
+                    "graphic": ""
+                },
+                {
+                    "target_scene": "feast_hall4",
+                    "location": [
+                        9536,
+                        512
+                    ],
+                    "graphic": ""
+                },
+                {
+                    "target_scene": "data_maw",
+                    "location": [
+                        928,
+                        96
+                    ],
+                    "graphic": ""
                 }
             ],
             "map_width": 50,
@@ -213,6 +237,23 @@
             "shop": "graphics/gui/tab_label_monster.png",
             "garden": "graphics/gui/tab_label_monster.png",
             "well": "graphics/gui/tab_label_monster.png"
+        },
+        "hideout_tileset": {
+            "grass": "graphics/dc-dngn/floor/crystal_floor5.png",
+            "sand": "graphics/dc-dngn/floor/crystal_floor5.png",
+            "water": "graphics/dc-dngn/floor/crystal_floor5.png",
+            "forest": "graphics/dc-dngn/wall/dngn_metal_wall.png",
+            "building": "graphics/dc-dngn/wall/dngn_metal_wall.png",
+            "street": "graphics/dc-dngn/floor/crystal_floor5.png",
+            "rubble": "graphics/dc-dngn/wall/dngn_metal_wall.png",
+            "path": "graphics/dc-dngn/floor/crystal_floor5.png",
+            "cobblestone": "graphics/dc-dngn/floor/crystal_floor5.png",
+            "mountain": "graphics/dc-dngn/wall/dngn_metal_wall.png",
+            "market": "graphics/dc-dngn/floor/crystal_floor5.png",
+            "house": "graphics/dc-dngn/floor/crystal_floor5.png",
+            "shop": "graphics/dc-dngn/floor/crystal_floor5.png",
+            "garden": "graphics/dc-dngn/floor/crystal_floor5.png",
+            "well": "graphics/dc-dngn/wall/dngn_metal_wall.png"
         }
     },
     "assets": {

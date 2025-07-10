@@ -642,19 +642,31 @@
     },
     "high_comptroller": {
         "name": "High Comptroller",
-        "health": 200000,
+        "health": 240000,
         "damage": 700,
         "speed": 150,
         "sprite_path": "graphics/dc-mon/undead/simulacrum_large.png",
         "attack_range": 1500,
         "attack_cooldown": 50,
-        "projectile_sprite_path": "graphics/dc-misc/error.png",
+        "projectile_sprite_path": "graphics/dc-misc/slot_eq_cursed.png",
         "ranged_attack_pattern": "circle",
         "xp_value": 50000,
         "spawn_on_cooldown": true,
         "spawn_cooldown": 1000,
         "enemies_to_spawn": ["firewall"],
-        "max_spawned_enemies": 15,
+        "max_spawned_enemies": 5,
         "scale_factor": 4.0
+    },
+    "guard": {
+        "name": "Guard",
+        "health": 30000,
+        "damage": 1000,
+        "speed": 100,
+        "sprite_path": "graphics/dc-misc/halo.png",
+        "attack_range": 50,
+        "attack_cooldown": 3000,
+        "projectile_sprite_path": "graphics/dc-misc/error.png",
+        "ranged_attack_pattern": "burst",
+        "xp_value": 50000
     }
 }

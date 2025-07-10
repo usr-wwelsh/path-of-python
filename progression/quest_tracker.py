@@ -237,6 +237,10 @@ class QuestTracker:
                             obj_type = "stabilize"
                             obj_target = description[len("stabilize "):]
                             obj_required = 1
+                        elif desc_lower.startswith("endure "):
+                            obj_type = "endure"
+                            obj_target = description[len("endure "):]
+                            obj_required = 1
                         elif desc_lower.startswith("keep the signal alive "):
                             obj_type = "keep_alive"
                             obj_target = description[len("keep the signal alive "):]
@@ -570,9 +574,13 @@ class QuestTracker:
             obj_target = description[len("escort "):]
             obj_required = 1
         elif desc_lower.startswith("stabilize "):
-            obj_type = "stabilize"
-            obj_target = description[len("stabilize "):]
-            obj_required = 1
+             obj_type = "stabilize"
+             obj_target = description[len("stabilize "):]
+             obj_required = 1
+        elif desc_lower.startswith("endure "):
+             obj_type = "endure"
+             obj_target = description[len("endure "):]
+             obj_required = 1
         elif desc_lower.startswith("keep the signal alive "):
             obj_type = "keep_alive"
             obj_target = description[len("keep the signal alive "):]

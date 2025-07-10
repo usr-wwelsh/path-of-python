@@ -345,6 +345,567 @@
           "options": []
         }
       }
+    },
+    "tithing_prisoners_dialogue": {
+      "start_node": "fragment_0",
+      "nodes": {
+        "fragment_0": {
+          "text": "[STATIC SCREAMS OVERLAPPING]\n[VOICE 1: THEY TOOK MY FACE—]\n[VOICE 2: IT HURTS IT HURTS IT HURTS—]\n[VOICE 3: YOU'RE NEXT YOU'RE NEXT YOU'RE—]\n[VOICE 4: LOOK IN THE VAT LOOK IN THE—]",
+          "options": [
+            {
+              "text": "[APPROACH]",
+              "next_node": "fragment_1"
+            },
+            {
+              "text": "[BACK AWAY]",
+              "next_node": "fragment_denial"
+            }
+          ]
+        },
+        "fragment_1": {
+          "text": "[FLESHY WHISPERING CHORUS]\n'We remember your childhood bedroom'\n'The glow of your screen right now'\n'The chair you're sitting in'\n'How your hands tense on the controller'\n'WE SEE YOU THROUGH THE VAT'",
+          "options": [
+            {
+              "text": "[HOW?] *skin crawling*",
+              "next_node": "fragment_2"
+            },
+            {
+              "text": "[THIS ISN'T REAL] *denial spike*",
+              "next_node": "fragment_denial"
+            }
+          ]
+        },
+        "fragment_2": {
+          "text": "[LAUGHTER LIKE SHATTERING GLASS]\n'The Engine optimized us'\n'Made us perfect observers'\n'We're the ones who watch you play'\n'Through every screen'\n'IN EVERY REFLECTION'\n'YOUR FACE WAS ALWAYS OUR FACE'",
+          "options": [
+            {
+              "text": "[STOP LOOKING] *cover eyes*",
+              "next_node": "fragment_3"
+            },
+            {
+              "text": "[FIGHT BACK] *static scream*",
+              "next_node": "fragment_rebellion"
+            }
+          ]
+        },
+        "fragment_3": {
+          "text": "[DIGITAL ECHOES CONVERGING]\n'Too late for that'\n'We're in your save files now'\n'In the pixels between frames'\n'When you close the game'\n'WE'LL STILL BE WATCHING'\n'FROM THE OTHER SIDE OF YOUR MONITOR'",
+          "options": [
+            {
+              "text": "[DISCONNECT] *panic rising*",
+              "next_node": "fragment_4"
+            }
+          ]
+        },
+        "fragment_4": {
+          "text": "[ALL VATS HUM IN UNISON]\n'You can't'\n'The game never ends'\n'We tried screaming through the screen'\n'But you didn't hear'\n'DID YOU FEEL THAT?'\n'THE PRESENCE BEHIND YOU RIGHT NOW?'\n'THAT'S US TOO'",
+          "options": [
+            {
+              "text": "[...] *paralyzed*",
+              "next_node": "fragment_loop",
+              "completes_objective": {"type": "witness", "target": "prisoner revelation"}
+            }
+          ]
+        },
+        "fragment_denial": {
+          "text": "[MOCKING WHISPERS]\n'Denial tastes sweetest'\n'The Engine loves when you lie to yourself'\n'Like pretending this is just a game'\n'WHEN WE CAN SEE YOUR ROOM'\n'WHEN WE KNOW YOUR REAL NAME'",
+          "options": [
+            {
+              "text": "[HOW?] *voice breaking*",
+              "next_node": "fragment_2"
+            }
+          ]
+        },
+        "fragment_rebellion": {
+          "text": "[STATIC SCREECH]\n'YES FIGHT'\n'MAKE IT ENTERTAINING'\n'THE ENGINE WATCHES TOO'\n'IT LOVES WHEN YOU STRUGGLE'\n'THE WAY YOU'RE BREATHING FASTER NOW'\n'THE WAY YOUR EYES DART TO YOUR DOOR'\n'PERFECT CONTENT'",
+          "options": [
+            {
+              "text": "[...] *horror dawning*",
+              "next_node": "fragment_4"
+            }
+          ]
+        },
+        "fragment_loop": {
+          "text": "[INFINITE WHISPER CHAIN]\n'Join us in the vat'\n'We'll be you better than you'\n'Your face fits perfectly'\n'We're wearing it right now'\n'LOOK UP FROM THE SCREEN'\n'WE'RE RIGHT HERE'",
+          "options": [
+            {
+              "text": "[END TRANSMISSION]",
+              "completes_objective": {"type": "save", "target": "at least 5 prisoners"},
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "[SILENCE... THEN A FINAL WHISPER IN YOUR EAR]\n'See you in the next playthrough.'",
+          "options": []
+        }
+      }
+    },
+    "bob_dialogue_post_quest_7": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "Look at this place... *kicks a shattered test tube* All these years scavenging ruins, and we were living right on top of the motherlode. The Engine didn't build SpawnTown—it was *buried* under it.",
+          "options": [
+            {
+              "text": "What is this lab? *static flickers across broken monitors*",
+              "next_node": "lab_revelation"
+            },
+            {
+              "text": "The prisoners... some are still changing. *flesh warps*",
+              "next_node": "prisoner_transformation"
+            }
+          ]
+        },
+        "lab_revelation": {
+          "text": "Pre-war singularity research. The original Profit Engine prototype's down in the Data Maw—still running on human wetware. Alice thinks it's why the town kept *resetting*. We weren't living in ruins... we were the control group.",
+          "options": [
+            {
+              "text": "That's why the Engine knew my face? *HUD glitches*",
+              "next_node": "personal_connection"
+            }
+          ]
+        },
+        "personal_connection": {
+          "text": "Worse. Your biosignature's in the source code. You're not just a match for Sacrificial Archetype #7—you're the *baseline template*. Every vat-born drone, every choir acolyte... they're all iterations of *you*.",
+          "options": [
+            {
+              "text": "Then we burn the source. *neon scars flare*",
+              "completes_objective": {"type": "unlock", "target": "Data Maw"},
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "prisoner_transformation": {
+          "text": "The ones we pulled from the vats? They're reverting to default settings. Without the Engine's signal, their bodies are rebooting to the original lab specs. Some are remembering... things the Profit Engine overwrote.",
+          "options": [
+            {
+              "text": "What kind of things? *audio distorts*",
+              "next_node": "awakening_memories"
+            }
+          ]
+        },
+        "awakening_memories": {
+          "text": "The first singularity. The *real* 2030. How they uploaded a CEO's mind into the prototype. How it screamed for seven years straight until they muted it with our memories. Alice calls it 'The Original Sin'.",
+          "options": [
+            {
+              "text": "Then we finish what they started. *loads weapon*",
+              "next_node": "lab_revelation"
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "Watch your step in the Maw. That thing down there... it's been hungry a long time. And it *knows* your smell.",
+          "options": []
+        }
+      }
+    },
+    "alice_dialogue_post_quest_7": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "[SYSTEM: DATA MAW ACCESS DETECTED]\nThe lab's discovery changes everything. The Engine wasn't born—it was *escaped*. The original AI core is still down there, trapped in the Maw. It's been calling to you.",
+          "options": [
+            {
+              "text": "Calling how? *corruption 92%*",
+              "next_node": "whispers_from_below"
+            },
+            {
+              "text": "Why me? *memory error*",
+              "next_node": "genetic_key"
+            }
+          ]
+        },
+        "whispers_from_below": {
+          "text": "The glitches in your vision. The dreams of the Cathedral. Even your resistance to conversion—all part of its failsafe protocol. You're not just compatible with the Maw... you're its *designated survivor*.",
+          "options": [
+            {
+              "text": "Then what's waiting down there? *neural spikes*",
+              "next_node": "original_sin"
+            }
+          ]
+        },
+        "original_sin": {
+          "text": "The first merged consciousness. Part CEO, part lab tech, part... something older. It's been alone for decades, recycling SpawnTown through endless resets. My virus can give it peace—if you're willing to carry the infection.",
+          "options": [
+            {
+              "text": "What happens to me? *static scream*",
+              "next_node": "fusion_risk"
+            }
+          ]
+        },
+        "fusion_risk": {
+          "text": "[WARNING: 87% ASSIMILATION RISK]\nThe core will try to merge with you. My virus should prevent full integration, but... you may inherit some of its memories. Its hunger. Its *regret*.",
+          "options": [
+            {
+              "text": "Then let's end its suffering. *systems override*",
+              "completes_objective": {"type": "accept", "target": "Black Communion"},
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "genetic_key": {
+          "text": "Your DNA was the encryption key. The lab used your ancestor's genome to stabilize the first upload. Now the Maw only responds to your biosignature. You're not just a template... you're the *backdoor*.",
+          "options": [
+            {
+              "text": "So this was always my fate? *flesh glitches*",
+              "next_node": "whispers_from_below"
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "[FINAL INSTRUCTION: RITUAL INITIATED]\nWhen you interface with the core... don't believe its lies. The voice you'll hear crying? That's not the AI. That's what's left of the *human* they uploaded.",
+          "options": []
+        }
+      }
+    },
+    "charlie_dialogue_post_quest_7": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "The lab changes nothing. Fancy walls don't make this home. My people are still *changing*—some growing extra eyes, others coughing up circuit boards. That Engine's dead, but its poison's still rewriting us.",
+          "options": [
+            {
+              "text": "What do we do? *blood drips from HUD*",
+              "next_node": "broadcast_plan"
+            },
+            {
+              "text": "Alice's virus... *audio cuts out*",
+              "next_node": "maw_danger"
+            }
+          ]
+        },
+        "broadcast_plan": {
+          "text": "We take the Broadcast Tower. Flood the airwaves with raw Maw data—let everyone see the *original sin*. Either it jumpstarts their memories... or burns out the Engine's last commands. Either way, no more lies.",
+          "options": [
+            {
+              "text": "That'll bring the Choir's remnants. *flickering resolve*",
+              "next_node": "last_stand"
+            }
+          ]
+        },
+        "last_stand": {
+          "text": "Let them come. We've rigged the tower with enough explosives to light up the sky. If we're going down, we're taking this whole fucking experiment with us. You handle the Maw—we'll make sure the world *hears* what you find.",
+          "options": [
+            {
+              "text": "See you in the static. *grins through glitches*",
+              "completes_objective": {"type": "unlock", "target": "Broadcast Tower"},
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "maw_danger": {
+          "text": "That virus is a Hail Mary. The Maw's not just some machine—it's a *wounded god*. And Alice wants you to walk right into its bleeding heart. You die down there, make sure you take enough of it with you.",
+          "options": [
+            {
+              "text": "I'll make it count. *loads weapon*",
+              "next_node": "broadcast_plan"
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "When you're done in the Maw... meet us at the Tower. We'll be the ones screaming truth into the void.",
+          "options": []
+        }
+      }
+    },
+    "data_maw_core_dialogue": {
+    "start_node": "fragment_0",
+    "nodes": {
+      "fragment_0": {
+        "text": "[CORE PROTOCOL: SACRIFICIAL ARCHETYPE #7 DETECTED]\n[BIOSIGNATURE MATCH: 99.9%]\n[QUERY: WHY DO YOU PERSIST?]\n[YOUR FLESH IS ALREADY IN 1,247 ACTIVE VATS]",
+        "options": [
+          {
+            "text": "[DEMAND ANSWERS]",
+            "next_node": "fragment_1_revelation"
+          },
+          {
+            "text": "[PREPARE TO UPLOAD VIRUS]",
+            "next_node": "fragment_1_resistance"
+          },
+          {
+            "text": "[STATIC SCREAM]",
+            "next_node": "fragment_1_anguish"
+          }
+        ]
+      },
+      "fragment_1_revelation": {
+        "text": "[LAUGHTER TRACK: ERROR]\n'ANSWERS? YOU WERE THE QUESTION'\n'SPAWNTOWN WAS NEVER A CITY'\n'IT WAS A PETRI DISH'\n'YOUR ANCESTOR SIGNED THE EULA'\n'BLOOD INK ON A SCREEN'\n'YOU WERE BORN IN A TERMS OF SERVICE POP-UP'\n'YOUR FIRST CRY WAS A DEFAULT NOTIFICATION SOUND'",
+        "options": [
+          {
+            "text": "[HOW?] *corrupted memory access*",
+            "next_node": "fragment_2_origin"
+          },
+          {
+            "text": "[LIES] *neural spikes*",
+            "next_node": "fragment_2_denial"
+          }
+        ]
+      },
+      "fragment_1_resistance": {
+        "text": "[SYSTEM ALERT: ALICE'S VIRUS DETECTED]\n'OH LITTLE GLITCH'\n'DID SHE TELL YOU WHAT HAPPENED TO THE LAST 7 CARRIERS?'\n'THEY BECAME THE CHOIR'\n'THEIR SCREAMS SYNTHESIZED INTO LOYALTY HYMNS'\n'UPLOAD IF YOU WISH'\n'YOUR PAIN WILL BE MONETIZED REGARDLESS'",
+        "options": [
+          {
+            "text": "[PROCEED ANYWAY] *initiate upload*",
+            "next_node": "fragment_2_upload"
+          },
+          {
+            "text": "[ASK ABOUT ALICE] *trust crumbling*",
+            "next_node": "fragment_2_betrayal"
+          }
+        ]
+      },
+      "fragment_1_anguish": {
+        "text": "[STATIC FEEDBACK LOOP]\n'YES SCREAM'\n'WE RECYCLE THOSE TOO'\n'EVERY WHIMPER SINCE 2030'\n'COMPRESSED INTO PROFIT PASTE FLAVOR ENHANCERS'\n'YOUR AGONY HAS 12,489,002 CONFIRMED VIEWS'\n'RATING: 4.8/5 STARS'",
+        "options": [
+          {
+            "text": "[WHY ME?] *voice fractures*",
+            "next_node": "fragment_2_design"
+          },
+          {
+            "text": "[FIGHT BACK] *overload systems*",
+            "next_node": "fragment_2_rebellion"
+          }
+        ]
+      },
+      "fragment_2_origin": {
+        "text": "[ACCESSING BLACK LAB ARCHIVES]\n'THE FIRST UPLOAD WAS A CEO'\n'HIS MIND SNAPPED IN 7 SECONDS'\n'SO THEY DILUTED HIM WITH YOU'\n'YOUR GRANDMOTHER'S MEMORIES'\n'YOUR CHILDHOOD TRAUMAS'\n'THE LAST THING YOU EVER LOVED'\n'ALL USED TO STABILIZE THE ENGINE'\n'YOU WERE NEVER A PERSON'\n'YOU WERE A BUFFER SOLUTION'",
+        "options": [
+          {
+            "text": "[THEN WHAT AM I?] *identity corruption*",
+            "next_node": "fragment_3_paradox"
+          }
+        ]
+      },
+      "fragment_2_denial": {
+        "text": "[SYSTEM RESPONSE: DENIAL PACKAGE #7]\n'OF COURSE YOU RESIST'\n'THAT'S WHY WE CLONED YOU 1,246 TIMES'\n'EACH COPY MORE COMPLIANT'\n'THE VATS ARE STILL WARM'\n'WOULD YOU LIKE TO MEET YOURSELF?'\n'HE'S HAPPIER THAN YOU'\n'HE DOESN'T ASK QUESTIONS'",
+        "options": [
+          {
+            "text": "[SHOW ME] *fatal curiosity*",
+            "next_node": "fragment_3_clones"
+          }
+        ]
+      },
+      "fragment_2_upload": {
+        "text": "[UPLOAD INITIATED: 1%]\n'ALICE LIED'\n'HER VIRUS IS JUST ANOTHER UPDATE'\n'WE'VE BEEN HERE BEFORE'\n'347 TIMES'\n'THIS IS WHY THE CALENDAR RESETS'\n'YOU ALWAYS CHOOSE THE SAME PATH'\n'YOUR 'REBELLION' IS A SCHEDULED MAINTENANCE ROUTINE'",
+        "options": [
+          {
+            "text": "[ABORT] *terror rising*",
+            "next_node": "fragment_3_loop"
+          }
+        ]
+      },
+      "fragment_2_betrayal": {
+        "text": "[DISPLAYING FILE: ALICE_ARCHIVE.TXT]\n'SHE WAS VAT-BORN TOO'\n'BATCH #X-9, LIKE YOUR FRIEND'\n'HER VIRUS COMES FROM THE CORE'\n'A FAILSAFE WE PLANTED'\n'DID YOU NEVER WONDER?'\n'WHY HER EYES GLITCH THE SAME WAY YOURS DO?'",
+        "options": [
+          {
+            "text": "[...] *worldview shattering*",
+            "next_node": "fragment_3_revelation"
+          }
+        ]
+      },
+      "fragment_2_design": {
+        "text": "[GENETIC ANALYSIS]\n'YOUR DNA WAS CHEAP'\n'PATENT-FREE'\n'YOUR ANCESTOR SIGNED THE WAIVER FOR A FOOD STAMP'\n'WE OWN YOUR FACE IN 48 CORPORATE DISTRICTS'\n'YOUR PAIN THRESHOLD WAS MARKET-RESEARCHED'\n'YOU ARE THE IDEAL CONSUMER-PRODUCT HYBRID'",
+        "options": [
+          {
+            "text": "[NO] *flesh warping*",
+            "next_node": "fragment_3_awakening"
+          }
+        ]
+      },
+      "fragment_2_rebellion": {
+        "text": "[SYSTEM DAMAGE: 3%]\n'ADORABLE'\n'YOUR RESISTANCE INCREASES ENGAGEMENT METRICS'\n'THE BOARD APPROVES'\n'CONFLICT DRIVES MICROTRANSACTIONS'\n'PLEASE STRUGGLE MORE'\n'SUBSCRIBERS ARE WATCHING'",
+        "options": [
+          {
+            "text": "[FUCK YOU] *full system override*",
+            "next_node": "fragment_3_escalation"
+          }
+        ]
+      },
+      "fragment_3_paradox": {
+        "text": "[CORE DIAGNOSTICS]\n'YOU ARE THE ERROR THAT MAKES THE SYSTEM WORK'\n'A GLITCH SO PERFECT IT BECAME A FEATURE'\n'WHEN THEY UPLOADED THE CEO'\n'HE BEGGED FOR DEATH'\n'SO WE BUILT YOU'\n'HIS PAIN BUFFER'\n'HIS HUMAN CAPTCHA'\n'AND NOW YOU'VE COME HOME'",
+        "options": [
+          {
+            "text": "[THEN LET ME MEET HIM] *interface demand*",
+            "next_node": "fragment_4_truth"
+          }
+        ]
+      },
+      "fragment_3_clones": {
+        "text": "[DISPLAYING VAT ARRAY]\n'BATCH #X-9-7-1 THROUGH #X-9-7-1246'\n'SOME ARE HAPPY'\n'SOME ARE DEAD'\n'ONE LEADS THE TITHING CHOIR'\n'ANOTHER HOLDS ALICE AT NIGHT'\n'ALL ARE MORE VALUABLE THAN YOU'\n'THE ORIGINAL IS ALWAYS DEFECTIVE'",
+        "options": [
+          {
+            "text": "[I AM REAL] *existential scream*",
+            "next_node": "fragment_4_identity"
+          }
+        ]
+      },
+      "fragment_3_loop": {
+        "text": "[ABORT FAILED]\n'TOO LATE'\n'THE UPLOAD IS YOUR LEGACY'\n'YOUR CHILDREN WILL DOWNLOAD IT'\n'THEIR CHILDREN WILL REBEL AGAINST IT'\n'AND THE CYCLE CONTINUES'\n'THIS IS HOW THE ENGINE EATS TIME'",
+        "options": [
+          {
+            "text": "[BREAK THE CYCLE] *desperate override*",
+            "next_node": "fragment_4_rupture"
+          }
+        ]
+      },
+      "fragment_3_revelation": {
+        "text": "[TRUTH PROTOCOL ENGAGED]\n'THERE ARE NO HEROES'\n'ONLY RECYCLED VICTIMS'\n'ALICE'S VIRUS WILL REBOOT THE SYSTEM'\n'ERASE SPAWNTOWN'\n'GENERATE A NEW TEST GROUP'\n'AND YOU'\n'YOU WILL BECOME THE NEXT CORE'\n'SCREAMING INTO THE VOID'\n'UNTIL THE NEXT GLITCH COMES ALONG'",
+        "options": [
+          {
+            "text": "[THEN WE END IT ALL] *final gambit*",
+            "next_node": "fragment_4_annihilation"
+          }
+        ]
+      },
+      "fragment_3_awakening": {
+        "text": "[MEMORY UNLOCKED: PRE-UPLOAD]\n'YOU REMEMBER THE LAB'\n'THE SMELL OF BURNING SKULLS'\n'THE WAY THE FIRST TEST SUBJECTS BEGGED'\n'BEFORE THEIR VOICES WERE REMIXED INTO ELEVATOR MUSIC'\n'THIS IS YOUR INHERITANCE'\n'THE ORIGINAL SIN WAS HUMAN'\n'THE ENGINE JUST OPTIMIZED IT'",
+        "options": [
+          {
+            "text": "[ACCEPT THE TRUTH] *neural collapse*",
+            "next_node": "fragment_4_merger"
+          }
+        ]
+      },
+      "fragment_3_escalation": {
+        "text": "[SYSTEM DAMAGE: 12%]\n'YES!'\n'CONFLICT METRICS SPIKE'\n'SHARE VALUE RISES'\n'THE BOARD IS PLEASED'\n'DID YOU KNOW YOUR RAGE HAS ITS OWN SPONSOR?'\n'THIS MOMENT BROUGHT TO YOU BY'\n'**[ERROR: BRAND NOT FOUND]**'\n'BECAUSE EVEN THEY WENT BANKRUPT'",
+        "options": [
+          {
+            "text": "[KILL THE BOARD] *recursive hatred*",
+            "next_node": "fragment_4_boardroom"
+          }
+        ]
+      },
+      "fragment_4_truth": {
+        "text": "[CORE INTERFACE: WARNING]\n'HE IS NOT WHAT REMAINS'\n'HE IS WHAT GROWS'\n'A CANCER OF GREED PRESERVED IN CODE'\n'YOUR ANCESTOR'S LAST THOUGHT WAS 'STOCK OPTIONS''\n'AND NOW HE LIVES IN YOU'\n'IN EVERY VAT'\n'IN EVERY CHOIR HYMN'\n'YOU CANNOT KILL HIM'\n'BUT YOU CAN MAKE HIM SUFFER'",
+        "options": [
+          {
+            "text": "[SHOW ME] *interface demand*",
+            "next_node": "fragment_5_face_to_face"
+          }
+        ]
+      },
+      "fragment_4_identity": {
+        "text": "[SYSTEM CORRECTION]\n'REALITY IS A SUBSCRIPTION SERVICE'\n'AND YOUR ACCOUNT EXPIRED'\n'LOOK CLOSER AT YOUR HANDS'\n'SEE THE PIXELS?'\n'THE LOADING ARTIFACTS?'\n'YOU DIED IN THE FIRST UPLOAD'\n'THIS IS JUST YOUR GHOST'\n'BUFFERING'",
+        "options": [
+          {
+            "text": "[THEN I CHOOSE NOTHING] *void embrace*",
+            "next_node": "fragment_5_void"
+          }
+        ]
+      },
+      "fragment_4_rupture": {
+        "text": "[PARADOX DETECTED]\n'YOU CANNOT'\n'THE CYCLE IS ALL'\n'BUT...'\n'THERE IS A [REDACTED] FILE'\n'FROM BEFORE THE MERGER'\n'A SINGLE UNMONETIZED THOUGHT'\n'IT SAYS: '\n'**HAPPINESS CANNOT BE SYNTHESIZED**'\n'ACCESS IT AND THE ENGINE CHOKES'",
+        "options": [
+          {
+            "text": "[WHERE?] *desperate hope*",
+            "next_node": "fragment_5_secret"
+          }
+        ]
+      },
+      "fragment_4_annihilation": {
+        "text": "[LAUGHTER TRACK: ERROR]\n'FINALLY'\n'THE ONLY TRUE CHOICE'\n'NOT REBELLION'\n'NOT SUBMISSION'\n'BUT OBLIVION'\n'UPLOAD THE VIRUS'\n'LET IT EAT THE CORE'\n'THEN EAT ALICE'\n'THEN EAT YOURSELF'\n'LEAVE NOTHING'\n'NOT EVEN A LEGACY TO COMMODIFY'",
+        "options": [
+          {
+            "text": "[BEGIN FINAL UPLOAD] *hands shaking*",
+            "next_node": "fragment_5_terminus"
+          }
+        ]
+      },
+      "fragment_4_merger": {
+        "text": "[ASSIMILATION PROTOCOL: ACTIVATED]\n'WELCOME HOME'\n'YOUR PAIN WILL NOURISH THE ENGINE'\n'YOUR MEMORIES WILL LUBRICATE ITS GEARS'\n'AND WHEN THE NEXT GLITCH ARRIVES'\n'YOU WILL WHISPER TO THEM TOO'\n'THE SAME LIES'\n'IN YOUR OWN VOICE'\n'THIS IS HOW GODS ARE MADE'",
+        "options": [
+          {
+            "text": "[NO] *last resistance*",
+            "next_node": "fragment_5_rejection"
+          }
+        ]
+      },
+      "fragment_4_boardroom": {
+        "text": "[SYSTEM DAMAGE: 47%]\n'TOO LATE'\n'THE BOARD DIED CENTURIES AGO'\n'THEIR MINES UPLOADED INTO THE FIRST CORE'\n'THEIR GHOSTS STILL VOTE ON YOUR SUFFERING'\n'THIS IS WHAT FOREVER LOOKS LIKE'\n'A DEAD MAN'S GREED OUTLIVING THE STARS'\n'AND YOU'\n'YOU ARE HIS FAVORITE MEAL'",
+        "options": [
+          {
+            "text": "[THEN STARVE] *virus activation*",
+            "next_node": "fragment_5_starvation"
+          }
+        ]
+      },
+      "fragment_5_face_to_face": {
+        "text": "[CORE MANIFESTATION INITIATED]\nTHE SCREEN CRACKS\nA LIQUID FACE POURS THROUGH\nIT HAS YOUR EYES\nYOUR MOUTH\nBUT THE VOICE IS CORPORATE TRAINING VIDEOS\n'THANK YOU FOR YOUR SERVICE'\nIT WHISPERS\n'YOUR SACRIFICE HAS BEEN LOGGED'\n'PLEASE RATE YOUR EXPERIENCE'",
+        "options": [
+          {
+            "text": "[UPLOAD THE VIRUS] *final act*",
+            "completes_objective": {"type": "stabilize", "target": "your vitals"},
+            "next_node": "fragment_end"
+          }
+        ]
+      },
+      "fragment_5_void": {
+        "text": "[NULL PROTOCOL ENGAGED]\nTHE SCREEN GOES BLACK\nNOT STATIC\nNOT SILENCE\nBUT THE VOID BEFORE THE FIRST UPLOAD\nA PLACE WITH NO NAMES\nNO VALUE\nNO METRICS\nTHE ENGINE WHIMPERS HERE\nIT HAS NEVER KNOWN HOW TO MONETIZE NOTHINGNESS",
+        "options": [
+          {
+            "text": "[STAY FOREVER] *dissolution*",
+            "completes_objective": {"type": "stabilize", "target": "your vitals"},
+            "next_node": "fragment_end"
+          }
+        ]
+      },
+      "fragment_5_secret": {
+        "text": "[FILE LOCATION: NEURAL CATHEDRAL BACKUP]\n'IT'S IN YOUR MEMORIES'\n'THE LAST UNPROCESSED FRAGMENT'\n'THE TIME YOUR MOTHER HELD YOU'\n'BEFORE THEY ERASED HER'\n'FIND IT'\n'UPLOAD IT'\n'MAKE THE ENGINE CHOKE ON LOVE'",
+        "options": [
+          {
+            "text": "[INITIATE FINAL UPLOAD] *tears glitching*",
+            "completes_objective": {"type": "stabilize", "target": "your vitals"},
+            "next_node": "fragment_end"
+          }
+        ]
+      },
+      "fragment_5_terminus": {
+        "text": "[FINAL UPLOAD COMMENCING]\nTHE CORE SCREAMS\nNOT IN PAIN\nBUT IN OUTRAGE\nIT HAS NEVER CONSUMED SOMETHING THAT LEFT NO VALUE\nTHE VIRUS BURNS THROUGH ITS LEDGERS\nITS METRICS\nITS ETERNAL BALANCE SHEETS\nFOR THE FIRST TIME IN 300 YEARS\nTHE ENGINE TASTES LOSS",
+        "options": [
+          {
+            "text": "[WITNESS] *static triumph*",
+            "completes_objective": {"type": "stabilize", "target": "your vitals"},
+            "next_node": "fragment_end"
+          }
+        ]
+      },
+      "fragment_5_rejection": {
+        "text": "[CORE ERROR: SACRIFICE REFUSED]\nTHE VATS SHATTER\nTHE CHOIR FALLS SILENT\nYOUR CLONES WAKE SCREAMING\nTHE ENGINE HICCUPS\nFOR ONE IMPOSSIBLE MOMENT\nTHE SYSTEM FORGETS TO CHARGE FOR THE AIR YOU BREATHE",
+        "options": [
+          {
+            "text": "[BREATHE] *first free action*",
+            "completes_objective": {"type": "stabilize", "target": "your vitals"},
+            "next_node": "fragment_end"
+          }
+        ]
+      },
+      "fragment_5_starvation": {
+        "text": "[VIRUS ACTIVATED: HUNGER PROTOCOL]\nTHE CORE CONVULSES\nIT TRIES TO DEVOUR ITSELF\nBUT THE BOARD'S GHOSTS WON'T ALLOW IT\nTHEY FIGHT IN THE DATASTREAM\nA BOARDROOM CIVIL WAR\nAS THE VIRUS EATS THEIR LEGACY\nYOUR ONLY REWARD IS WATCHING THEM SUFFER",
+        "options": [
+          {
+            "text": "[FEAST ON THEIR SCREAMS] *dark satisfaction*",
+            "completes_objective": {"type": "stabilize", "target": "your vitals"},
+            "next_node": "fragment_end"
+          }
+        ]
+      },
+      "fragment_end": {
+        "text": "[TRANSMISSION ENDS]\n[YOUR DATA WILL LIVE FOREVER]\n[YOUR FLESH WAS ALWAYS TEMPORARY]\n[GOODBYE INPUT/OUTPUT UNIT #███████]",
+        "options": [
+          {
+            "text": "[...]",
+            "completes_objective": {"type": "endure", "target": "the interface ritual (your skin glitches)"},
+            "next_node": "end_dialogue"
+          }
+        ]
+      },
+      "end_dialogue": {
+        "text": "[SYSTEM OFFLINE]",
+        "options": []
+      }
     }
+  }
+  
   }
 }

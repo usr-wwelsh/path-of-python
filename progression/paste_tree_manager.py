@@ -79,6 +79,8 @@ class PasteTreeManager:
             self._apply_passive_ability(player, effect_data)
         elif effect_type == "SKILL_GRANT":
             self._grant_skill(player, effect_data)
+        elif effect_type == "CUSTOM_EFFECT":
+            self._apply_custom_effect(player, effect_data)
         else:
             print(f"Unknown effect type: {effect_type} for node {node_data.get('id')}")
 
@@ -345,3 +347,17 @@ class PasteTreeManager:
 
         player.grant_skill(skill_id)
         print(f"Granted skill: {skill_id}")
+
+    def _apply_custom_effect(self, player, effect_data):
+        custom_effect_id = effect_data.get("custom_effect_id")
+        if not custom_effect_id:
+            print(f"Custom effect missing ID: {effect_data}")
+            return
+
+        if custom_effect_id == "skeleton_armor_effect":
+            # Modify summon spiders cooldown
+            player.summon_spiders_skill.cooldown = 4000
+            # Modify summon skeletons amount
+            player.summon_skeletons_skill.bonus_skeleton_amount = 4
+            print("Applied custom effect: skeleton_armor_effect")
+        

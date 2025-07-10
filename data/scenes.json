@@ -169,6 +169,21 @@
             "name": "feast_hall2",
             "class": "core.dungeons.feast_hall2.feast_hall2",
             "dungeon_data_path": "data/dungeons/feast_hall2.json"
+        },
+        {
+            "name": "feast_hall3",
+            "class": "core.dungeons.feast_hall3.feast_hall3",
+            "dungeon_data_path": "data/dungeons/feast_hall3.json"
+        },
+        {
+            "name": "feast_hall4",
+            "class": "core.dungeons.feast_hall4.feast_hall4",
+            "dungeon_data_path": "data/dungeons/feast_hall4.json"
+        },
+        {
+            "name": "data_maw",
+            "class": "core.dungeons.data_maw.data_maw",
+            "dungeon_data_path": "data/dungeons/data_maw.json"
         }
     ]
 }

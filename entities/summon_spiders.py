@@ -24,7 +24,10 @@ class SummonSpiders:
         self.bonus_spider_damage = 0
         self.spider_speed = 280 # Increased spider speed (70 * 4 = 280)
         self.last_used = 0
-        self.cooldown = 10000  # 10 second cooldown
+        if self.player.has_skill("skeleton_armor"):
+            self.cooldown = 4000  # 4 second cooldown
+        else:
+            self.cooldown = 10000  # 10 second cooldown
         self.mana_cost = 30
         self.summon_spread_radius = TILE_SIZE * 10 # Radius around player to spread spiders
 
@@ -209,59 +212,64 @@ class Spider(Enemy):
             return
 
         current_time = pygame.time.get_ticks()
+        self_rect = self.rect # Cache self.rect
 
         nearest_enemy = self._find_nearest_enemy(self.enemy_finding_range)
 
         if nearest_enemy:
-            dx, dy = nearest_enemy.rect.centerx - self.rect.centerx, nearest_enemy.rect.centery - self.rect.centery
-            dist = math.hypot(dx, dy)
+            target_rect = nearest_enemy.rect # Cache target's rect
+            dx = target_rect.centerx - self_rect.centerx
+            dy = target_rect.centery - self_rect.centery
+            dist_sq = dx*dx + dy*dy
 
-            if dist <= self.attack_range and current_time - self.last_attack_time > self.attack_cooldown:
+            # Attack logic
+            if dist_sq <= self.attack_range**2 and current_time - self.last_attack_time > self.attack_cooldown:
                 nearest_enemy.take_damage(self.damage)
-                # Apply slow
                 nearest_enemy.apply_slow(self.slow_amount, self.slow_duration)
-                # Apply poison
                 if hasattr(self.player, 'webweavers_wrath_state') and self.player.webweavers_wrath_state["active"]:
                     web_slow_amount = self.player.webweavers_wrath_state["slow_amount"]
                     web_entangle_duration = self.player.webweavers_wrath_state["entangle_duration"]
-                    WebEffect(self.game, nearest_enemy.rect.centerx, nearest_enemy.rect.centery, web_slow_amount, web_entangle_duration)
-                    print(f"Spider created WebEffect at ({nearest_enemy.rect.centerx}, {nearest_enemy.rect.centery})")
-                nearest_enemy.apply_poison(self.poison_damage["min"], self.poison_duration) # Corrected to use min damage for poison
+                    WebEffect(self.game, target_rect.centerx, target_rect.centery, web_slow_amount, web_entangle_duration)
+                nearest_enemy.apply_poison(self.poison_damage["min"], self.poison_duration)
                 self.last_attack_time = current_time
-                print(f"Spider attacked {nearest_enemy.name} for {self.damage} damage, applied slow and poison.")
-            elif dist > 0:
+            # Movement logic
+            elif dist_sq > 0:
+                dist = math.sqrt(dist_sq)
                 dx, dy = dx / dist, dy / dist
                 move_x = dx * self.speed * dt
-                move_y = dy * self.speed * dt # Corrected typo here
+                move_y = dy * self.speed * dt
 
-                original_x, original_y = self.rect.x, self.rect.y
-
-                self.rect.x += move_x
+                original_x, original_y = self_rect.x, self_rect.y
+                self_rect.x += move_x
                 if self._check_collision(tile_map, tile_size):
-                    self.rect.x = original_x
-
-                self.rect.y += move_y
+                    self_rect.x = original_x
+                self_rect.y += move_y
                 if self._check_collision(tile_map, tile_size):
-                    self.rect.y = original_y
+                    self_rect.y = original_y
         else:
-            dx, dy = player.rect.centerx - self.rect.centerx, player.rect.centery - self.rect.centery
-            dist = math.hypot(dx, dy)
+            # Circle player if no enemy is near
+            player_rect = player.rect
+            dx = player_rect.centerx - self_rect.centerx
+            dy = player_rect.centery - self_rect.centery
+            dist_sq = dx*dx + dy*dy
 
-            if dist > 0 and dist < self.following_range:
+            if dist_sq > 0 and dist_sq < self.following_range**2:
                 self._circle_around_player(dt, player, tile_map, tile_size)
 
     def _find_nearest_enemy(self, finding_range):
+        """Finds the nearest enemy that is not a player minion, using squared distances for efficiency."""
         nearest_enemy = None
-        min_distance = float('inf')
+        min_dist_sq = finding_range ** 2
 
         for sprite in self.game.current_scene.enemies:
-            #if isinstance(sprite, Enemy) and not isinstance(sprite, Spider) and not isinstance(sprite, Skeleton):
+            # Check if the sprite is an Enemy and not a friendly minion to prevent crashes
             if isinstance(sprite, Enemy) and sprite.faction != "player_minions":
-                dx, dy = sprite.rect.centerx - self.rect.centerx, sprite.rect.centery - self.rect.centery
-                dist = math.hypot(dx, dy)
+                dx = sprite.rect.centerx - self.rect.centerx
+                dy = sprite.rect.centery - self.rect.centery
+                dist_sq = dx*dx + dy*dy
 
-                if dist < min_distance and dist <= finding_range:
-                    min_distance = dist
+                if dist_sq < min_dist_sq:
+                    min_dist_sq = dist_sq
                     nearest_enemy = sprite
         return nearest_enemy
 

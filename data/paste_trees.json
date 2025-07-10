@@ -166,11 +166,9 @@
         "id": "skeleton_armor",
         "name": "Armored Skeletons",
         "description": "Summoned skeletons gain 40% increased health.",
-        "effect_type": "STAT_MODIFIER",
+        "effect_type": "CUSTOM_EFFECT",
         "effect_data": {
-            "stat": "skeleton_health_multiplier",
-            "value": 0.40,
-            "operation": "multiply"
+            "custom_effect_id": "skeleton_armor_effect"
         }
       },
       {

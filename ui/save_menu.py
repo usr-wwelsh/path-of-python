@@ -215,7 +215,8 @@ class SaveMenu(BaseScene):
 
             # Load paste tree data
             if "paste_tree" in save_data:
-                player.acquired_paste_nodes = save_data.get("paste_tree", {}).get("acquired_paste_nodes", [])
+                paste_tree_manager = PasteTreeManager(self.game)
+                paste_tree_manager.load_player_paste_tree_data(player, save_data)
 
             # Ensure current life, mana, energy shield are capped at max
             player.current_life = min(player.current_life, player.max_life)

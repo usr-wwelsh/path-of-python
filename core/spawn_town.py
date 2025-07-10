@@ -97,6 +97,8 @@ class SpawnTown(BaseGameplayScene):
 # Only override with corrupted tileset if quest is completed
             if self.quest_tracker.is_quest_completed("quest_005"):
                 tileset_name = "corrupted_tileset"
+            if self.quest_tracker.is_quest_completed("quest_007"):
+                tileset_name = "hideout_tileset"
 
              # Remove suffix
         except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
@@ -138,6 +140,9 @@ class SpawnTown(BaseGameplayScene):
         # Determine the seed for map generation based on quest completion
         if self.quest_tracker.is_quest_completed("quest_005"):
             seed = None  # Use a random seed if quest 5 is completed
+            map_generator = SpawnTownMapGenerator(30, 17, seed=seed)
+        if self.quest_tracker.is_quest_completed("quest_007"):
+            seed = 29  # Use a random seed if quest 7 is completed
             map_generator = SpawnTownMapGenerator(30, 17, seed=seed)
         else:
             seed = 47  # Use the fixed seed otherwise
@@ -230,6 +235,7 @@ class SpawnTown(BaseGameplayScene):
         self.shop_message = None
         self.quest_5_dialogue_set = False # Initialize flag for quest 5 dialogue
         self.quest_6_dialogue_set = False # Initialize flag for quest 5 dialogue
+        self.quest_7_dialogue_set = False # Initialize flag for quest 5 dialogue
 
     def enter(self):
         self.game.logger.info("Entering SpawnTown.")
@@ -453,6 +459,23 @@ class SpawnTown(BaseGameplayScene):
                     if npc.in_dialogue:
                         self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
             self.quest_6_dialogue_set = True # Set flag to prevent repeated updates
+
+        if self.quest_tracker.is_quest_completed("quest_007") and not self.quest_7_dialogue_set:
+            print("Quest 7 completed! Updating NPC dialogues.")
+            for npc in self.npcs:
+                if npc.name == "Bob the Bold":
+                    npc.dialogue_id = "bob_dialogue_post_quest_7"
+                    if npc.in_dialogue:
+                        self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
+                elif npc.name == "Alice the Agile":
+                    npc.dialogue_id = "alice_dialogue_post_quest_7"
+                    if npc.in_dialogue:
+                        self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
+                elif npc.name == "Charlie the Calm":
+                    npc.dialogue_id = "charlie_dialogue_post_quest_7"
+                    if npc.in_dialogue:
+                        self.game.dialogue_manager.start_dialogue(npc.dialogue_id)
+            self.quest_7_dialogue_set = True # Set flag to prevent repeated updates
 
         # Combine NPCs for the minimap
         all_entities = self.npcs.sprites()

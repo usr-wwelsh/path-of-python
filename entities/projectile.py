@@ -4,6 +4,7 @@ import math
 from config.constants import TILE_SIZE
 
 class Projectile(pygame.sprite.Sprite):
+    sprite_cache = {}
     def __init__(self, game, x, y, target_x, target_y, speed, damage, sprite_path):
         super().__init__()
         self.game = game
@@ -19,20 +20,27 @@ class Projectile(pygame.sprite.Sprite):
         self.apply_corrupted_blood = False # New attribute for Corrupted Blood
 
     def _load_sprite(self, sprite_path):
-        """Loads the projectile sprite, with error handling."""
+        """Loads the projectile sprite, with caching and error handling."""
+        if sprite_path in self.sprite_cache:
+            return self.sprite_cache[sprite_path]
+
         full_path = os.path.join(os.getcwd(), sprite_path)
         try:
             if not os.path.exists(full_path):
                 print(f"Error: Projectile sprite file not found: {full_path}")
                 placeholder = pygame.Surface((TILE_SIZE // 2, TILE_SIZE // 2))
                 placeholder.fill((255, 0, 0))  # Red color for missing texture
+                self.sprite_cache[sprite_path] = placeholder
                 return placeholder
             image = pygame.image.load(full_path).convert_alpha()
-            return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE)) # Scale down for projectiles
+            scaled_image = pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE)) # Scale down for projectiles
+            self.sprite_cache[sprite_path] = scaled_image
+            return scaled_image
         except pygame.error as e:
             print(f"Error loading projectile sprite {full_path}: {e}")
             placeholder = pygame.Surface((TILE_SIZE // 2, TILE_SIZE // 2))
             placeholder.fill((255, 0, 0))  # Red color for missing texture
+            self.sprite_cache[sprite_path] = placeholder
             return placeholder
 
     def _calculate_direction(self, start_x, start_y, target_x, target_y):

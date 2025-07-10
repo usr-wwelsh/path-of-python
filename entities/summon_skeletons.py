@@ -44,6 +44,7 @@ class SummonSkeletons:
             if summon_skeletons_data:
                 self.mana_cost = summon_skeletons_data.get("mana_cost", 20)
                 self.cooldown = summon_skeletons_data.get("cooldown", 1) * 1000  # Convert to milliseconds
+                self.bonus_skeleton_amount = 0
                 self.max_skeletons = summon_skeletons_data.get("max_skeletons", 999)
                 self.skeleton_health = summon_skeletons_data.get("skeleton_health", 30)
                 self.skeleton_damage = summon_skeletons_data.get("skeleton_damage", 5)
@@ -102,7 +103,7 @@ class SummonSkeletons:
         self.last_used = current_time
 
         # Determine a random number of skeletons to summon (between 1 and 3)
-        num_to_summon = random.randint(1, 3)
+        num_to_summon = random.randint(1, 3) + self.bonus_skeleton_amount
         print(f"Attempting to summon {num_to_summon} skeletons.")
         # Add debug print to show current active skeletons and number to summon
         print(f"DEBUG: Current active skeletons: {len(self.player.game.current_scene.friendly_entities)}, Attempting to summon: {num_to_summon}")
@@ -128,7 +129,7 @@ class SummonSkeletons:
         # Create a skeleton enemy
         # Calculate scaled stats based on player level
         player_level = self.player.level
-        scaled_health = self.skeleton_health + (player_level - 1) * 5  # Example: +5 health per level
+        scaled_health = self.skeleton_health + (player_level - 1) * 50  # Example: +50 health per level
         scaled_damage = self.skeleton_damage + self.bonus_skeleton_damage + (player_level - 1) * 50  # Example: +10 damage per level
         scaled_speed = self.skeleton_speed + (player_level - 2) * 10  # Example: +5 speed per level (start scaling from level 2)
         

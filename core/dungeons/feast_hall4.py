@@ -5,10 +5,10 @@ import os
 from core.scene_manager import SceneManager
 from core.base_gameplay_scene import BaseGameplayScene
 
-class feast_hall(BaseGameplayScene):
+class feast_hall4(BaseGameplayScene):
     def __init__(self, game, player, hud, dungeon_data=None):
         super().__init__(game, player, hud, tileset_name=dungeon_data.get("tileset", "default"), dungeon_data=dungeon_data)
-        self.name = "feast_hall"
+        self.name = "feast_hall4"
         self.dungeon_data = dungeon_data
         self.tile_map = self.dungeon_data["tile_map"]
         self.map_width = self.dungeon_data["width"]
@@ -17,7 +17,6 @@ class feast_hall(BaseGameplayScene):
         self.effects = pygame.sprite.Group()  # Initialize the effects group
         self.arrow_rect = None
         self.arrow_screen_pos = (0, 0)
-
 
     def load_dungeon_data(self, dungeon_name):
         # This method is no longer strictly needed if dungeon_data is passed directly,
@@ -37,7 +36,7 @@ class feast_hall(BaseGameplayScene):
 
         # Check if player is standing on the rectangle
         if self.arrow_rect and self.player.rect.colliderect(self.arrow_rect):
-            self.game.scene_manager.set_scene("feast_hall3")
+            self.game.scene_manager.set_scene("feast_hall2")
             return True
 
         super().update(dt, self.entities)
@@ -62,8 +61,8 @@ class feast_hall(BaseGameplayScene):
         tile_size = 64
         rect_size = 500
 
-        # Calculate position at bottom-right of the map in world coordinates
-        rect_world_x = (self.map_width * tile_size ) - 500
+        # Calculate position of the map in world coordinates
+        rect_world_x = (self.map_width * tile_size) - 500
         rect_world_y = (self.map_height * tile_size // 2)
 
         # Create rect for collision detection in world coordinates
