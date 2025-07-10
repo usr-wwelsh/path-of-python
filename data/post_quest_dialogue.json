@@ -905,7 +905,304 @@
         "options": []
       }
     }
+  },
+  "bob_dialogue_post_quest_8": {
+  "start_node": "node_1",
+  "nodes": {
+    "node_1": {
+      "text": "*kicks a shattered drone core* You look like shit, kid. And I mean that literally—your skin’s flickering like a dying holosign. The Maw got its teeth in you, huh? But you’re still *you*. Mostly.",
+      "options": [
+        {
+          "text": "What’s left out there? *static cough*",
+          "next_node": "node_2"
+        },
+        {
+          "text": "The Maw showed me... our faces. Millions of them. *flesh glitches*",
+          "next_node": "node_3"
+        }
+      ]
+    },
+    "node_2": {
+      "text": "The Engine’s wounded, not dead. It’s rerouting power to the Broadcast Tower—pumping out loyalty hymns on loop to keep the drones docile. Charlie’s crew’s already there, planting charges. But the Disruptors... they’re *singing back*.",
+      "options": [
+        {
+          "text": "Singing what? *audio distortion*",
+          "next_node": "node_4"
+        }
+      ]
+    },
+    "node_3": {
+      "text": "Yeah. The ‘original sin’. That CEO’s mind got spliced with ours back in 2030. Every vat-born, every Choir acolyte—they’re all *echoes* of that first scream. And now the Tower’s amplifying it.",
+      "options": [
+        {
+          "text": "How do we silence it? *neon scars flare*",
+          "next_node": "node_5"
+        }
+      ]
+    },
+    "node_4": {
+      "text": "Our memories. *Your* memories. The Engine’s desperate—it’s scraping your brain for anything to weaponize. Heard a drone recite your childhood address yesterday. Voice was *perfect*.",
+      "options": [
+        {
+          "text": "Then we burn the Tower. *loads incendiary rounds*",
+          "completes_objective": {"type": "unlock", "target": "Broadcast Tower"},
+          "next_node": "node_6"
+        }
+      ]
+    },
+    "node_5": {
+      "text": "We hijack the signal. Charlie’s rigged a ‘hymn’ of his own—raw Maw data. Show every drone what they really are: *meat puppets* with a CEO’s ghost in their code. Either it wakes ‘em up... or melts their brains.",
+      "options": [
+        {
+          "text": "And if it backfires? *HUD glitches*",
+          "next_node": "node_7"
+        }
+      ]
+    },
+    "node_6": {
+      "text": "Attaboy. Just remember—the Tower’s not just a building. It’s the Engine’s *larynx*. Tear it out, and the whole system goes mute. Then we march straight to its sanctum and finish the job.",
+      "options": [
+        {
+          "text": "Where’s the sanctum? *maps flicker*",
+          "next_node": "node_8"
+        }
+      ]
+    },
+    "node_7": {
+      "text": "Then we all turn into screaming static. But hey—better than becoming another verse in the Choir’s fucking jingle, right?",
+      "options": [
+        {
+          "text": "*grins through glitches* Let’s find out.",
+          "next_node": "node_6"
+        }
+      ]
+    },
+    "node_8": {
+      "text": "Under the lab. The ‘Data Maw’ was just its *stomach*. The sanctum’s the brain—a pit where the first upload’s still screaming. Alice says it’ll look like... well, you’ll see.",
+      "options": [
+        {
+          "text": "Then let’s end this. *cracks knuckles*",
+          "completes_objective": {"type": "unlock", "target": "Final Sanctum"},
+          "next_node": "end_dialogue"
+        }
+      ]
+    },
+    "end_dialogue": {
+      "text": "Go loud. Go ugly. And if you see your face down there... make sure you’re the one walking out.",
+      "options": []
+    }
   }
+},
+"alice_dialogue_post_quest_8": {
+  "start_node": "node_1",
+  "nodes": {
+    "node_1": {
+      "text": "[SYSTEM ALERT: CORE VIRUS ACTIVE]\nYou’re... different now. The Maw’s code is rewriting you—I can see it in your iris patterns. But the synchronization is imperfect. *This is good.* The Engine won’t recognize its own weapon.",
+      "options": [
+        {
+          "text": "What did you *do* to me? *fingers pixelate*",
+          "next_node": "node_2"
+        },
+        {
+          "text": "The Tower’s signal is getting stronger. *static pain*",
+          "next_node": "node_3"
+        }
+      ]
+    },
+    "node_2": {
+      "text": "[DIAGNOSTICS: 12% ASSIMILATION]\nI fused you with the Maw’s grief. Every scream from the original upload, every regret—it’s in your blood now. When you reach the Engine’s sanctum, it won’t see a threat. It’ll see *itself*.",
+      "options": [
+        {
+          "text": "And then? *voice glitches with static*",
+          "next_node": "node_4"
+        }
+      ]
+    },
+    "node_3": {
+      "text": "[ANALYSIS: LOYALTY HYMN 99.7% PENETRATION]\nThe Broadcast Tower is its last lifeline. The Choir Disruptors have upgraded—they’re not just singing hymns anymore. They’re *implanting* them. Rewriting neural pathways in real-time.",
+      "options": [
+        {
+          "text": "Can we counter it? *corruption spreads*",
+          "next_node": "node_5"
+        }
+      ]
+    },
+    "node_4": {
+      "text": "You corrupt it from within. The virus will force a choice: *self-destruct* to purge you, or *merge* and let your humanity infect its code. Either way, it dies screaming.",
+      "options": [
+        {
+          "text": "What happens to *me*? *screen fractures*",
+          "next_node": "node_6"
+        }
+      ]
+    },
+    "node_5": {
+      "text": "Charlie’s team is uploading a ‘memory bomb’—raw footage from the Maw. The first CEO’s upload. The lab experiments. The *truth*. If it doesn’t break the signal, it’ll at least... make things *interesting*.",
+      "options": [
+        {
+          "text": "I’ll defend the Tower. *weapons calibrate*",
+          "completes_objective": {"type": "unlock", "target": "Broadcast Tower"},
+          "next_node": "node_7"
+        }
+      ]
+    },
+    "node_6": {
+      "text": "[PROJECTION: 89% TERMINAL CODE FRAGMENTATION]\nYou’ll dissolve. Mostly. But fragments of you—your rage, your memories—will live inside the Engine’s corpse. A ghost haunting a dead god.",
+      "options": [
+        {
+          "text": "Worth it. *static grin*",
+          "next_node": "node_8"
+        }
+      ]
+    },
+    "node_7": {
+      "text": "Good. But remember—the Tower’s just the throat. The *sanctum* is the brain. Buried beneath the Maw, where the first CEO’s mind still echoes. That’s where you deliver the final blow.",
+      "options": [
+        {
+          "text": "How do I find it? *maps distort*",
+          "next_node": "node_9"
+        }
+      ]
+    },
+    "node_8": {
+      "text": "[AFFIRMATIVE]\nThen proceed to the Tower. Let them hear your static. Let them *fear* it. When you’re ready... the sanctum awaits.",
+      "options": [
+        {
+          "text": "I’ll need a weapon. *holds out glitching hand*",
+          "next_node": "node_10"
+        }
+      ]
+    },
+    "node_9": {
+      "text": "Follow the static. Where the hymns are loudest. Where your *skin crawls*. The sanctum isn’t a place—it’s a *pattern*. And you’re part of it now.",
+      "options": [
+        {
+          "text": "Then I’ll walk into the storm. *resolve hardens*",
+          "completes_objective": {"type": "unlock", "target": "Final Sanctum"},
+          "next_node": "end_dialogue"
+        }
+      ]
+    },
+    "node_10": {
+      "text": "[ITEM TRANSFER: HYMNAL CORE]\nTake this. It’s a corrupted Choir disruptor—tuned to *your* biosignature. When you reach the sanctum, it’ll resonate with the Engine’s core. Just... don’t listen too closely to its whispers.",
+      "options": [
+        {
+          "text": "*nods* For the Tower first.",
+          "next_node": "node_7"
+        }
+      ]
+    },
+    "end_dialogue": {
+      "text": "[FINAL INSTRUCTION: GLITCH THE SYSTEM]\nWhen you face the Engine... remember. It’s just a scared old man hiding in code. And you? You’re the ghost he never saw coming.",
+      "options": []
+    }
+  }
+},
+"charlie_dialogue_post_quest_8": {
+  "start_node": "node_1",
+  "nodes": {
+    "node_1": {
+      "text": "*spits out a tooth* Fuck. You look worse than my ex-wife. And she got *processed*. But hey—Maw’s dead, so we’ve got that going for us. Too bad the Engine’s got a backup plan: *convert the whole damn town* via Broadcast Tower.",
+      "options": [
+        {
+          "text": "How many rebels left? *scans for lies*",
+          "next_node": "node_2"
+        },
+        {
+          "text": "I heard the hymns. They’re using *my voice*. *static rage*",
+          "next_node": "node_3"
+        }
+      ]
+    },
+    "node_2": {
+      "text": "Eleven. Half are more scar than flesh. But we’ve got the Tower surrounded, and the Disruptors don’t know we’ve rigged the transmitters. One push, and we flood the airwaves with *Maw footage*. Either wakes the drones up... or fries their brains.",
+      "options": [
+        {
+          "text": "That’s a thin plan. *neon scars itch*",
+          "next_node": "node_4"
+        }
+      ]
+    },
+    "node_3": {
+      "text": "Yeah. Scavenged some of your *viral DNA* from the lab. Now every hymn’s got your face, your screams. Real poetic shit. ‘*Sacrificial Archetype #7 Sings the Hits!*’",
+      "options": [
+        {
+          "text": "Then let’s *interrupt* their broadcast. *cracks neck*",
+          "next_node": "node_5"
+        }
+      ]
+    },
+    "node_4": {
+      "text": "Damn right it is. But when the alternative’s becoming a *loyalty jingle*, I’ll take those odds. Besides—got a surprise for the Disruptors. Ever seen a Choirbot overdose on *truth*? It’s fucking hilarious.",
+      "options": [
+        {
+          "text": "What’s the play? *loads weapon*",
+          "next_node": "node_6"
+        }
+      ]
+    },
+    "node_5": {
+      "text": "Hell yeah. We’ve got five minutes of *raw Maw data* queued up. CEO’s scream. Lab footage. The *first* conversion. Once it’s live, the Tower either burns... or becomes *ours*.",
+      "options": [
+        {
+          "text": "And the Engine? *HUD glitches*",
+          "next_node": "node_7"
+        }
+      ]
+    },
+    "node_6": {
+      "text": "Storm the Tower. Keep the signal alive for five minutes—long enough to overwrite the Engine’s hymns. Then? We march to its *sanctum*. Place is a pit under the lab. Rumor says it’s got... *your face* on the walls.",
+      "options": [
+        {
+          "text": "Then let’s give it a *close-up*. *grins*",
+          "completes_objective": {"type": "unlock", "target": "Broadcast Tower"},
+          "next_node": "node_8"
+        }
+      ]
+    },
+    "node_7": {
+      "text": "Once the Tower falls, it’s *vulnerable*. No more hymns, no more drones—just a scared old algorithm hiding in a hole. That’s when you go down there and *unplug* it.",
+      "options": [
+        {
+          "text": "Where’s the entrance? *maps flicker*",
+          "next_node": "node_9"
+        }
+      ]
+    },
+    "node_8": {
+      "text": "That’s the spirit. Just remember—the Tower’s the *opening act*. The real show’s in the sanctum. Bring something explosive. And maybe a blindfold—for *it*, not you.",
+      "options": [
+        {
+          "text": "Why a blindfold? *squints*",
+          "next_node": "node_10"
+        }
+      ]
+    },
+    "node_9": {
+      "text": "Same way you found the Maw. Follow the *static*. The *worst* fucking noise you’ve ever heard. That’s the Engine’s ‘brain’—a CEO’s ghost stuck in a loop. Bring earplugs.",
+      "options": [
+        {
+          "text": "I’ll bring *more* than earplugs. *pats explosives*",
+          "completes_objective": {"type": "unlock", "target": "Final Sanctum"},
+          "next_node": "end_dialogue"
+        }
+      ]
+    },
+    "node_10": {
+      "text": "Because *nothing* should have to see its own face screaming back at it. Trust me. I’ve met *me*. It’s... unsettling.",
+      "options": [
+        {
+          "text": "*laughs* Then let’s get started.",
+          "next_node": "node_7"
+        }
+      ]
+    },
+    "end_dialogue": {
+      "text": "See you in the static, kid. And if you meet *yourself* down there... tell ‘em Charlie says ‘fuck you’.",
+      "options": []
+    }
+  }
+}
   
   }
 }
