@@ -1,3 +1,5 @@
+import sys
+sys.setrecursionlimit(5000)
 import pygame
 import json
 import os

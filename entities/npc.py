@@ -9,6 +9,7 @@ class NPC(pygame.sprite.Sprite):
         self.name = name
         self.dialogue_id = dialogue_id
         self.in_dialogue = False
+        self.dialogue_finished = False
 
         # Define sprite paths
         yaktaur_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon")
@@ -93,6 +94,7 @@ class NPC(pygame.sprite.Sprite):
 
     def interact(self, player):
         # Placeholder for interaction logic (e.g., open dialogue, quest, shop)
+        self.game.current_npc = self
         if self.dialogue_id:
             self.in_dialogue = True
             print(f"NPC {self.name} interacting with dialogue_id: {self.dialogue_id}")

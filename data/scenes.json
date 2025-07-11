@@ -117,12 +117,6 @@
             "darkness": true
         },
         {
-            "name": "tower",
-            "class": "core.dungeons.tower.tower",
-            "dungeon_data_path": "data/dungeons/tower.json",
-            "darkness": true
-        },
-        {
             "name": "maze",
             "class": "core.dungeons.maze.maze",
             "dungeon_data_path": "data/dungeons/maze.json",
@@ -184,6 +178,36 @@
             "name": "data_maw",
             "class": "core.dungeons.data_maw.data_maw",
             "dungeon_data_path": "data/dungeons/data_maw.json"
+        },
+        {
+            "name": "broadcast_tower",
+            "class": "core.dungeons.broadcast_tower.broadcast_tower",
+            "dungeon_data_path": "data/dungeons/broadcast_tower.json"
+        },
+        {
+            "name": "tower1",
+            "class": "core.dungeons.tower1.tower1",
+            "dungeon_data_path": "data/dungeons/tower1.json"
+        },
+        {
+            "name": "tower2",
+            "class": "core.dungeons.tower2.tower2",
+            "dungeon_data_path": "data/dungeons/tower2.json"
+        },
+        {
+            "name": "tower3",
+            "class": "core.dungeons.tower3.tower3",
+            "dungeon_data_path": "data/dungeons/tower3.json"
+        },
+        {
+            "name": "tower4",
+            "class": "core.dungeons.tower4.tower4",
+            "dungeon_data_path": "data/dungeons/tower4.json"
+        },
+        {
+            "name": "final_sanctum",
+            "class": "core.dungeons.final_sanctum.final_sanctum",
+            "dungeon_data_path": "data/dungeons/final_sanctum.json"
         }
     ]
 }

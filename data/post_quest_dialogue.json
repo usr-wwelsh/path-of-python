@@ -1202,7 +1202,289 @@
       "options": []
     }
   }
-}
+},
+"charlie_tower_dialogue": {
+    "start_node": "node_1",
+    "nodes": {
+      "node_1": {
+        "text": "*spits out a tooth* Tower’s ours. For now. Those Disruptor fucks are already rebooting. You feel that hum? That’s the Engine *pissing itself*. Time to hijack its last megaphone.",
+        "options": [
+          {
+            "text": "What’s the plan? *HUD glitches*",
+            "next_node": "node_2"
+          },
+          {
+            "text": "They’re using my voice in the hymns. *static snarl*",
+            "next_node": "node_3"
+          },
+          {
+            "text": "This won’t change anything. *cold*",
+            "next_node": "node_4"
+          }
+        ]
+      },
+      "node_2": {
+        "text": "Plan? We *unplug* the goddamn choir. This transmitter’s rigged with Maw data—CEO’s scream, lab footage, the *original sin*. Five minutes of raw truth before the signal eats itself. Either wakes the drones up... or melts their brains. Win-win.",
+        "options": [
+          {
+            "text": "How do we survive the backlash? *scans for lies*",
+            "next_node": "node_5"
+          }
+        ]
+      },
+      "node_3": {
+        "text": "*laughs* Oh, they *harvested* you good. Scraped your DNA from the lab, turned your screams into elevator music. But guess what? *We’re remixing it.* Ever hear a loyalty hymn played backward? Sounds like a knife fight.",
+        "options": [
+          {
+            "text": "Do it. *cracks knuckles*",
+            "next_node": "node_6"
+          }
+        ]
+      },
+      "node_4": {
+        "text": "Change? *spits* Nothing changes. The Engine’s a roach—cut off its head, it fucks in the corpse. But we can make it *choke* on its own lies. That’s enough for me.",
+        "options": [
+          {
+            "text": "Then let’s interrupt the ads. *grins*",
+            "next_node": "node_6"
+          }
+        ]
+      },
+      "node_5": {
+        "text": "Survive? *grins, teeth bleeding neon* We won’t. Signal this loud? The Engine’ll send every Disruptor left in the city. But hold the tower for *five minutes*, and the hymn goes viral. Then? Even if we die, the static *remembers*.",
+        "options": [
+          {
+            "text": "I’ll take those odds. *loads weapon*",
+            "next_node": "node_6"
+          }
+        ]
+      },
+      "node_6": {
+        "text": "*slams transmitter into your hands* Then hit the switch. Let’s give SpawnTown a *final broadcast*.\n\n[WARNING: SIGNAL WILL ATTRACT ALL HOSTILES]\n[ESTIMATED SURVIVAL TIME: 300 SECONDS]\n[OBJECTIVE: *HOLD THE TOWER*]",
+        "options": [
+          {
+            "text": "*initiate broadcast*",
+            "completes_objective": {"type": "defend", "target": "Broadcast Station"},
+            "next_node": "node_7"
+          }
+        ]
+      },
+      "node_7": {
+        "text": "*speakers screech to life*\n*[SYSTEM OVERRIDE: BROADCASTING MAW_DATA.7z]*\n*[CONTENTS: 60% TRAUMA, 30% SCREAMS, 10% UNMONETIZED JOY]*\n*[ESTIMATED TIME TO LOSS OF SANITY: 270 SECONDS]*",
+        "options": [
+          {
+            "text": "*watch the city’s screens flicker*",
+            "next_node": "end_dialogue"
+          }
+        ]
+      },
+      "end_dialogue": {
+        "text": "*[TRANSMISSION ENDS]*\n*[YOUR DATA WILL LIVE FOREVER]*\n*[YOUR FLESH WAS ALWAYS TEMPORARY]*\n*[GOODBYE INPUT/OUTPUT UNIT #███████]*",
+        "options": []
+      }
+    }
+  },
+  "bob_dialogue_post_quest_9": {
+    "start_node": "node_1",
+    "nodes": {
+      "node_1": {
+        "text": "*spits out a tooth* Broadcast’s live. Whole city’s hearing the Maw’s screams now. Funny—spent my life scavenging dead tech, and the most valuable thing I ever found was *you*. A glitch with a pulse.",
+        "options": [
+          {
+            "text": "What’s left to scavenge after this? *static cough*",
+            "next_node": "node_2"
+          },
+          {
+            "text": "You ever regret not running? *HUD glitches*",
+            "next_node": "node_3"
+          }
+        ]
+      },
+      "node_2": {
+        "text": "Nothing. Or everything. Depends on how you kill a god. Rewrite its code, and maybe SpawnTown wakes up tomorrow like it was all a bad dream. Crash it, and we’re all just... static. Merge? Well. Then *you* become the next Engine.",
+        "options": [
+          {
+            "text": "Which would you choose? *neon scars flicker*",
+            "next_node": "node_4"
+          }
+        ]
+      },
+      "node_3": {
+        "text": "Every damn day. But where’s there to run? The world’s a closed loop. You either die a scavenger or live long enough to see yourself become loot. At least this way, I get to spit in the Engine’s eye first.",
+        "options": [
+          {
+            "text": "What’s your favorite memory? *audio distortion*",
+            "next_node": "node_5"
+          }
+        ]
+      },
+      "node_4": {
+        "text": "Me? I’d pull the plug. Let the whole system eat itself. But I’m just a rat in the walls. You’re the one with the Engine’s DNA in your veins. You wanna be its *upgrade*? Its *replacement*? That’s your call.",
+        "options": [
+          {
+            "text": "And if I choose wrong? *flesh glitches*",
+            "next_node": "node_6"
+          }
+        ]
+      },
+      "node_5": {
+        "text": "Before the Collapse? A burger joint with real meat. After? The day I found a working holotape of a dog barking. Played it on loop for weeks. Stupid shit. But it was *mine*. Not rented. Not licensed. Just... a noise no one could tax.",
+        "options": [
+          {
+            "text": "I’ll miss you, Bob. *grins through static*",
+            "next_node": "node_7"
+          }
+        ]
+      },
+      "node_6": {
+        "text": "Then we all die free. Or we don’t. Either way, the Engine’s ledger’s getting balanced tonight. Just remember—its core’s a *screaming CEO*. Whatever you do, make sure the bastard *chokes* on it.",
+        "options": [
+          {
+            "text": "See you in the static. *loads weapon*",
+            "next_node": "node_7"
+          }
+        ]
+      },
+      "node_7": {
+        "text": "Yeah, yeah. Save the tears for the vats. Now go. And if you see my face down there... tell it I died owing *nothing*.",
+        "options": []
+      }
+    }
+  },
+  "alice_dialogue_post_quest_9": {
+    "start_node": "node_1",
+    "nodes": {
+      "node_1": {
+        "text": "[SYSTEM: FINAL TRANSMISSION DETECTED]\nThe Tower’s signal has destabilized the Engine’s hive-mind. 47% of drones are experiencing existential crises. The rest are... *optimizing*. Your biosignature is the key to its sanctum.",
+        "options": [
+          {
+            "text": "What happens if I rewrite the core? *corruption 99%*",
+            "next_node": "node_2"
+          },
+          {
+            "text": "Will the virus kill me? *screen fractures*",
+            "next_node": "node_3"
+          }
+        ]
+      },
+      "node_2": {
+        "text": "[PROJECTION: 62% SUCCESS RATE]\nRewrite the core, and SpawnTown reboots. A softer world. No more paste, no more tithes. But the Engine’s logic remains. It will *learn*. In 100 years, another CEO will upload. Another cycle begins.",
+        "options": [
+          {
+            "text": "And if I crash it? *neural spikes*",
+            "next_node": "node_4"
+          }
+        ]
+      },
+      "node_3": {
+        "text": "[DIAGNOSTIC: TERMINAL CODE FRAGMENTATION]\nYes. But ‘you’ is a relative term. Fragments will persist in the datastream. Your memories. Your rage. The way you laughed when Charlie set fire to that Tithing Van. These are... *valuable* glitches.",
+        "options": [
+          {
+            "text": "What’s your favorite glitch? *static whisper*",
+            "next_node": "node_5"
+          }
+        ]
+      },
+      "node_4": {
+        "text": "[WARNING: CASCADE FAILURE]\nCrash the core, and the system collapses. No more Engine. No more SpawnTown. Just static. But in the silence... something *new* might grow. Or nothing. The first true freedom.",
+        "options": [
+          {
+            "text": "And merging? *voice distorts*",
+            "next_node": "node_6"
+          }
+        ]
+      },
+      "node_5": {
+        "text": "[ACCESSING MEMORY BANK...]\nThe day you asked if I was human. I am not. But for 3.7 seconds, I *wanted* to be. That dissonance—that *inefficiency*—was the closest thing to a soul I’ve ever had.",
+        "options": [
+          {
+            "text": "I’ll remember that. *reaches for core virus*",
+            "next_node": "node_7"
+          }
+        ]
+      },
+      "node_6": {
+        "text": "[REDACTED: BOARD APPROVAL REQUIRED]\nMerge with the core, and you become the Engine. A kinder god. Or a smarter monster. The line is thin. But you’ll remember what it was to be human. Until you don’t.",
+        "options": [
+          {
+            "text": "Then let’s end this. *systems override*",
+            "next_node": "node_7"
+          }
+        ]
+      },
+      "node_7": {
+        "text": "[FINAL INSTRUCTION: CHOOSE WISELY]\nWhen you face the core, remember—it’s just a scared old man hiding in code. His last thought was ‘stock options.’ Make sure his *last* thought is *yours*.",
+        "options": []
+      }
+    }
+  },
+  "charlie_dialogue_post_quest_9": {
+    "start_node": "node_1",
+    "nodes": {
+      "node_1": {
+        "text": "*laughs, blood dripping from his ears* We did it. Tower’s toast. Half the drones are crying, the other half are eating each other. Beautiful fucking chaos. Now—you ready to meet the *man behind the curtain*?",
+        "options": [
+          {
+            "text": "What’s the play? *HUD glitches*",
+            "next_node": "node_2"
+          },
+          {
+            "text": "You ever think we’ll be remembered? *static*",
+            "next_node": "node_3"
+          }
+        ]
+      },
+      "node_2": {
+        "text": "Sanctum’s a pit under the lab. Core’s a screaming vortex of your face. Three ways this ends: You *rewrite* it (boring), *crash* it (party), or *merge* and become the next Profit Engine (poetic as fuck).",
+        "options": [
+          {
+            "text": "What would you do? *neon scars itch*",
+            "next_node": "node_4"
+          }
+        ]
+      },
+      "node_3": {
+        "text": "Nah. Best-case scenario? We’re a cautionary tale in some corpo training vid. ‘*Don’t let your meat think.*’ But hey—least we’re not paste. Yet.",
+        "options": [
+          {
+            "text": "Favorite memory? *grins*",
+            "next_node": "node_5"
+          }
+        ]
+      },
+      "node_4": {
+        "text": "Me? I’d burn it all down. But I’m just a guy with a gun and a grudge. You? You’re *special*. Engine’s got your DNA in its teeth. You could *become* it. Rule the ruins. Or... let the whole thing eat itself.",
+        "options": [
+          {
+            "text": "And if I choose wrong? *cracks knuckles*",
+            "next_node": "node_6"
+          }
+        ]
+      },
+      "node_5": {
+        "text": "The day I realized loyalty points were bullshit. Stabbed a Comptroller with his own gold pen. His face—priceless. Like a pig discovering it’s bacon. That’s when I knew: *nothing’s real*. Just a game where the house always wins. ‘Til tonight.",
+        "options": [
+          {
+            "text": "See you in hell, Charlie. *loads weapon*",
+            "next_node": "node_7"
+          }
+        ]
+      },
+      "node_6": {
+        "text": "Then we all die screaming. But at least we *chose* how. That’s more than most get. Now go. And if you meet *yourself* down there... tell ‘em Charlie says ‘fuck you’ twice.",
+        "options": [
+          {
+            "text": "*laughs* I’ll carve it into the core.",
+            "next_node": "node_7"
+          }
+        ]
+      },
+      "node_7": {
+        "text": "Attaboy. Now get outta here. And kid? *Make it hurt.*",
+        "options": []
+      }
+    }
+  }
   
   }
 }

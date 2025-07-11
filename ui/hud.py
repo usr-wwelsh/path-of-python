@@ -18,6 +18,9 @@ import os
 
 class HUD:
     def __init__(self, player, scene):
+        self.countdown_active = False
+        self.countdown_start_time = 0
+        self.countdown_duration = 0
         self.player = player
         self.minimap = Minimap(self.player, [], scene) # Initialize with an empty entity list for now
         self.font = pygame.font.SysFont(UI_FONT, UI_FONT_SIZE_DEFAULT)
@@ -40,8 +43,26 @@ class HUD:
         except (FileNotFoundError, json.JSONDecodeError) as e:
             print(f"Error loading skill tree data: {e}")
             return {"skills": []}
+    
+    def start_countdown(self, duration):
+        self.countdown_active = True
+        self.countdown_duration = duration
+        self.countdown_start_time = pygame.time.get_ticks()
+
+    def stop_countdown(self):
+        self.countdown_active = False
+        self.countdown_duration = 0
 
     def update(self, dt, entities):
+        if self.countdown_active and hasattr(self.player.game, 'current_scene') and self.player.game.current_scene.name == "tower4":
+            current_time = pygame.time.get_ticks()
+            elapsed_time = current_time - self.countdown_start_time
+            self.countdown_duration = max(0, self.countdown_duration - elapsed_time) # Recalculate remaining duration
+            self.countdown_start_time = current_time # Reset start time for next frame's calculation
+
+            if self.countdown_duration <= 0:
+                self.countdown_active = False
+                self.countdown_duration = 0
         self.minimap.update(entities, self.player.game.current_scene)
         self.player.experience = self.player.experience  # Dummy change to force XP redraw
 
@@ -86,6 +107,11 @@ class HUD:
         # Draw Level/Experience Gauge
         self._draw_experience_gauge(screen, width_scale, height_scale)
         
+        if self.countdown_active and hasattr(self.player.game, 'current_scene') and self.player.game.current_scene.name == "tower4":
+            minutes = int(self.countdown_duration / 60000)
+            seconds = int((self.countdown_duration % 60000) / 1000)
+            countdown_text = f"Time Remaining: {minutes:02}:{seconds:02}"
+            draw_text(screen, countdown_text, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, current_screen_width // 2, 100 * height_scale, align="center")
         # Draw Level Up Button if player has skill points
         if self.player.level - self.player.spent_level_points > 0:
             self._draw_level_up_button(screen, width_scale, height_scale)

@@ -90,14 +90,6 @@
                     "graphic": "graphics/dc-dngn/gateways/sewer_portal_rusted.png"
                 },
                 {
-                    "target_scene": "tower",
-                    "location": [
-                        384,
-                        2720
-                    ],
-                    "graphic": "graphics/dc-dngn/gateways/fleshy_orifice_open.png"
-                },
-                {
                     "target_scene": "maze",
                     "location": [
                         3072,
@@ -182,6 +174,54 @@
                     "location": [
                         928,
                         96
+                    ],
+                    "graphic": ""
+                },
+                {
+                    "target_scene": "broadcast_tower",
+                    "location": [
+                        416,
+                        12736
+                    ],
+                    "graphic": ""
+                },
+                {
+                    "target_scene": "tower1",
+                    "location": [
+                        1632,
+                        512
+                    ],
+                    "graphic": ""
+                },
+                {
+                    "target_scene": "tower2",
+                    "location": [
+                        768,
+                        160
+                    ],
+                    "graphic": ""
+                },
+                {
+                    "target_scene": "tower3",
+                    "location": [
+                        160,
+                        1344
+                    ],
+                    "graphic": ""
+                },
+                {
+                    "target_scene": "tower4",
+                    "location": [
+                        1088,
+                        320
+                    ],
+                    "graphic": ""
+                },
+                {
+                    "target_scene": "final_sanctum",
+                    "location": [
+                        1024,
+                        1120
                     ],
                     "graphic": ""
                 }

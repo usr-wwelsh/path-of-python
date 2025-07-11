@@ -63,7 +63,7 @@ class PasteTreeScreen(BaseScene):
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE or event.key == pygame.K_p:
-                self.game.scene_manager.set_scene("spawn_town")
+                self.game.scene_manager.set_scene(self.game.scene_manager.previous_scene_name)
             elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 self.selected_node_index = (self.selected_node_index + 1) % len(self.nodes)
             elif event.key == pygame.K_LEFT or event.key == pygame.K_a:

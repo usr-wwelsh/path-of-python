@@ -22,6 +22,7 @@ class LevelUpScreen(BaseScene):
         self.level_up_points = self.player.level - self.player.spent_level_points if self.player else 0
         self.generate_background_chars()
         self.generate_stat_buttons()
+        self.right_mouse_down = False
 
     
 
@@ -62,8 +63,17 @@ class LevelUpScreen(BaseScene):
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE or event.key == pygame.K_l:
-                self.game.scene_manager.set_scene("spawn_town", player=self.player, hud=self.hud, friendly_entities=self.friendly_entities)
+                self.game.scene_manager.set_scene(self.game.scene_manager.previous_scene_name)
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            for button in self.stat_buttons:
+                if button["rect"].collidepoint(event.pos):
+                    if event.button == 3:
+                        self.right_mouse_down = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 3:
+                self.right_mouse_down = False
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
             for button in self.stat_buttons:
                 if button["rect"].collidepoint(event.pos):
                     if button["stat"] == "all":
@@ -72,18 +82,22 @@ class LevelUpScreen(BaseScene):
                             self.level_up_points -= 1
                             self.player.spent_level_points += 1
                         elif event.button == 3 and self.level_up_points >= 10:  # Right click
-                            for _ in range(10):
-                                self.increase_all_stats()
-                            self.level_up_points -= 10
-                            self.player.spent_level_points += 10
+                            while self.right_mouse_down and self.level_up_points >= 10:
+                                for _ in range(10):
+                                    self.increase_all_stats()
+                                self.level_up_points -= 10
+                                self.player.spent_level_points += 10
+                                
                     elif event.button == 1 and self.level_up_points > 0:  # Left click
                         self.increase_stat(button["stat"])
                         self.level_up_points -= 1
                         self.player.spent_level_points += 1
-                    elif event.button == 3 and self.level_up_points >= 10:  # Right click
-                        self.increase_stat(button["stat"])
-                        self.level_up_points -= 10
-                        self.player.spent_level_points += 10
+                    elif event.button == 3 and self.level_up_points > 0:  # Right click
+                        while self.right_mouse_down and self.level_up_points > 0:
+                            self.increase_stat(button["stat"])
+                            self.level_up_points -= 1
+                            self.player.spent_level_points += 1
+                            pygame.time.delay(50)
                         
     def increase_all_stats(self):
         self.increase_stat("max_life")

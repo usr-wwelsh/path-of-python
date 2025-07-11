@@ -657,6 +657,23 @@
         "max_spawned_enemies": 5,
         "scale_factor": 4.0
     },
+    "choir_disruptor": {
+        "name": "Choir Disruptor",
+        "health": 100000,
+        "damage": 2000,
+        "speed": 500,
+        "sprite_path": "graphics/dc-mon/necromancer.png",
+        "attack_range": 1500,
+        "attack_cooldown": 5000,
+        "projectile_sprite_path": "graphics/dc-misc/halo.png",
+        "ranged_attack_pattern": "spiral",
+        "xp_value": 50000,
+        "spawn_on_cooldown": true,
+        "spawn_cooldown": 100,
+        "enemies_to_spawn": ["guard"],
+        "max_spawned_enemies": 5,
+        "scale_factor": 4.0
+    },
     "guard": {
         "name": "Guard",
         "health": 30000,
@@ -665,7 +682,7 @@
         "sprite_path": "graphics/dc-misc/halo.png",
         "attack_range": 50,
         "attack_cooldown": 3000,
-        "projectile_sprite_path": "graphics/dc-misc/error.png",
+        "projectile_sprite_path": "graphics/dc-misc/halo.png",
         "ranged_attack_pattern": "burst",
         "xp_value": 50000
     }

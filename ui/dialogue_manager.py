@@ -141,6 +141,8 @@ class DialogueManager:
     def end_dialogue(self):
         """Ends the current dialogue."""
         self.current_dialogue_node = None
+        if hasattr(self.game, 'current_npc') and self.game.current_npc:
+            self.game.current_npc.dialogue_finished = True
 
 
     def draw(self, screen):

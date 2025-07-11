@@ -27,7 +27,7 @@ class TeleporterMenu:
         self.dungeon_item_height = 40 # Height of each dungeon item (graphic + text)
         self.visible_items = 5 # Number of items visible at once for dungeons (approx for quests)
 
-        self.excluded_dungeons = ["vault", "bot", "third", "maze", "flesh_lab", "neural_cathedral", "firewall", "feast_hall", "feast_hall2", "feast_hall3", "feast_hall4", "data_maw"] # List of dungeons to exclude
+        self.excluded_dungeons = ["vault", "bot", "third", "maze", "flesh_lab", "neural_cathedral", "firewall", "feast_hall", "feast_hall2", "feast_hall3", "feast_hall4", "data_maw", "broadcast_tower", "tower1", "tower2", "tower3", "tower4"] # List of dungeons to exclude
         self._load_tilemap_for_selection() # Load initial map visualizer - moved after excluded_dungeons definition
         self._load_scene_graphics()
 
