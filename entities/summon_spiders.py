@@ -158,7 +158,8 @@ class Spider(Enemy):
         super().__init__(game, x, y, "Spider", health, damage, speed, sprite_path)
         self.player_level = player_level
         # Increased base scale factor for better visibility
-        self.scale_factor = 1.0 + (self.player_level - 1) * 0.01 # Base scale 2.0, smaller increment
+        scale_increment_per_level = 0.005  # .5% per level
+        self.scale_factor = min(2, 1 + (self.player_level - 1) * scale_increment_per_level)
         self.base_health = health # Store base health for explosion damage calculation
 
         original_image = pygame.image.load(os.path.join(os.getcwd(), sprite_path)).convert_alpha()

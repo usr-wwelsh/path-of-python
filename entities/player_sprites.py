@@ -16,11 +16,11 @@ def get_player_head_sprite(class_name):
 def get_player_hand_sprite(class_name):
     # Load the hand sprite based on class_name
     if class_name == "stalker":
-        hand_sprite = pygame.image.load("graphics/player/hand1/war_axe.png").convert_alpha()
+        hand_sprite = pygame.image.load("graphics/player/hand1/scythe_slant.png").convert_alpha()
     elif class_name == "technomancer":
         hand_sprite = pygame.image.load("graphics/player/hand2/misc/book_blue.png").convert_alpha()
     elif class_name == "hordemonger":
-        hand_sprite = pygame.image.load("graphics/player/hand2/misc/dagger.png").convert_alpha()
+        hand_sprite = pygame.image.load("graphics/player/hand2/misc/fire_green.png").convert_alpha()
     else:
         hand_sprite = pygame.image.load("graphics/player/hand1/short_sword.png").convert_alpha() # Default
     return pygame.transform.scale(hand_sprite, (TILE_SIZE, TILE_SIZE))
@@ -28,9 +28,9 @@ def get_player_hand_sprite(class_name):
 def get_player_leg_sprite(class_name):
     # Load the leg sprite based on class_name
     if class_name == "stalker":
-        leg_sprite = pygame.image.load("graphics/player/legs/pants_brown.png").convert_alpha()
+        leg_sprite = pygame.image.load("graphics/player/legs/loincloth_red.png").convert_alpha()
     elif class_name == "technomancer":
-        leg_sprite = pygame.image.load("graphics/player/legs/pants_blue.png").convert_alpha()
+        leg_sprite = pygame.image.load("graphics/player/legs/chunli.png").convert_alpha()
     elif class_name == "hordemonger":
         leg_sprite = pygame.image.load("graphics/player/legs/trouser_green.png").convert_alpha() # Corrected filename
     else:

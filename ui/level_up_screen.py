@@ -56,6 +56,7 @@ class LevelUpScreen(BaseScene):
             {"stat": "max_mana", "label": "Mana", "rect": pygame.Rect(start_x, start_y + spacing, button_width, button_height)},
             {"stat": "max_energy_shield", "label": "Energy Shield", "rect": pygame.Rect(start_x, start_y + 2 * spacing, button_width, button_height)},
             {"stat": "damage", "label": "Damage", "rect": pygame.Rect(start_x, start_y + 3 * spacing, button_width, button_height)},
+            {"stat": "all", "label": "????", "rect": pygame.Rect(start_x, start_y + 4 * spacing, button_width, button_height)},
         ]
 
     def handle_event(self, event):
@@ -65,16 +66,30 @@ class LevelUpScreen(BaseScene):
         elif event.type == pygame.MOUSEBUTTONDOWN:
             for button in self.stat_buttons:
                 if button["rect"].collidepoint(event.pos):
-                    if event.button == 1 and self.level_up_points > 0:  # Left click
+                    if button["stat"] == "all":
+                        if event.button == 1 and self.level_up_points > 0:  # Left click
+                            self.increase_all_stats()
+                            self.level_up_points -= 1
+                            self.player.spent_level_points += 1
+                        elif event.button == 3 and self.level_up_points >= 10:  # Right click
+                            for _ in range(10):
+                                self.increase_all_stats()
+                            self.level_up_points -= 10
+                            self.player.spent_level_points += 10
+                    elif event.button == 1 and self.level_up_points > 0:  # Left click
                         self.increase_stat(button["stat"])
                         self.level_up_points -= 1
                         self.player.spent_level_points += 1
                     elif event.button == 3 and self.level_up_points >= 10:  # Right click
-                        for _ in range(10):
-                            self.increase_stat(button["stat"])
+                        self.increase_stat(button["stat"])
                         self.level_up_points -= 10
                         self.player.spent_level_points += 10
-
+                        
+    def increase_all_stats(self):
+        self.increase_stat("max_life")
+        self.increase_stat("max_mana")
+        self.increase_stat("max_energy_shield")
+        self.increase_stat("damage")
     def increase_stat(self, stat):
         if stat == "max_life":
             self.player.max_life += 200

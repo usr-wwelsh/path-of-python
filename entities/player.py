@@ -52,9 +52,7 @@ class Player(pygame.sprite.Sprite):
         # Combine sprites
         self.image = pygame.Surface([TILE_SIZE, TILE_SIZE], pygame.SRCALPHA)
         self.image.blit(self.base_sprite, (0, 0))
-        self.image.blit(self.leg1_sprite, (0, 0))
-        self.image.blit(self.hand1_sprite, (0, 0))
-        self.image.blit(self.head1_sprite, (0, 0))
+        
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -261,7 +259,7 @@ class Player(pygame.sprite.Sprite):
         self.image.blit(self.base_sprite, (0, 0))
         self.image.blit(self.leg1_sprite, (0, 0))
         self.image.blit(self.hand1_sprite, (0, 0))
-        self.image.blit(self.head1_sprite, (0, 0))
+        
 
         # Apply class-specific stats
         if class_stats:

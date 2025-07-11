@@ -187,8 +187,8 @@ class Skeleton(Enemy):
         # Calculate scale factor based on player level
         # Base scale is 1.0 for level 1, increases by 0.1 for every 5 levels
         # Reduce the sprite size growth rate
-        scale_increment_per_level = 0.10  # 10% per level
-        self.scale_factor = 2.0 + (self.player_level - 1) * scale_increment_per_level # Base scale 2.0 for level 1
+        scale_increment_per_level = 0.01  # 10% per level
+        self.scale_factor = min(4, 2 + (self.player_level - 1) * scale_increment_per_level)
         
         # Load and scale the sprite image
         original_image = pygame.image.load(os.path.join(os.getcwd(), sprite_path)).convert_alpha()
