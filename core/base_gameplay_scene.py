@@ -486,7 +486,7 @@ class BaseGameplayScene(BaseScene):
             pass
 
         # Update projectiles
-        self.projectiles.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size, entities=self.friendly_entities)
+        self.projectiles.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
         
         # Update paste
         for p in self.paste:
