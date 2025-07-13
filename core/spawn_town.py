@@ -193,6 +193,10 @@ class SpawnTown(BaseGameplayScene):
         npc4 = create_npc(game, 6140, 3928, "Proto Oracle", "proto_oracle_dialogue")
         self.npcs.add(npc4)
 
+        # Create the hideout terminal NPC after quest 8
+        if self.quest_tracker.is_quest_completed("quest_008"):
+            terminal_npc = create_npc(game, 700, 150, "Hideout Terminal", "hideout_terminal_dialogue")
+            self.npcs.add(terminal_npc)
         # Load portal images and create portal rects
         self.portal_images = {}
         self.portal_rects = []

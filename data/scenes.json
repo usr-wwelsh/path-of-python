@@ -208,6 +208,10 @@
             "name": "final_sanctum",
             "class": "core.dungeons.final_sanctum.final_sanctum",
             "dungeon_data_path": "data/dungeons/final_sanctum.json"
+        },
+        {
+            "name": "flesh_algorithm_terminal",
+            "class": "ui.flesh_algorithm_terminal.FleshAlgorithmTerminal"
         }
     ]
 }

@@ -1,6 +1,8 @@
 from core.music_manager import MusicManager
 import sys
 import os
+
+from ui.flesh_algorithm_terminal import FleshAlgorithmTerminal
 sys.path.append(".")
 import pygame
 from config import settings # Import settings module directly
@@ -55,6 +57,7 @@ class GameEngine:
         self.player = None # Initialize player to None
         self.hud = None # Initialize hud to None
         self.dialogue_manager = DialogueManager(self)
+        self.flesh_algorithm_terminal = FleshAlgorithmTerminal(self)
         self.quest_manager = QuestManager('data/quests.json') # Initialize QuestManager
         self.quest_tracker = QuestTracker() # Initialize QuestTracker
 

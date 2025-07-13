@@ -47,6 +47,9 @@ class NPC(pygame.sprite.Sprite):
         elif self.name == "maw_core":
             sprite_filename = "core.png"
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
+        elif self.name == "Hideout Terminal":
+            sprite_filename = "core.png"
+            sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
         else:
             # Load random merfolk sprite for other NPCs
             merfolk_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon", "cult")

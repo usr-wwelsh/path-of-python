@@ -102,6 +102,11 @@ class DialogueManager:
                     obj_target = objective_to_complete.get("target")
                     if obj_type and obj_target:
                         self.game.quest_tracker.update_quest_progress(obj_type, obj_target)
+                # Check if the option opens a menu
+                menu_to_open = selected_option.get("opens_menu")
+                if menu_to_open:
+                    if menu_to_open == "flesh_algorithm_terminal":
+                        self.game.flesh_algorithm_terminal.open()
 
                 if next_node_id == "end_dialogue":
                     self.end_dialogue()

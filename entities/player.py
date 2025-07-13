@@ -918,3 +918,37 @@ class Player(pygame.sprite.Sprite):
                 total_damage += self.summon_spiders_skill.spider_damage + self.summon_spiders_skill.bonus_spider_damage
                 
         return total_damage
+
+    def rebuild_sprite(self):
+        
+        """Rebuilds the player's sprite from its component parts."""
+        if hasattr(self, 'head_sprite'):
+            self.head1_sprite = self.head_sprite
+        if hasattr(self, 'gloves_sprite'):
+            self.gloves_sprite = self.gloves_sprite
+        if hasattr(self, 'hand2_sprite'):
+            self.hand2_sprite = self.hand2_sprite
+        if hasattr(self, 'hand1_sprite'):
+            self.hand1_sprite = self.hand1_sprite
+        if hasattr(self, 'legs_sprite'):
+            self.leg1_sprite = self.legs_sprite
+        if hasattr(self, 'body_sprite'):
+            self.body_sprite = self.body_sprite
+        
+
+        self.image.fill((0, 0, 0, 0))  # Clear the image
+        if hasattr(self, 'base_sprite') and self.base_sprite:
+            self.image.blit(self.base_sprite, (0, 0))
+        if hasattr(self, 'body_sprite') and self.body_sprite:
+            self.image.blit(self.body_sprite, (0, 0))
+        if hasattr(self, 'gloves_sprite') and self.gloves_sprite:
+            self.image.blit(self.gloves_sprite, (0, 0))
+        if hasattr(self, 'leg1_sprite') and self.leg1_sprite:
+            self.image.blit(self.leg1_sprite, (0, 0))
+        if hasattr(self, 'hand1_sprite') and self.hand1_sprite:
+            self.image.blit(self.hand1_sprite, (0, 0))
+        if hasattr(self, 'hand2_sprite') and self.hand2_sprite:
+            self.image.blit(self.hand2_sprite, (0, 0))
+        if hasattr(self, 'head1_sprite') and self.head1_sprite:
+            self.image.blit(self.head1_sprite, (0, 0))
+

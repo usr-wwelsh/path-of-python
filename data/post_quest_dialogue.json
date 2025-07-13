@@ -1484,7 +1484,26 @@
         "options": []
       }
     }
+  },
+  "hideout_terminal_dialogue": {
+  "start_node": "node_1",
+  "nodes": {
+    "node_1": {
+      "text": "[FLESH ALGORITHM TERMINAL: WARNING: UNAUTHORIZED USE WILL VOID WARRANTY]\n[QUERY: REWRITE GENETIC CODE? (Y/N)]",
+      "options": [
+        {
+          "text": "[Y]",
+          "next_node": "node_2",
+          "opens_menu": "flesh_algorithm_terminal"
+        },
+        {
+          "text": "[N]",
+          "next_node": "end_dialogue"
+        }
+      ]
+    }
   }
+}
   
   }
 }
