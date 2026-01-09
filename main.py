@@ -53,7 +53,12 @@ if __name__ == "__main__":
         traceback.print_exc()
     finally:
         print("\n" + "="*50)
-        input("Press Enter to exit...")
+        # Only prompt for input if stdin is available (dev mode or console)
+        if sys.stdin and hasattr(sys.stdin, 'fileno'):
+            try:
+                input("Press Enter to exit...")
+            except:
+                pass
         try:
             pygame.quit()
         except:

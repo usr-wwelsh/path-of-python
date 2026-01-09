@@ -3,6 +3,25 @@ import json
 from core.new_dungeon_generator import translate_tile_type
 from utility.resource_path import resource_path
 
+# Cache for missing texture placeholder
+_missing_texture_cache = None
+
+def get_missing_texture(tile_size=32):
+    """Create a placeholder texture for missing assets."""
+    global _missing_texture_cache
+    if _missing_texture_cache is None:
+        # Create a magenta/black checkerboard pattern (classic missing texture)
+        surface = pygame.Surface((tile_size, tile_size))
+        half = tile_size // 2
+        # Top-left and bottom-right: magenta
+        pygame.draw.rect(surface, (255, 0, 255), (0, 0, half, half))
+        pygame.draw.rect(surface, (255, 0, 255), (half, half, half, half))
+        # Top-right and bottom-left: black
+        pygame.draw.rect(surface, (0, 0, 0), (half, 0, half, half))
+        pygame.draw.rect(surface, (0, 0, 0), (0, half, half, half))
+        _missing_texture_cache = surface
+    return _missing_texture_cache
+
 def render_dungeon_pygame(dungeon_data, zoom_scale):
     width = dungeon_data['width']
     height = dungeon_data['height']
@@ -19,8 +38,12 @@ def render_dungeon_pygame(dungeon_data, zoom_scale):
         tileset_data = json.load(f)
 
     for tile_name, tile_path in tileset_data.items():
-        tile_image = pygame.image.load(resource_path(tile_path)).convert_alpha()
-        tileset[tile_name] = tile_image
+        try:
+            tile_image = pygame.image.load(resource_path(tile_path)).convert_alpha()
+            tileset[tile_name] = tile_image
+        except FileNotFoundError:
+            print(f"Warning: Missing texture '{tile_path}', using placeholder")
+            tileset[tile_name] = get_missing_texture()
 
     # Create a Pygame surface
     tile_size = 32  # Assuming each tile is 32x32 pixels

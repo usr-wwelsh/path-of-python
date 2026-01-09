@@ -41,7 +41,8 @@ def resource_path(relative_path):
         'C:/Users/.../Temp/_MEI12345/graphics/gui/cursor.png'  # bundled
     """
     base = get_base_path()
-    return os.path.join(base, relative_path)
+    # Normalize the path to use the correct separators for the OS
+    return os.path.normpath(os.path.join(base, relative_path))
 
 
 # For convenience, also export the base path
