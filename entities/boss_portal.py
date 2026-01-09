@@ -1,6 +1,7 @@
 import pygame
 import os
 from config.constants import TILE_SIZE
+from utility.resource_path import resource_path
 
 class BossPortal(pygame.sprite.Sprite):
     def __init__(self, game, x, y, boss_key):
@@ -9,7 +10,7 @@ class BossPortal(pygame.sprite.Sprite):
         self.boss_key = boss_key
         # Placeholder sprite - replace with an actual portal sprite
 # Load the actual portal sprite
-        portal_sprite_path = os.path.join('graphics', 'dc-dngn', 'gateways', 'dngn_enter_zot_open.png')
+        portal_sprite_path = resource_path(os.path.join('graphics', 'dc-dngn', 'gateways', 'dngn_enter_zot_open.png'))
         try:
             self.image = pygame.image.load(portal_sprite_path).convert_alpha()
             # Scale the image to double its size

@@ -3,6 +3,7 @@ from core.scene_manager import BaseScene
 from config import settings
 from core.utils import draw_text
 from config.constants import STATE_GAMEPLAY, KEY_INVENTORY
+from utility.resource_path import resource_path
 
 class InventoryScreen(BaseScene):
     def __init__(self, game):
@@ -14,7 +15,7 @@ class InventoryScreen(BaseScene):
         self.gem_slot_spacing = 5  # Example spacing between gem slots
         self.item_slot_size = 50  # Example size for item slots
         try:
-            self.background_image = pygame.image.load("graphics/gui/window_inventory.png").convert()
+            self.background_image = pygame.image.load(resource_path("graphics/gui/window_inventory.png")).convert()
         except FileNotFoundError:
             self.game.logger.error("Inventory background image not found!")
             self.background_image = None
@@ -55,12 +56,12 @@ class InventoryScreen(BaseScene):
                 item_icon = None
                 if item.name == "Health Potion":
                     try:
-                        item_icon = pygame.image.load("graphics/item/potion/ruby.png").convert_alpha()
+                        item_icon = pygame.image.load(resource_path("graphics/item/potion/ruby.png")).convert_alpha()
                     except FileNotFoundError:
                         item_icon = None
                 elif item.name == "Basic Sword":
                     try:
-                        item_icon = pygame.image.load("graphics/item/weapon/quickblade.png").convert_alpha()
+                        item_icon = pygame.image.load(resource_path("graphics/item/weapon/quickblade.png")).convert_alpha()
                     except FileNotFoundError:
                         item_icon = None
                 else:

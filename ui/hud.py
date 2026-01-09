@@ -15,6 +15,7 @@ from ui.minimap import Minimap
 from progression.quest_tracker import QuestTracker, QuestTrackerHUD # Removed Quest, as it's not directly used here
 import json
 import os
+from utility.resource_path import resource_path
 
 class HUD:
     def __init__(self, player, scene):
@@ -35,7 +36,7 @@ class HUD:
         self.level_up_button_rect = pygame.Rect(0, 0, 0, 0)
 
     def load_skill_tree_data(self):
-        skill_tree_path = os.path.join(os.getcwd(), "data", "skill_tree.json")
+        skill_tree_path = resource_path(os.path.join("data", "skill_tree.json"))
         try:
             with open(skill_tree_path, "r") as f:
                 skill_tree_data = json.load(f)

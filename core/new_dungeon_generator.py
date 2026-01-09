@@ -2,6 +2,7 @@ import pygame
 import random
 import json
 from noise import pnoise2
+from utility.resource_path import resource_path
 
 def load_tileset(tileset_path):
     """Loads a tileset from a JSON file and returns a dictionary of tile names to Pygame surfaces."""
@@ -176,7 +177,7 @@ def generate_new_dungeon(params):
     enemy_data = load_enemy_data(enemy_data_path)
 
     # Load tileset mapping
-    with open('data/tileset_mappings.json', 'r') as f:
+    with open(resource_path('data/tileset_mappings.json'), 'r') as f:
         tileset_mappings = json.load(f)
     tileset_mapping = tileset_mappings.get(tileset_name, tileset_mappings['default'])
 

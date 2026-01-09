@@ -20,6 +20,7 @@ import pygame
 import json
 import os
 from core.base_gameplay_scene import BaseGameplayScene
+from utility.resource_path import resource_path
 
 class {class_name}(BaseGameplayScene):
     def __init__(self, game, player, hud, dungeon_data=None):
@@ -35,7 +36,8 @@ class {class_name}(BaseGameplayScene):
     def load_dungeon_data(self, dungeon_name):
         # This method is no longer strictly needed if dungeon_data is passed directly,
         # but kept for compatibility or if other parts of the code rely on it.
-        dungeon_data_path = os.path.abspath(os.path.join(os.getcwd(), "data", "dungeons", f'{{dungeon_name}}.json'))
+        dungeon_data_path = os.path.abspath(resource_path(os.path.join("data", "dungeons", f'{{dungeon_name}}.json')))
+
         try:
             with open(dungeon_data_path, "r") as f:
                 dungeon_data = json.load(f)
@@ -131,7 +133,8 @@ def add_portal_to_spawntown(new_dungeon_name, portal_graphic, find_portal_locati
         with open(zone_data_path, "w") as f:
             json.dump(zone_data, f, indent=4)
 # Add a portal to the new dungeon that leads back to spawntown
-        dungeon_data_path = os.path.abspath(os.path.join(os.getcwd(), "data", "dungeons", f'{new_dungeon_name}.json'))
+        dungeon_data_path = os.path.abspath(resource_path(os.path.join("data", "dungeons", f'{new_dungeon_name}.json')))
+
         try:
             with open(dungeon_data_path, "r") as f:
                 dungeon_data = json.load(f)

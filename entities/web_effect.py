@@ -1,6 +1,7 @@
 import pygame
 from config.constants import TILE_SIZE
 import os
+from utility.resource_path import resource_path
 
 class WebEffect(pygame.sprite.Sprite):
     def __init__(self, game, x, y, slow_amount, entangle_duration):
@@ -13,7 +14,7 @@ class WebEffect(pygame.sprite.Sprite):
 
         # Load web graphic
         try:
-            self.image = pygame.image.load(os.path.join(os.getcwd(), "graphics/effect/web.png")).convert_alpha()
+            self.image = pygame.image.load(resource_path(os.path.join("graphics", "effect", "web.png"))).convert_alpha()
         except FileNotFoundError:
             print("Web effect image not found! Using a placeholder.")
             self.image = pygame.Surface((TILE_SIZE * 2, TILE_SIZE * 2))

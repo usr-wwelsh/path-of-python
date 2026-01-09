@@ -6,6 +6,7 @@ import json
 from config.constants import TILE_SIZE
 from entities.projectile import Projectile
 from entities.enemy import Enemy
+from utility.resource_path import resource_path
 
 class FireballSkill:
     def __init__(self, player):
@@ -28,7 +29,7 @@ class FireballSkill:
 
     def _load_skill_data(self):
         """Loads Fireball skill data from skills.json."""
-        skills_file_path = os.path.join(os.getcwd(), "data", "skills.json")
+        skills_file_path = resource_path(os.path.join("data", "skills.json"))
         try:
             with open(skills_file_path, 'r') as f:
                 skills_data = json.load(f)
@@ -216,7 +217,7 @@ class ExplosionEffect(pygame.sprite.Sprite):
     def __init__(self, game, x, y, image_path, scale=1):
         super().__init__()
         self.game = game
-        self.original_image = pygame.image.load(os.path.join(os.getcwd(), image_path)).convert_alpha()
+        self.original_image = pygame.image.load(resource_path(image_path)).convert_alpha()
         self.image = pygame.transform.scale(self.original_image, (int(self.original_image.get_width() * scale), int(self.original_image.get_height() * scale)))
         self.rect = self.image.get_rect(center=(x, y))
         self.alpha = 255
@@ -253,7 +254,7 @@ class BurningGround(pygame.sprite.Sprite):
         self.center_x = x
         self.center_y = y
 
-        self.original_image = pygame.image.load(os.path.join(os.getcwd(), sprite_path)).convert_alpha()
+        self.original_image = pygame.image.load(resource_path(sprite_path)).convert_alpha()
         # Scale image to match radius
         scaled_width = int(self.radius * 2)
         scaled_height = int(self.radius * 2)

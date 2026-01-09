@@ -6,6 +6,7 @@ import json
 from config.constants import TILE_SIZE
 from entities.enemy import Enemy
 from entities.web_effect import WebEffect
+from utility.resource_path import resource_path
 
 class SummonSpiders:
     def __init__(self, player):
@@ -35,7 +36,7 @@ class SummonSpiders:
 
     def _load_skill_data(self):
         """Loads Summon Spiders skill data from skills.json."""
-        skills_file_path = os.path.join(os.getcwd(), "data", "skills.json")
+        skills_file_path = resource_path(os.path.join("data", "skills.json"))
         try:
             with open(skills_file_path, 'r') as f:
                 skills_data = json.load(f)
@@ -162,7 +163,7 @@ class Spider(Enemy):
         self.scale_factor = min(2, 1 + (self.player_level - 1) * scale_increment_per_level)
         self.base_health = health # Store base health for explosion damage calculation
 
-        original_image = pygame.image.load(os.path.join(os.getcwd(), sprite_path)).convert_alpha()
+        original_image = pygame.image.load(resource_path(sprite_path)).convert_alpha()
         new_width = int(original_image.get_width() * self.scale_factor)
         new_height = int(original_image.get_height() * self.scale_factor)
         self.image = pygame.transform.scale(original_image, (new_width, new_height))

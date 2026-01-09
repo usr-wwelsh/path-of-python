@@ -5,6 +5,7 @@ from config import settings
 from core.utils import draw_text
 from progression.quest_tracker import QuestTracker
 from ui.dungeon_renderer import render_dungeon_pygame
+from utility.resource_path import resource_path
 
 class TeleporterMenu:
     def __init__(self, x, y, dungeon_scenes_data, game):
@@ -37,7 +38,7 @@ class TeleporterMenu:
         for scene_data in self.dungeon_scenes_data:
             graphic_path = scene_data.get('graphic')
             if graphic_path:
-                full_path = os.path.join(os.getcwd(), graphic_path)
+                full_path = resource_path(graphic_path)
                 try:
                     image = pygame.image.load(full_path).convert_alpha()
                     # Scale image to a suitable size for the menu, e.g., 32x32
@@ -103,7 +104,7 @@ class TeleporterMenu:
                 print(f"[_load_tilemap_for_selection] dungeon_data_path for selected dungeon: {dungeon_data_path}")
                 if dungeon_data_path:
                     
-                    full_path = os.path.join(os.getcwd(), dungeon_data_path)
+                    full_path = resource_path(dungeon_data_path)
                     print(f"[_load_tilemap_for_selection] Attempting to load dungeon: {selected_scene_data['name']}")
                     print(f"[_load_tilemap_for_selection] Dungeon file_path: {selected_scene_data.get('file_path')}")
                     print(f"[_load_tilemap_for_selection] Constructed full_path for dungeon: {full_path}")
@@ -127,7 +128,7 @@ class TeleporterMenu:
                     scene_entry = next((s for s in self.dungeon_scenes_data if s['name'] == selected_quest.tilemap_scene_name), None)
                     if scene_entry and scene_entry.get('dungeon_data_path'):
                         dungeon_data_path = scene_entry['dungeon_data_path']
-                        full_path = os.path.join(os.getcwd(), dungeon_data_path)
+                        full_path = resource_path(dungeon_data_path)
                         print(f"[_load_tilemap_for_selection] Attempting to load quest: {selected_quest.name}")
                         print(f"[_load_tilemap_for_selection] Quest tilemap_path: {selected_quest.tilemap_scene_name}")
                         print(f"[_load_tilemap_for_selection] Constructed full_path for quest: {full_path}")

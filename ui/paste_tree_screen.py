@@ -7,6 +7,7 @@ from core.scene_manager import BaseScene
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, UI_FONT, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_SECONDARY_COLOR, UI_BACKGROUND_COLOR
 from core.utils import draw_text
 from progression.paste_tree_manager import PasteTreeManager
+from utility.resource_path import resource_path
 
 class PasteTreeScreen(BaseScene):
     def __init__(self, game, player, hud, friendly_entities=None):
@@ -28,7 +29,7 @@ class PasteTreeScreen(BaseScene):
         self.paste_tree_manager = PasteTreeManager(game) # Initialize PasteTreeManager
 
     def load_paste_tree_data(self):
-        paste_tree_path = os.path.join(os.getcwd(), "data", "paste_trees.json")
+        paste_tree_path = resource_path(os.path.join("data", "paste_trees.json"))
         try:
             with open(paste_tree_path, "r") as f:
                 return json.load(f)

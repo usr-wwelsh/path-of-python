@@ -4,6 +4,7 @@ from config import settings
 from core.utils import draw_text
 import json
 import os
+from utility.resource_path import resource_path
 
 class SkillTreeUI(BaseScene):
     def __init__(self, game):
@@ -17,7 +18,7 @@ class SkillTreeUI(BaseScene):
         self.max_scroll = 0 # Maximum scroll offset
 
     def load_skill_tree_data(self):
-        skill_tree_path = os.path.join(os.getcwd(), "data", "skill_tree.json")
+        skill_tree_path = resource_path(os.path.join("data", "skill_tree.json"))
         try:
             with open(skill_tree_path, "r") as f:
                 skill_tree_data = json.load(f)

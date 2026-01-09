@@ -13,6 +13,7 @@ from config.constants import (
     PROJECTILE_DESPAWN_DISTANCE
 )
 from core.base_gameplay_scene import BaseGameplayScene
+from utility.resource_path import resource_path
 
 class GameplayScene(BaseGameplayScene):
     def __init__(self, game):
@@ -39,7 +40,7 @@ class GameplayScene(BaseGameplayScene):
     def _load_enemy_data(self, json_path):
         """Loads enemy data from a JSON file."""
         try:
-            full_path = os.path.join(os.getcwd(), json_path)
+            full_path = resource_path(json_path)
             with open(full_path, "r") as f:
                 data = json.load(f)
             return data # Directly return the loaded data, as it's already a dictionary of enemies

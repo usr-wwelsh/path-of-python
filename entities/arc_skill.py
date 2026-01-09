@@ -7,6 +7,7 @@ from config.constants import TILE_SIZE
 from entities.projectile import Projectile
 from entities.enemy import Enemy # Import Enemy class
 from entities.summon_skeletons import WraithEffect
+from utility.resource_path import resource_path
 
 class ArcSkill:
     def __init__(self, player):
@@ -33,7 +34,7 @@ class ArcSkill:
 
     def _load_skill_data(self):
         """Loads Arc skill data from skills.json."""
-        skills_file_path = os.path.join(os.getcwd(), "data", "skills.json")
+        skills_file_path = resource_path(os.path.join("data", "skills.json"))
         try:
             with open(skills_file_path, 'r') as f:
                 skills_data = json.load(f)
@@ -72,7 +73,7 @@ class ArcSkill:
     def load_arc_image(self, path):
         """Loads and scales the arc image."""
         try:
-            image = pygame.image.load(os.path.join(os.getcwd(), path)).convert_alpha()
+            image = pygame.image.load(resource_path(path)).convert_alpha()
             return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
         except FileNotFoundError:
             print(f"Error: Arc image file not found: {path}")

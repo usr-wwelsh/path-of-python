@@ -15,6 +15,7 @@ from config.constants import (
     KEY_PASTE_TREE, KEY_INVENTORY, KEY_PAUSE_MENU, KEY_SETTINGS_MENU
 )
 from config import settings # Import settings for screen dimensions
+from utility.resource_path import resource_path
 
 class SwampCaveDungeon(BaseGameplayScene):
     def __init__(self, game, player, hud, is_dark=False): # Added is_dark parameter
@@ -67,7 +68,7 @@ class SwampCaveDungeon(BaseGameplayScene):
     def _load_tile_images(self):
         """Loads tile images specifically for the swamp cave dungeon."""
         try:
-            zone_data_path = os.path.join(os.getcwd(), "data", "zone_data.json")
+            zone_data_path = resource_path(os.path.join("data", "zone_data.json"))
             with open(zone_data_path, "r") as f:
                 zone_data = json.load(f)
 
@@ -75,7 +76,7 @@ class SwampCaveDungeon(BaseGameplayScene):
             tileset_paths = zone_data["tile_sets"]["swamp_cave_tileset"]
             for tile_type, path in tileset_paths.items():
                 try:
-                    full_path = os.path.join(os.getcwd(), path)
+                    full_path = resource_path(path)
                     if not os.path.exists(full_path):
                         print(f"SwampCaveDungeon: Error: Tile image file not found: {full_path}")
                         self.tile_images[tile_type] = pygame.Surface((self.tile_size, self.tile_size))
@@ -115,7 +116,7 @@ class SwampCaveDungeon(BaseGameplayScene):
     def _load_assets(self):
         """Loads general assets like portals from zone_data.json."""
         try:
-            zone_data_path = os.path.join(os.getcwd(), "data", "zone_data.json")
+            zone_data_path = resource_path(os.path.join("data", "zone_data.json"))
             with open(zone_data_path, "r") as f:
                 zone_data = json.load(f)
 
@@ -123,7 +124,7 @@ class SwampCaveDungeon(BaseGameplayScene):
             portal_assets = zone_data.get("assets", {}).get("portals", {})
             for asset_key, path in portal_assets.items():
                 try:
-                    full_path = os.path.join(os.getcwd(), path)
+                    full_path = resource_path(path)
                     if not os.path.exists(full_path):
                         print(f"SwampCaveDungeon: Error: Asset file not found: {full_path}")
                         self.assets[asset_key] = None # Store None or a placeholder if file not found
@@ -144,7 +145,7 @@ class SwampCaveDungeon(BaseGameplayScene):
 
     def load_dungeon_data(self, dungeon_key):
         """Loads data for a specific dungeon from dungeons.json."""
-        dungeons_data_path = os.path.join(os.getcwd(), "data", "dungeons.json")
+        dungeons_data_path = resource_path(os.path.join("data", "dungeons.json"))
         try:
             with open(dungeons_data_path, "r") as f:
                 all_dungeons_data = json.load(f)

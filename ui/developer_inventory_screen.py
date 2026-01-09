@@ -10,6 +10,7 @@ from items.armor import Armor
 from items.potion import HealthPotion
 from items.gem import Gem
 from items.item import Item # Import base Item class
+from utility.resource_path import resource_path
 
 class DeveloperInventoryScreen(BaseScene):
     def __init__(self, game):
@@ -28,7 +29,7 @@ class DeveloperInventoryScreen(BaseScene):
     def load_available_items(self):
         items_data = {}
         try:
-            items_file_path = os.path.join(os.getcwd(), 'data', 'items.json')
+            items_file_path = resource_path(os.path.join('data', 'items.json'))
             with open(items_file_path, 'r') as f:
                 data = json.load(f)
             

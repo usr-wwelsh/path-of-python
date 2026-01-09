@@ -1,6 +1,7 @@
 import pygame
 import os
 import random
+from utility.resource_path import resource_path
 
 class MusicManager:
     _instance = None
@@ -14,7 +15,7 @@ class MusicManager:
     def __init__(self):
         if not self._initialized:
             # Note: pygame.mixer.init() is now handled in main.py before GameEngine is created
-            self.music_directory = "data/music"
+            self.music_directory = resource_path("data/music")
             self.music_files = [f for f in os.listdir(self.music_directory) if f.endswith(".mp3")]
             self.current_track = None
             self._initialized = True

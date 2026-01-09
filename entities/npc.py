@@ -1,6 +1,7 @@
 import pygame
 import os
 import random
+from utility.resource_path import resource_path
 
 class NPC(pygame.sprite.Sprite):
     def __init__(self, game, x, y, width, height, color, name="NPC", dialogue_id=None, sprite=None):
@@ -12,11 +13,11 @@ class NPC(pygame.sprite.Sprite):
         self.dialogue_finished = False
 
         # Define sprite paths
-        yaktaur_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon")
+        yaktaur_path_base = resource_path(os.path.join("graphics", "dc-mon"))
         sprite_path = None
         
         if self.name == "Billy Bob" and sprite:
-            sprite_path = os.path.join(os.getcwd(), sprite)
+            sprite_path = resource_path(sprite)
         elif self.name == "Bob the Bold":
             sprite_filename = "stone_giant.png"
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
@@ -52,7 +53,7 @@ class NPC(pygame.sprite.Sprite):
             sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
         else:
             # Load random merfolk sprite for other NPCs
-            merfolk_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon", "cult")
+            merfolk_path_base = resource_path(os.path.join("graphics", "dc-mon", "cult"))
             merfolk_sprites = [
                 "1.png",
                 "2.png",

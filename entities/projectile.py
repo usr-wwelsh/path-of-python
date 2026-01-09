@@ -2,6 +2,7 @@ import pygame
 import os
 import math
 from config.constants import TILE_SIZE
+from utility.resource_path import resource_path
 
 class Projectile(pygame.sprite.Sprite):
     sprite_cache = {}
@@ -24,7 +25,7 @@ class Projectile(pygame.sprite.Sprite):
         if sprite_path in self.sprite_cache:
             return self.sprite_cache[sprite_path]
 
-        full_path = os.path.join(os.getcwd(), sprite_path)
+        full_path = resource_path(sprite_path)
         try:
             if not os.path.exists(full_path):
                 print(f"Error: Projectile sprite file not found: {full_path}")

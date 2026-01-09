@@ -2,6 +2,7 @@ import pygame
 import math
 import random
 from config.constants import TILE_SIZE
+from utility.resource_path import resource_path
 
 class CycloneSkill:
     def __init__(self, player):
@@ -26,7 +27,7 @@ class CycloneSkill:
         self.num_orbiting_weapons = 3 # Number of weapons orbiting
 
         # Load default weapon graphic
-        self.default_weapon_image = pygame.image.load("graphics/UNUSED/weapons/ancient_sword.png").convert_alpha()
+        self.default_weapon_image = pygame.image.load(resource_path("graphics/UNUSED/weapons/ancient_sword.png")).convert_alpha()
         self.default_weapon_image = pygame.transform.scale(self.default_weapon_image, (TILE_SIZE, TILE_SIZE)) # Scale to tile size
         self.default_weapon_image.set_alpha(180) # Slightly transparent
 

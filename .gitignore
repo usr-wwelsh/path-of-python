@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# PyInstaller
+*.spec~
+*.manifest
+*.spec.bak
+dist_old_*/
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Game specific
+saves/*.sav
+*.log
+*.prof
+profile_output.prof
+fullscreen_test.log
+
+# Temporary files
+*.tmp
+*.bak
+*.old
+fix_*.py
+
+# Claude Code
+.claude/

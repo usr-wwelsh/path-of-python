@@ -3,6 +3,7 @@ import pygame
 from core.utils import draw_text
 import random
 import time
+from utility.resource_path import resource_path
 
 class DialogueManager:
     """Manages the game's branching dialogue system with hacker-style visuals."""
@@ -19,7 +20,7 @@ class DialogueManager:
     def load_dialogue_data(self):
         """Loads dialogue data from the JSON file."""
         try:
-            with open('data/dialogue.json', 'r', encoding='utf-8') as f:
+            with open(resource_path('data/dialogue.json'), 'r', encoding='utf-8') as f:
                 self.dialogue_data = json.load(f)
         except FileNotFoundError:
             print("ERROR: dialogue.json not found.")
@@ -28,7 +29,7 @@ class DialogueManager:
             print("ERROR: Could not decode dialogue.json. Check for JSON syntax errors.")
             self.dialogue_data = {"dialogues": {}}
         try:
-            with open('data/spawntown_generated_npcs_dialogue.json', 'r') as f:
+            with open(resource_path('data/spawntown_generated_npcs_dialogue.json'), 'r') as f:
                 generated_dialogue_data = json.load(f)
             # Merge the generated NPC dialogue into the main dialogue data
             if "dialogues" in generated_dialogue_data:
@@ -38,7 +39,7 @@ class DialogueManager:
         except json.JSONDecodeError:
             print("ERROR: Could not decode spawntown_generated_npcs_dialogue.json. Check for JSON syntax errors.")
         try:
-            with open('data/post_quest_dialogue.json', 'r', encoding='utf-8') as f:
+            with open(resource_path('data/post_quest_dialogue.json'), 'r', encoding='utf-8') as f:
                 self.post_quest_dialogue_data = json.load(f)
         except FileNotFoundError:
             print("WARNING: post_quest_dialogue.json not found. Post-quest dialogues may not be available.")

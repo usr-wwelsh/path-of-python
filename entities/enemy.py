@@ -7,6 +7,7 @@ from entities.paste import Paste
 from utility.image_cache import load_image
 from entities.projectile import Projectile
 from ui.damage_text import DamageText
+from utility.resource_path import resource_path
 # Removed: from entities.summon_skeletons import Skeleton # Import Skeleton class
 
 class Enemy(pygame.sprite.Sprite):
@@ -116,7 +117,7 @@ class Enemy(pygame.sprite.Sprite):
  
     def _load_sprite(self, sprite_path):
         """Loads the enemy sprite, with error handling."""
-        full_path = os.path.join(os.getcwd(), sprite_path)
+        full_path = resource_path(sprite_path)
         try:
             if not os.path.exists(full_path):
                 print(f"Error: Enemy sprite file not found: {full_path}")

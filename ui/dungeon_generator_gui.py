@@ -12,6 +12,7 @@ from PIL import Image, ImageTk
 from core.new_dungeon_generator import generate_new_dungeon, save_dungeon_data, translate_tile_type, load_enemy_data
 from ui.dungeon_gui_scene_generator import generate_scene_file, add_scene_to_game_engine, add_portal_to_spawntown, remove_scene_from_scenes_json, remove_portal_from_spawntown
 from ui.dungeon_display import display_dungeon
+from utility.resource_path import resource_path
 
 class DungeonGeneratorGUI:
     def __init__(self, game):
@@ -36,7 +37,7 @@ class DungeonGeneratorGUI:
 
         self.tileset_label = ttk.Label(self.root, text="Tileset:")
         self.tileset_label.grid(row=2, column=0)
-        with open('data/tileset_mappings.json', 'r') as f:
+        with open(resource_path('data/tileset_mappings.json'), 'r') as f:
             tileset_data = json.load(f)
         self.tileset_options = list(tileset_data.keys())
         self.tileset_combo = ttk.Combobox(self.root, values=self.tileset_options)

@@ -21,12 +21,13 @@ from items.potion import HealthPotion # Import the HealthPotion class
 from ui.shop_window import ShopWindow
 from core.utils import draw_text
 from ui.teleporter_menu import TeleporterMenu
+from utility.resource_path import resource_path
 
 # Function to create an NPC with random sprites
 def create_npc(game, x, y, name, dialogue_id):
-    head_dir = os.path.join(os.getcwd(), "graphics", "player", "head")
-    legs_dir = os.path.join(os.getcwd(), "graphics", "player", "legs")
-    hand1_dir = os.path.join(os.getcwd(), "graphics", "player", "hand1")
+    head_dir = resource_path(os.path.join("graphics", "player", "head"))
+    legs_dir = resource_path(os.path.join("graphics", "player", "legs"))
+    hand1_dir = resource_path(os.path.join("graphics", "player", "hand1"))
 
     head_sprites = [f for f in os.listdir(head_dir) if os.path.isfile(os.path.join(head_dir, f))]
     legs_sprites = [f for f in os.listdir(legs_dir) if os.path.isfile(os.path.join(legs_dir, f))]
@@ -41,7 +42,7 @@ def create_npc(game, x, y, name, dialogue_id):
     npc_image = pygame.Surface((TILE_SIZE, TILE_SIZE * 2), pygame.SRCALPHA)  # Assuming 32x64 is a reasonable size
 
     try:
-        base_sprite = pygame.image.load(os.path.join(os.getcwd(), "graphics", "player", "base", "human_m.png")).convert_alpha()
+        base_sprite = pygame.image.load(resource_path(os.path.join("graphics", "player", "base", "human_m.png"))).convert_alpha()
         base_sprite = pygame.transform.scale(base_sprite, (TILE_SIZE, TILE_SIZE))
         npc_image.blit(base_sprite, (0, 0))
 
@@ -80,7 +81,7 @@ class SpawnTown(BaseGameplayScene):
         initial_player_y = 0
         tileset_name = "default_tileset"  # Default tileset
         try:
-            zone_data_path = os.path.join(os.getcwd(), "data", "zone_data.json")
+            zone_data_path = resource_path(os.path.join("data", "zone_data.json"))
             with open(zone_data_path, "r") as f:
                 zone_data = json.load(f)
             spawn_town_data = zone_data["zones"]["spawn_town"]
@@ -201,7 +202,7 @@ class SpawnTown(BaseGameplayScene):
         self.portal_images = {}
         self.portal_rects = []
         try:
-            zone_data_path = os.path.join(os.getcwd(), "data", "zone_data.json")
+            zone_data_path = resource_path(os.path.join("data", "zone_data.json"))
             with open(zone_data_path, "r") as f:
                 zone_data = json.load(f)
             spawn_town_data = zone_data["zones"]["spawn_town"]
@@ -211,7 +212,7 @@ class SpawnTown(BaseGameplayScene):
                 portal_image = None
                 portal_image_path = portal.get("graphic")
                 if portal_image_path:
-                    full_path = os.path.join(os.getcwd(), portal_image_path)
+                    full_path = resource_path(portal_image_path)
                     try:
                         portal_image = pygame.image.load(full_path).convert_alpha()
                         self.portal_images[portal["target_scene"]] = portal_image
@@ -254,7 +255,7 @@ class SpawnTown(BaseGameplayScene):
     def open_shop_window(self):
         """Opens the shop window in the spawn town scene next to Charlie."""
         try:
-            with open('data/items.json', 'r') as f:
+            with open(resource_path('data/items.json'), 'r') as f:
                 items_data = json.load(f)
         except FileNotFoundError:
             self.game.logger.error("ERROR: items.json not found.")
@@ -626,7 +627,7 @@ class SpawnTown(BaseGameplayScene):
         self.portal_images = {}
         self.portal_rects = []
         try:
-            zone_data_path = os.path.join(os.getcwd(), "data", "zone_data.json")
+            zone_data_path = resource_path(os.path.join("data", "zone_data.json"))
             with open(zone_data_path, "r") as f:
                 zone_data = json.load(f)
             spawn_town_data = zone_data["zones"]["spawn_town"]
@@ -636,7 +637,7 @@ class SpawnTown(BaseGameplayScene):
                 portal_image = None
                 portal_image_path = portal.get("graphic")
                 if portal_image_path:
-                    full_path = os.path.join(os.getcwd(), portal_image_path)
+                    full_path = resource_path(portal_image_path)
                     try:
                         portal_image = pygame.image.load(full_path).convert_alpha()
                         self.portal_images[portal["target_scene"]] = portal_image
@@ -662,7 +663,7 @@ class SpawnTown(BaseGameplayScene):
     def next_song(self):
         if self.music_files:
             self.current_music_index += 1
-            next_song = os.path.join(os.getcwd(), "data", "music", self.music_files[self.current_music_index % len(self.music_files)])
+            next_song = resource_path(os.path.join("data", "music", self.music_files[self.current_music_index % len(self.music_files)]))
             pygame.mixer.music.load(next_song)
             pygame.mixer.music.play()
         else:

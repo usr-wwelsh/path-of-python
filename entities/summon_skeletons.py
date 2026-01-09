@@ -7,6 +7,7 @@ from config.constants import TILE_SIZE
 from entities.enemy import Enemy
 from entities.necrotic_plague import NecroticPlague  # Import the NecroticPlague class
 from entities.singularity_core import SingularityCore  # Import the SingularityCore class
+from utility.resource_path import resource_path
 
 
 class SummonSkeletons:
@@ -30,7 +31,7 @@ class SummonSkeletons:
 
     def _load_skill_data(self):
         """Loads Summon Skeletons skill data from skills.json."""
-        skills_file_path = os.path.join(os.getcwd(), "data", "skills.json")
+        skills_file_path = resource_path(os.path.join("data", "skills.json"))
         try:
             with open(skills_file_path, 'r') as f:
                 skills_data = json.load(f)
@@ -191,7 +192,7 @@ class Skeleton(Enemy):
         self.scale_factor = min(4, 2 + (self.player_level - 1) * scale_increment_per_level)
         
         # Load and scale the sprite image
-        original_image = pygame.image.load(os.path.join(os.getcwd(), sprite_path)).convert_alpha()
+        original_image = pygame.image.load(resource_path(sprite_path)).convert_alpha()
         new_width = int(original_image.get_width() * self.scale_factor * scale)
         new_height = int(original_image.get_height() * self.scale_factor * scale)
         self.image = pygame.transform.scale(original_image, (new_width, new_height))
@@ -413,7 +414,7 @@ class WraithEffect(pygame.sprite.Sprite):
     def __init__(self, game, x, y, image_path, scale=1):
         super().__init__()
         self.game = game
-        self.original_image = pygame.image.load(os.path.join(os.getcwd(), image_path)).convert_alpha()
+        self.original_image = pygame.image.load(resource_path(image_path)).convert_alpha()
         self.image = pygame.transform.scale(self.original_image, (int(self.original_image.get_width() * scale), int(self.original_image.get_height() * scale)))
         self.rect = self.image.get_rect(center=(x, y))
         self.alpha = 255

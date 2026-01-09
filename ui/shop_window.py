@@ -4,6 +4,7 @@ from core.utils import draw_text
 import os
 import random
 import json
+from utility.resource_path import resource_path
 
 class Button:
     def __init__(self, rect, color, hover_color, click_color, text, font, text_color):
@@ -44,7 +45,7 @@ class ShopWindow:
         self.height = settings.SCREEN_HEIGHT * 0.6  # Reduced height
         self.x = (settings.SCREEN_WIDTH - self.width) // 2  # Center horizontally
         self.y = y - self.height + 300 # Adjusted position
-        with open('data/items.json', 'r') as f:
+        with open(resource_path('data/items.json'), 'r') as f:
             self.items_data = json.load(f)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.font = pygame.font.Font(None, 24)

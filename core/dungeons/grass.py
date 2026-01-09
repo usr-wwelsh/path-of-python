@@ -3,6 +3,7 @@ import pygame
 import json
 import os
 from core.base_gameplay_scene import BaseGameplayScene
+from utility.resource_path import resource_path
 
 class grass(BaseGameplayScene):
     def __init__(self, game, player, hud):
@@ -18,7 +19,7 @@ class grass(BaseGameplayScene):
         self.effects = pygame.sprite.Group()  # Initialize the effects group
 
     def load_dungeon_data(self, dungeon_name):
-        dungeon_data_path = os.path.abspath(os.path.join(os.getcwd(), "data", "dungeons", f'{dungeon_name}.json'))
+        dungeon_data_path = os.path.abspath(resource_path(os.path.join("data", "dungeons", f'{dungeon_name}.json')))
         try:
             with open(dungeon_data_path, "r") as f:
                 dungeon_data = json.load(f)

@@ -269,6 +269,11 @@ class SaveMenu(BaseScene):
 
     def load_save_files(self):
         save_files = []
+        # Create saves directory if it doesn't exist
+        if not os.path.exists("saves"):
+            os.makedirs("saves")
+            return save_files
+
         for filename in os.listdir("saves"):
             if filename.startswith("save_") and filename.endswith(".json"):
                 save_files.append(filename)

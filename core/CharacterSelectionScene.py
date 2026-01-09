@@ -5,6 +5,7 @@ from core.scene_manager import BaseScene
 from progression.quest_tracker import QuestTracker
 from config.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ui.menus import Button # Import Button class
+from utility.resource_path import resource_path
 
 class ElectricityEffect(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -90,7 +91,7 @@ class CharacterSelectionScene(BaseScene):
     def load_class_data(self, json_path):
         """Loads class data from a JSON file."""
         try:
-            with open(json_path, "r") as f:
+            with open(resource_path(json_path), "r") as f:
                 data = json.load(f)
             # Initialize helmet_lift_offset for each class
             for class_name in data:
@@ -102,7 +103,7 @@ class CharacterSelectionScene(BaseScene):
 
     def load_graphics(self):
         # Load room graphic
-        self.room_graphic = pygame.image.load("graphics/room.png").convert_alpha()
+        self.room_graphic = pygame.image.load(resource_path("graphics/room.png")).convert_alpha()
         self.room_graphic = pygame.transform.scale(self.room_graphic, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
         # Create a darkened version of the room graphic
@@ -112,14 +113,14 @@ class CharacterSelectionScene(BaseScene):
         self.darkened_room_graphic.blit(dark_overlay, (0, 0))
 
         # Load generic helmet sprite (VR helmet)
-        generic_helmet_sprite = pygame.image.load("graphics/player/head/full_black.png").convert_alpha()
+        generic_helmet_sprite = pygame.image.load(resource_path("graphics/player/head/full_black.png")).convert_alpha()
         generic_helmet_sprite = pygame.transform.scale(generic_helmet_sprite, (400, 200)) # Scale to desired size
 
         for class_name, data in self.classes.items():
             # Load base sprite from the path specified in classes.json
             base_sprite_path = data.get("base_sprite")
             if base_sprite_path:
-                base_sprite = pygame.image.load(base_sprite_path).convert_alpha()
+                base_sprite = pygame.image.load(resource_path(base_sprite_path)).convert_alpha()
                 base_sprite = pygame.transform.scale(base_sprite, (200, 300))
                 data["base_sprite_image"] = base_sprite # Store the loaded image
             else:

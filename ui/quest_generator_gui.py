@@ -10,6 +10,7 @@ from tkinter import font as tkFont
 from core.new_dungeon_generator import translate_tile_type, load_enemy_data
 from ui.dungeon_gui_scene_generator import generate_scene_file, add_scene_to_game_engine
 from ui.dungeon_display import display_dungeon
+from utility.resource_path import resource_path
 
 class QuestGeneratorGUI:
     def __init__(self, game):
@@ -142,7 +143,7 @@ class QuestGeneratorGUI:
         
         # Tileset selection
         ttk.Label(meta_frame, text="Tileset:").grid(row=4, column=0, sticky=tk.W)
-        with open('data/tileset_mappings.json', 'r') as f:
+        with open(resource_path('data/tileset_mappings.json'), 'r') as f:
             tileset_data = json.load(f)
         self.tileset_options = list(tileset_data.keys())
         self.tileset_combo = ttk.Combobox(meta_frame, values=self.tileset_options)

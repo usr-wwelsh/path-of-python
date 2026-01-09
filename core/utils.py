@@ -2,6 +2,7 @@ import os
 import json
 import pygame
 from utility.font_cache import get_font
+from utility.resource_path import resource_path
 
 def load_json(filepath):
     """Loads data from a JSON file."""
@@ -123,7 +124,7 @@ def draw_text(surface, text, size, color, x, y, align="topleft", max_width=None,
 def load_zone_data():
     """Loads zone data from a JSON file."""
     try:
-        with open("data/zone_data.json", "r") as file:
+        with open(resource_path("data/zone_data.json"), "r") as file:
             zone_data = json.load(file)
             # Access the 'zones' dictionary and then a specific zone, e.g., "spawn_town"
             # Assuming "spawn_town" is the default or initial zone

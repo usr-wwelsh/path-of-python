@@ -7,6 +7,7 @@ from core.utils import draw_text
 import random
 import math
 from ui.button import Button
+from utility.resource_path import resource_path
 
 class TitleScreen(BaseScene):
     def __init__(self, game):
@@ -42,7 +43,7 @@ class TitleScreen(BaseScene):
         )
         self.settings_button = Button(
             settings.SCREEN_WIDTH // 2 + 110, settings.SCREEN_HEIGHT // 2 + 175, 40, 40,
-            pygame.transform.scale(pygame.image.load("graphics/dc-misc/options.png").convert_alpha(), (32, 32)), lambda: self.game.scene_manager.set_scene("settings_menu")
+            pygame.transform.scale(pygame.image.load(resource_path("graphics/dc-misc/options.png")).convert_alpha(), (32, 32)), lambda: self.game.scene_manager.set_scene("settings_menu")
         )
         self.dungeon_maker_button = Button(
             settings.SCREEN_WIDTH // 2 - 100, settings.SCREEN_HEIGHT // 2 + 230, 200, 50,
@@ -55,7 +56,7 @@ class TitleScreen(BaseScene):
         # New mute button
         self.mute_button = Button(
             settings.SCREEN_WIDTH // 2 - 150, settings.SCREEN_HEIGHT // 2 + 175, 40, 40,
-            pygame.transform.scale(pygame.image.load("graphics/dc-misc/mute.png").convert_alpha(), (32, 32)), self.toggle_mute
+            pygame.transform.scale(pygame.image.load(resource_path("graphics/dc-misc/mute.png")).convert_alpha(), (32, 32)), self.toggle_mute
         )
         self.needs_background_redraw = True # Force redraw when UI is recreated
 
@@ -121,8 +122,7 @@ class TitleScreen(BaseScene):
 
             # Load background images (only once per timed redraw)
             self.background_images = [
-
-                pygame.image.load("graphics/titlebg.png").convert_alpha()
+                pygame.image.load(resource_path("graphics/titlebg.png")).convert_alpha()
             ]
 
             # Draw the background images with a parallax effect
@@ -152,7 +152,7 @@ class TitleScreen(BaseScene):
         screen.blit(self.background_surface, (0, 0))
 
         # Load the title image (always drawn every frame)
-        title_image = pygame.image.load("graphics/title.png").convert_alpha()
+        title_image = pygame.image.load(resource_path("graphics/title.png")).convert_alpha()
         # Scale the title image to fit the screen width while maintaining aspect ratio
         aspect_ratio = title_image.get_width() / title_image.get_height()
         title_scale_factor = 0.6  # Make the title image 75% smaller

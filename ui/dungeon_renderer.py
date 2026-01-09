@@ -1,6 +1,7 @@
 import pygame
 import json
 from core.new_dungeon_generator import translate_tile_type
+from utility.resource_path import resource_path
 
 def render_dungeon_pygame(dungeon_data, zoom_scale):
     width = dungeon_data['width']
@@ -9,8 +10,8 @@ def render_dungeon_pygame(dungeon_data, zoom_scale):
     tileset_name = dungeon_data['tileset']
 
     # Load tileset
-    tileset_path = f'data/tilesets/{tileset_name}_tileset.json'
-    with open('data/tileset_mappings.json', 'r') as f:
+    tileset_path = resource_path(f'data/tilesets/{tileset_name}_tileset.json')
+    with open(resource_path('data/tileset_mappings.json'), 'r') as f:
         tileset_mappings = json.load(f)
     tileset_mapping = tileset_mappings.get(tileset_name, tileset_mappings['default'])
     tileset = {}
@@ -18,7 +19,7 @@ def render_dungeon_pygame(dungeon_data, zoom_scale):
         tileset_data = json.load(f)
 
     for tile_name, tile_path in tileset_data.items():
-        tile_image = pygame.image.load(tile_path).convert_alpha()
+        tile_image = pygame.image.load(resource_path(tile_path)).convert_alpha()
         tileset[tile_name] = tile_image
 
     # Create a Pygame surface

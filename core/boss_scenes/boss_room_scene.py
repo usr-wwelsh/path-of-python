@@ -8,6 +8,7 @@ from entities.bosses.base_boss import BaseBoss  # Assuming BaseBoss is needed fo
 from config.constants import TILE_SIZE, KEY_INTERACT  # Assuming TILE_SIZE and KEY_INTERACT are needed
 from entities.boss_portal import BossPortal  # Import BossPortal for the return portal
 from core.input_handler import InputHandler  # Import InputHandler
+from utility.resource_path import resource_path
 
 
 class BossRoomScene(BaseGameplayScene):
@@ -62,7 +63,7 @@ class BossRoomScene(BaseGameplayScene):
             self.boss_data["layout_path"] = "data/boss_rooms/generic_boss_layout.json"
 
         # Load the specific boss room layout and tileset from boss_data
-        dungeon_data_path = os.path.join(os.getcwd(), self.boss_data.get("layout_path"))
+        dungeon_data_path = resource_path(os.path.join(self.boss_data.get("layout_path")))
 
         # Extract the dungeon name from the previous_scene_name
         dungeon_name = self.previous_scene_name  # Assuming previous_scene_name is the dungeon name
@@ -130,7 +131,7 @@ class BossRoomScene(BaseGameplayScene):
 
     def _load_boss_config(self):
         """Loads the boss configuration from boss_config.json."""
-        boss_config_path = os.path.join(os.getcwd(), "data", "boss_config.json")
+        boss_config_path = resource_path(os.path.join("data", "boss_config.json"))
         try:
             with open(boss_config_path, "r") as f:
                 return json.load(f).get("bosses", {})  # Return the 'bosses' dictionary
@@ -402,7 +403,7 @@ class BossRoomScene(BaseGameplayScene):
         pygame.mixer.music.stop()
 
         # Play a random song from data/music
-        music_dir = os.path.join(os.getcwd(), "data", "music")
+        music_dir = resource_path(os.path.join("data", "music"))
         try:
             music_files = [f for f in os.listdir(music_dir) if f.endswith(".ogg") or f.endswith(".mp3")]
             if music_files:

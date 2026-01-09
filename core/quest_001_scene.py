@@ -8,10 +8,21 @@ from entities.npc import NPC
 from items.item import Item
 from ui.hud import HUD
 from config.constants import TILE_SIZE, KEY_INTERACT
+from utility.resource_path import resource_path
 import math
 
 class Quest001Scene(BaseGameplayScene):
     def __init__(self, game, player=None, hud=None, dungeon_data=None, is_dark=False):
+        # Load dungeon data if not provided
+        if dungeon_data is None:
+            dungeon_data_path = resource_path("data/quest_001_tilemap.json")
+            try:
+                with open(dungeon_data_path, "r") as f:
+                    dungeon_data = json.load(f)
+            except (FileNotFoundError, json.JSONDecodeError) as e:
+                print(f"Error loading dungeon data from {dungeon_data_path}: {e}")
+                dungeon_data = {}
+
         # Call BaseGameplayScene's init, passing dungeon_data for tileset name
         super().__init__(game, player, hud, tileset_name=dungeon_data.get('tileset', 'default'), dungeon_data=dungeon_data, is_dark=is_dark)
         self.game = game

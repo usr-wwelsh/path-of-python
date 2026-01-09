@@ -5,6 +5,7 @@ import os
 from ui.flesh_algorithm_terminal import FleshAlgorithmTerminal
 sys.path.append(".")
 import pygame
+from utility.resource_path import resource_path
 from config import settings # Import settings module directly
 from config.constants import STATE_TITLE_SCREEN, STATE_GAMEPLAY, STATE_PAUSE_MENU, STATE_SETTINGS_MENU, STATE_INVENTORY, STATE_SKILL_TREE, STATE_DEVELOPER_INVENTORY
 from core.input_handler import InputHandler
@@ -44,6 +45,15 @@ class GameEngine:
 
         self.settings = settings # Make settings accessible
         pygame.display.set_caption(self.settings.CAPTION)
+
+        # Set window icon
+        try:
+            icon_path = resource_path("icon.ico")
+            icon_surface = pygame.image.load(icon_path)
+            pygame.display.set_icon(icon_surface)
+        except (pygame.error, FileNotFoundError) as e:
+            self.logger.warning(f"Could not load window icon: {e}")
+
         self.clock = pygame.time.Clock()
         self.running = True
 
@@ -61,7 +71,7 @@ class GameEngine:
         self._use_system_cursor = False
 
         # Load custom cursor image
-        self.custom_cursor_image = pygame.image.load('graphics/gui/cursor.png').convert_alpha()
+        self.custom_cursor_image = pygame.image.load(resource_path('graphics/gui/cursor.png')).convert_alpha()
         pygame.mouse.set_visible(False)
 
 
@@ -71,7 +81,7 @@ class GameEngine:
         self.hud = None # Initialize hud to None
         self.dialogue_manager = DialogueManager(self)
         self.flesh_algorithm_terminal = FleshAlgorithmTerminal(self)
-        self.quest_manager = QuestManager('data/quests.json') # Initialize QuestManager
+        self.quest_manager = QuestManager(resource_path('data/quests.json')) # Initialize QuestManager
         self.quest_tracker = QuestTracker() # Initialize QuestTracker
 
         self.scene_manager = SceneManager(self) # Pass self (GameEngine instance) to SceneManager - MOVED THIS LINE UP
@@ -88,7 +98,7 @@ class GameEngine:
 
     def load_scenes(self):
         """Loads scenes from data/scenes.json."""
-        with open('data/scenes.json', 'r') as f:
+        with open(resource_path('data/scenes.json'), 'r') as f:
             self.scenes_data = json.load(f) # Store scenes_data as a self attribute
 
         self.scenes = {}
@@ -120,7 +130,7 @@ class GameEngine:
                     if "dungeon_data_path" in scene_data:
                         dungeon_data_path = scene_data["dungeon_data_path"]
                         try:
-                            with open(dungeon_data_path, "r") as df:
+                            with open(resource_path(dungeon_data_path), "r") as df:
                                 dungeon_data = json.load(df)
                             scene_args['dungeon_data'] = dungeon_data
                         except (FileNotFoundError, json.JSONDecodeError) as e:
@@ -243,6 +253,15 @@ class GameEngine:
                 self.reinitialize_ui_fonts()
                 self.logger.debug("After self.reinitialize_ui_fonts()")
                 pygame.display.set_caption(self.settings.CAPTION)
+
+                # Re-set window icon after fallback display mode
+                try:
+                    icon_path = resource_path("icon.ico")
+                    icon_surface = pygame.image.load(icon_path)
+                    pygame.display.set_icon(icon_surface)
+                except (pygame.error, FileNotFoundError) as e:
+                    self.logger.warning(f"Could not load window icon: {e}")
+
                 return # Exit the method after fallback
             # Fallback to a known safe mode if the desired mode fails
             try:
@@ -268,6 +287,14 @@ class GameEngine:
 
         pygame.display.set_caption(self.settings.CAPTION)
 
+        # Re-set window icon after display mode change
+        try:
+            icon_path = resource_path("icon.ico")
+            icon_surface = pygame.image.load(icon_path)
+            pygame.display.set_icon(icon_surface)
+        except (pygame.error, FileNotFoundError) as e:
+            self.logger.warning(f"Could not load window icon: {e}")
+
         # Record the time of this display change to prevent reentrant calls
         self._display_change_time = pygame.time.get_ticks()
         self.logger.info(f"Display change timestamp set to {self._display_change_time}")
@@ -285,7 +312,7 @@ class GameEngine:
             self._use_system_cursor = False
             # Only reinitialize custom cursor in windowed mode (can freeze in fullscreen)
             try:
-                self.custom_cursor_image = pygame.image.load('graphics/gui/cursor.png').convert_alpha()
+                self.custom_cursor_image = pygame.image.load(resource_path('graphics/gui/cursor.png')).convert_alpha()
                 pygame.mouse.set_visible(False)  # Hide system cursor in windowed mode
                 self.logger.info("Custom cursor reinitialized after display change")
             except Exception as e:

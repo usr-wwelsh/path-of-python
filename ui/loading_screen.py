@@ -2,6 +2,7 @@ import pygame
 import time
 import random
 import math
+from utility.resource_path import resource_path
 
 class LoadingScreen:
     def __init__(self, screen):
@@ -163,11 +164,11 @@ class LoadingScreen:
         
         # Load and set the window icon from an .ico file
         try:
-            icon_path = "icon.ico" # Placeholder path for the icon file
+            icon_path = resource_path("icon.ico") # Placeholder path for the icon file
             icon_surface = pygame.image.load(icon_path)
             pygame.display.set_icon(icon_surface)
-        except pygame.error as e:
-            print(f"Could not load icon: {e}")
+        except (pygame.error, FileNotFoundError) as e:
+            print(f"Could not load icon (this is fine): {e}")
             # Fallback to a transparent icon if loading fails
             empty_surface = pygame.Surface((1, 1), pygame.SRCALPHA)
             pygame.display.set_icon(empty_surface)
@@ -175,8 +176,8 @@ class LoadingScreen:
         # Using default pygame font as get_font caused import error
         # Using a more "cyber" font if available, otherwise default
         try:
-            self.title_font = pygame.font.Font("data/fonts/Cyberpunk.ttf", 80) # Example custom font
-            self.message_font = pygame.font.Font("data/fonts/Cyberpunk.ttf", self.FONT_SIZE)
+            self.title_font = pygame.font.Font(resource_path("data/fonts/Cyberpunk.ttf"), 80) # Example custom font
+            self.message_font = pygame.font.Font(resource_path("data/fonts/Cyberpunk.ttf"), self.FONT_SIZE)
         except FileNotFoundError:
             print("Cyberpunk font not found, falling back to default.")
             self.title_font = pygame.font.Font(None, 80)

@@ -4,6 +4,7 @@ import pygame
 import json
 import os
 from entities.enemy import Enemy
+from utility.resource_path import resource_path
 
 class EnemyFactory:
     def __init__(self, game):
@@ -11,7 +12,7 @@ class EnemyFactory:
         self.enemy_configs = self._load_enemy_configs()
 
     def _load_enemy_configs(self):
-        enemy_config_path = os.path.join(os.getcwd(), "data", "enemy_data.json")
+        enemy_config_path = resource_path(os.path.join("data", "enemy_data.json"))
         try:
             with open(enemy_config_path, "r") as f:
                 return json.load(f)

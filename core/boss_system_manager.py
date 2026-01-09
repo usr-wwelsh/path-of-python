@@ -7,6 +7,7 @@ from entities.boss_portal import BossPortal # Assuming BossPortal is needed
 from config.constants import TILE_SIZE, KEY_INTERACT # Assuming TILE_SIZE and KEY_INTERACT are needed
 from core.boss_scenes.boss_room_scene import BossRoomScene # To transition to the boss scene
 from core.input_handler import InputHandler # Import InputHandler
+from utility.resource_path import resource_path
 
 class BossSystemManager:
     def __init__(self, game):
@@ -18,7 +19,7 @@ class BossSystemManager:
 
     def _load_boss_config(self):
         """Loads the boss configuration from boss_config.json."""
-        boss_config_path = os.path.join(os.getcwd(), "data", "boss_config.json")
+        boss_config_path = resource_path(os.path.join("data", "boss_config.json"))
         try:
             with open(boss_config_path, "r") as f:
                 return json.load(f).get("bosses", {}) # Return the 'bosses' dictionary
@@ -28,7 +29,7 @@ class BossSystemManager:
 
     def _load_enemy_data(self):
         """Loads the enemy data from enemy_data.json."""
-        enemy_data_path = os.path.join(os.getcwd(), "data", "enemy_data.json")
+        enemy_data_path = resource_path(os.path.join("data", "enemy_data.json"))
         try:
             with open(enemy_data_path, "r") as f:
                 return json.load(f) # Load the entire enemy data

@@ -7,6 +7,7 @@ import random
 import math
 
 import core
+from utility.resource_path import resource_path
 
 class SpriteWithFilename(pg.Surface):
     def __init__(self, size, filename=""):
@@ -79,14 +80,14 @@ class FleshAlgorithmTerminal(BaseGameplayScene):
         self.button_text_color = (255, 255, 255)
 
     def load_skills(self):
-        with open("data/skills.json", "r") as f:
+        with open(resource_path("data/skills.json"), "r") as f:
             skills_data = json.load(f)
         return [skill["name"] for skill in skills_data["active_skills"]]
 
     def load_sprites(self):
         sprites = {}
         for part in self.sprite_parts:
-            sprite_dir = os.path.join("graphics", "player", part)
+            sprite_dir = resource_path(os.path.join("graphics", "player", part))
             loaded_sprites = []
             filenames = []
             print(f"Loading sprites from: {sprite_dir}")  # Log the directory

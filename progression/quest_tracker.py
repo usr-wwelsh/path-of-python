@@ -4,6 +4,7 @@ import pygame
 from config.settings import UI_FONT, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_SECONDARY_COLOR, GREEN
 import random
 from core.utils import draw_text
+from utility.resource_path import resource_path
 
 class QuestTracker:
     _instance = None
@@ -22,7 +23,7 @@ class QuestTracker:
         self.active_quests = [] # This will now typically hold only one quest
         self.completed_quests = []
         self.current_active_quest_index = -1 # -1 means no quest is active yet
-        self._load_quests("data/quests.json")
+        self._load_quests(resource_path("data/quests.json"))
         self._set_initial_active_quest()
         self.quest_completed_display_active = False
         self.quest_completed_display_timer = 0
@@ -36,18 +37,15 @@ class QuestTracker:
         self.active_quests = []
         self.completed_quests = []
         self.current_active_quest_index = -1
-        self._load_quests("data/quests.json")
+        self._load_quests(resource_path("data/quests.json"))
         self._set_initial_active_quest()
         self.quest_completed_display_active = False
         self.quest_completed_display_timer = 0
 
     def _load_quests(self, filepath):
         try:
-            # Get the absolute path to the directory where this script is located
-            script_dir = os.path.dirname(__file__)
-            # Construct the absolute path to the quests.json file
-            absolute_filepath = os.path.join(script_dir, '..', filepath)
-            absolute_filepath = os.path.normpath(absolute_filepath)
+            # Use resource_path to get correct path in both dev and bundled modes
+            absolute_filepath = resource_path(filepath)
 
             with open(absolute_filepath, 'r') as f:
                 quests_data = json.load(f)

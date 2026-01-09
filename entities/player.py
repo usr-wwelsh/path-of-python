@@ -13,6 +13,7 @@ from entities.fireball_skill import FireballSkill
 from entities.summon_spiders import SummonSpiders
 from entities.ice_nova import IceNovaSkill
 from progression.paste_tree_manager import PasteTreeManager # Import PasteTreeManager
+from utility.resource_path import resource_path
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y, class_name="knight", initial_stats=None):
@@ -42,7 +43,7 @@ class Player(pygame.sprite.Sprite):
         self.footstep_interval = 100  # milliseconds between footsteps
         self.last_footstep_time = pygame.time.get_ticks()
 
-        self.footstep_image = pygame.image.load("graphics/player/base/shadow.png").convert_alpha()
+        self.footstep_image = pygame.image.load(resource_path("graphics/player/base/shadow.png")).convert_alpha()
         # Load player sprites - these will be updated by set_class
         self.head1_sprite = get_player_head_sprite(class_name)
         self.hand1_sprite = get_player_hand_sprite(class_name)
@@ -283,7 +284,7 @@ class Player(pygame.sprite.Sprite):
     def load_skills(self, json_path):
         """Loads skill data from a JSON file."""
         try:
-            skill_data_path = os.path.join(os.getcwd(), json_path)
+            skill_data_path = resource_path(json_path)
             with open(skill_data_path, "r") as f:
                 data = json.load(f)
             return data['skills']

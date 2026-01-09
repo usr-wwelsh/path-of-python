@@ -7,6 +7,7 @@ from core.music_manager import MusicManager
 from entities.player import Player
 from entities.boss_portal import BossPortal  # Import BossPortal
 from ui.hud import HUD
+from utility.resource_path import resource_path
 from config.constants import (
     KEY_INVENTORY, KEY_PASTE_TREE, KEY_INTERACT, KEY_OPTIONS_MENU, # Added KEY_PASTE_TREE
     STATE_INVENTORY, STATE_PASTE_TREE, STATE_PAUSE_MENU, STATE_SETTINGS_MENU, TILE_SIZE,
@@ -144,7 +145,7 @@ class BaseGameplayScene(BaseScene):
             self.portal_spawned = True # Set the flag to True after attempting to spawn the portal
 
         # Update enemy XP values based on enemy_data.json
-        enemy_config_path = os.path.join(os.getcwd(), "data", "enemy_data.json")
+        enemy_config_path = resource_path(os.path.join("data", "enemy_data.json"))
         try:
             with open(enemy_config_path, "r") as f:
                 all_enemy_configs = json.load(f)
@@ -162,7 +163,7 @@ class BaseGameplayScene(BaseScene):
     def _load_tile_images(self):
         """Loads tile images based on the dungeon's tileset."""
         try:
-            zone_data_path = os.path.join(os.getcwd(), "data", "zone_data.json")
+            zone_data_path = resource_path(os.path.join("data", "zone_data.json"))
             with open(zone_data_path, "r") as f:
                 zone_data = json.load(f)
 
@@ -178,7 +179,7 @@ class BaseGameplayScene(BaseScene):
                 # Load tile images from zone_data.json
                 for tile_name, tile_path in tileset_data.items():
                     try:
-                        full_path = os.path.join(os.getcwd(), tile_path)
+                        full_path = resource_path( tile_path)
                         if not os.path.exists(full_path):
                             print(f"BaseGameplayScene: Error: Tile image file not found: {full_path}")
                             self.tile_images[tile_name] = pygame.Surface((self.tile_size, self.tile_size))
@@ -207,13 +208,13 @@ class BaseGameplayScene(BaseScene):
 
             else:
                 # Load tile images from a separate JSON file
-                tileset_path = os.path.join(os.getcwd(), "data", "tilesets", f"{self.tileset_name}_tileset.json")
+                tileset_path = resource_path(os.path.join("data", "tilesets", f"{self.tileset_name}_tileset.json"))
                 with open(tileset_path, "r") as f:
                     tileset_data = json.load(f)
 
                 for tile_name, tile_path in tileset_data.items():
                     try:
-                        full_path = os.path.join(os.getcwd(), tile_path)
+                        full_path = resource_path( tile_path)
                         if not os.path.exists(full_path):
                             print(f"BaseGameplayScene: Error: Tile image file not found: {full_path}")
                             self.tile_images[tile_name] = pygame.Surface((self.tile_size, self.tile_size))
@@ -274,7 +275,7 @@ class BaseGameplayScene(BaseScene):
             sprite_path = decoration_info.get('sprite_path')
 
             try:
-                full_path = os.path.join(os.getcwd(), sprite_path)
+                full_path = resource_path( sprite_path)
                 image = pygame.image.load(full_path).convert_alpha().convert_alpha()
                 self.decorations.append({
                     'type': decoration_type,
@@ -435,9 +436,9 @@ class BaseGameplayScene(BaseScene):
                 if isinstance(portal, BossPortal) and portal.rect.collidepoint(world_x, world_y):
                     self.game.scene_manager.set_scene("boss_room", self.player, self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
                     pygame.mixer.music.stop()
-                    pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "boss1.mp3"))
+                    pygame.mixer.music.load(resource_path(os.path.join("data", "boss1.mp3")))
                     pygame.mixer.music.play(0)  # Play once
-                    pygame.mixer.music.queue(os.path.join(os.getcwd(), "data", "boss.mp3"))  # Play the boss music in a loop
+                    pygame.mixer.music.queue(resource_path(os.path.join("data", "boss.mp3")))  # Play the boss music in a loop
                     return  # Interact with only one portal at a time
         # Pass event to minimap
         # Pass event to HUD
@@ -695,7 +696,7 @@ class BaseGameplayScene(BaseScene):
             self.death_sequence_initiated = True
             # Load the defeat window image
             try:
-                defeat_image = pygame.image.load(os.path.join(os.getcwd(), "graphics", "gui", "window_defeat.png")).convert_alpha()
+                defeat_image = pygame.image.load(resource_path(os.path.join("graphics", "gui", "window_defeat.png"))).convert_alpha()
             except FileNotFoundError:
                 print("Defeat window image not found!")
                 defeat_image = None
