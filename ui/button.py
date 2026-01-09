@@ -1,5 +1,6 @@
 import pygame
 from config.settings import UI_FONT, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_SECONDARY_COLOR, UI_ACCENT_COLOR
+from utility.font_cache import get_font
 
 class Button:
     def __init__(self, x, y, width, height, text, action, font_size=UI_FONT_SIZE_DEFAULT, color=UI_PRIMARY_COLOR, bg_color=UI_SECONDARY_COLOR, hover_color=UI_ACCENT_COLOR):
@@ -8,7 +9,7 @@ class Button:
         self.action = action
         self.font_name = UI_FONT  # Store font name
         self.font_size = font_size  # Store font size
-        self.font = pygame.font.SysFont(self.font_name, self.font_size)
+        self.font = get_font(self.font_name, self.font_size)  # Use font cache for stability
         self.color = color
         self.bg_color = bg_color
         self.hover_color = hover_color
@@ -16,7 +17,7 @@ class Button:
 
     def reinitialize_font(self):
         """Recreates the font object for the button."""
-        self.font = pygame.font.SysFont(self.font_name, self.font_size)
+        self.font = get_font(self.font_name, self.font_size)
 
     def draw(self, surface):
         current_bg_color = self.hover_color if self.is_hovered else self.bg_color

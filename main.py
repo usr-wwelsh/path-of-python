@@ -11,14 +11,15 @@ from core.IntroScene import IntroScene  # Import the IntroScene
 from ui.loading_screen import LoadingScreen
 
 if __name__ == "__main__":
+    # Set SDL_VIDEO_CENTERED before pygame.init() for proper window centering
+    os.environ['SDL_VIDEO_CENTERED'] = '1'
     pygame.init()
-    screen = pygame.display.set_mode((800, 600)) # Assuming a default screen size
-    pygame.mouse.set_visible(False) # Hide the system cursor
+    pygame.mixer.init()
+    screen = pygame.display.set_mode((800, 600))  # Temporary screen for loading
+    pygame.mouse.set_visible(False)  # Hide the system cursor
     if "-dev" not in sys.argv:
         loading_screen = LoadingScreen(screen)
         loading_screen.run()
-    pygame.init()
-    pygame.mixer.init()
     pygame.mixer.music.load("./data/corrupted.wav")  # Changed to corrupted.wav
     pygame.mixer.music.play(-1) # -1 means loop indefinitely
     # screen_width = 800

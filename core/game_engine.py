@@ -21,21 +21,19 @@ import sys
 import logging # Import logging module
 import traceback # Import traceback module
 from core.swamp_cave_dungeon import SwampCaveDungeon # Import SwampCaveDungeon
+from utility.font_cache import clear_font_cache
 import json
 import inspect # Import inspect module
 
 class GameEngine:
     """Manages the main game loop, scenes, and core systems."""
     def __init__(self):
-        # Center the window before initializing pygame
-        if not settings.FULLSCREEN:
-            os.environ['SDL_VIDEO_CENTERED'] = '1'
-            
-        pygame.init()
+        # Note: SDL_VIDEO_CENTERED and pygame.init() are now handled in main.py
+        # before GameEngine is created. This ensures proper initialization order.
+
         # Initialize the screen with basic settings first
         self.screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
-        self.game_surface = pygame.Surface((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)) # Game is rendered to this surface
-        
+
         # Configure logging
         logging.basicConfig(level=logging.DEBUG if settings.DEBUG_MODE else logging.INFO,
                             format='%(asctime)s - %(levelname)s - %(message)s')
@@ -49,8 +47,23 @@ class GameEngine:
         self.clock = pygame.time.Clock()
         self.running = True
 
+        # Track display changes to prevent reentrant calls during mode transitions
+        self._display_change_time = 0
+        self._display_grace_period = 1000  # 1 second grace period in milliseconds
+
+        # Flag to defer display settings application to main loop
+        self._pending_display_settings = False
+
+        # Flag to block drawing during display mode changes
+        self._applying_display_settings = False
+
+        # Fallback to system cursor in fullscreen mode to prevent freeze
+        self._use_system_cursor = False
+
         # Load custom cursor image
         self.custom_cursor_image = pygame.image.load('graphics/gui/cursor.png').convert_alpha()
+        pygame.mouse.set_visible(False)
+
 
         self.input_handler = InputHandler()
 
@@ -113,7 +126,7 @@ class GameEngine:
                         except (FileNotFoundError, json.JSONDecodeError) as e:
                             self.logger.error(f"Error loading dungeon data for scene {name} from {dungeon_data_path}: {e}")
                             scene_args['dungeon_data'] = None # Ensure dungeon_data is None on error
-                    
+
                     # Pass 'is_dark' parameter if it exists in scene_data AND the scene's __init__ accepts it
                     if "darkness" in scene_data and 'is_dark' in sig.parameters: # Re-added 'is_dark' in sig.parameters check
                         scene_args['is_dark'] = scene_data["darkness"]
@@ -124,58 +137,186 @@ class GameEngine:
             self.logger.info(f"Attempting to add scene: {name} with class {class_name}")
             self.scene_manager.add_scene(name, scene)
 
+    
+    def _show_loading_feedback(self, message: str):
+        """Shows a loading message on screen during display settings changes.
+        
+        Args:
+            message: The message to display
+        """
+        # Create a larger, more visible loading surface
+        width, height = 400, 80
+        temp_surface = pygame.Surface((width, height))
+        temp_surface.fill((20, 20, 20))  # Dark gray background
+        # Add a border
+        pygame.draw.rect(temp_surface, (100, 100, 100), temp_surface.get_rect(), 2)
+        
+        # Draw the message
+        draw_text(temp_surface, message, 28, (255, 255, 255), width // 2, height // 2 - 10, align="center")
+        
+        # Draw to center of screen
+        x = (self.settings.SCREEN_WIDTH - width) // 2
+        y = (self.settings.SCREEN_HEIGHT - height) // 2
+        self.screen.blit(temp_surface, (x, y))
+        pygame.display.flip()
+        # Only pump events if display is active to avoid blocking
+        if pygame.display.get_active():
+            try:
+                pygame.event.pump()
+            except:
+                pass  # Ignore event pump errors during display changes
+    
+    def schedule_display_settings_change(self):
+        """
+        Schedules a display settings change to happen at the next safe point in the main loop.
+        This prevents race conditions when changing display modes during event handling.
+        """
+        self.logger.info("Scheduling display settings change for next frame")
+        self._pending_display_settings = True
+
     def apply_display_settings(self):
-        """Applies display settings from config.settings."""
-        self.logger.info("Applying display settings.")
-        self.logger.info(f"Fullscreen: {self.settings.FULLSCREEN}, Borderless: {self.settings.BORDERLESS}, Vsync: {self.settings.VSYNC}")
+        """
+        Applies display settings from config.settings.
+        This involves re-creating the main display surface, which can be a slow operation.
+        """
+        self.logger.info("apply_display_settings: Starting")
+        self._pending_display_settings = False  # Clear the pending flag
+        self._applying_display_settings = True  # Block drawing during this operation
+
+        self.logger.info("Attempting to apply new display settings...")
+        self.logger.debug(f"Target settings: Resolution=({self.settings.SCREEN_WIDTH}x{self.settings.SCREEN_HEIGHT}), "
+                         f"Fullscreen={self.settings.FULLSCREEN}, Borderless={self.settings.BORDERLESS}, Vsync={self.settings.VSYNC}")
 
         # Center the window before reinitializing the display
         if not self.settings.FULLSCREEN:
             os.environ['SDL_VIDEO_CENTERED'] = '1'
+        start_time = pygame.time.get_ticks() # Use pygame.time.get_ticks() for consistent timing
+        timeout = 5000  # 5 second timeout in milliseconds
 
-        # Calculate flags based on settings
         flags = 0
         if self.settings.FULLSCREEN:
-            flags |= pygame.FULLSCREEN
-        if self.settings.VSYNC:
-            flags |= pygame.DOUBLEBUF
+            flags = pygame.FULLSCREEN  # Simple fullscreen flag only
+        elif self.settings.BORDERLESS:
+            flags = pygame.NOFRAME
 
-        # Reinitialize the display with the correct settings
         try:
+            self.logger.info(f"Calling pygame.display.set_mode() with flags={flags}")
+
+            # Simple, direct set_mode call like in test_fullscreen.py
+            # Don't use vsync parameter - it can cause issues on Windows
             self.screen = pygame.display.set_mode(
                 (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT),
-                flags,
-                vsync=self.settings.VSYNC
+                flags
             )
-            # Also update the game surface to match the new resolution
-            self.game_surface = pygame.Surface((self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT))
+            self.logger.info("Display mode set successfully.")
+
+            # Force a display update
+            self.screen.fill((0, 0, 0))
+            pygame.display.flip()
+            self.logger.info("Display flip completed.")
+
         except pygame.error as e:
-            self.logger.error(f"Failed to set display mode: {e}")
-            # Fallback to basic windowed mode if there's an error
-            self.screen = pygame.display.set_mode(
-                (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT)
-            )
-            self.game_surface = pygame.Surface((self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT))
-        
-        # Ensure fonts are initialized after display changes
-        if not pygame.font.get_init():
-            pygame.font.init()
-            from utility.font_cache import clear_font_cache
-            clear_font_cache()
-            self.logger.info("Pygame font module re-initialized.")
-        
-        # Reinitialize fonts for UI elements across all scenes
-        self.reinitialize_ui_fonts() # Call the new method here
+            self.logger.error(f"Failed to set display mode: {e}. Falling back to default.")
+            if pygame.time.get_ticks() - start_time > timeout:
+                self.logger.error("Display change timed out. Falling back to windowed mode.")
+                self.settings.FULLSCREEN = False
+                self.settings.BORDERLESS = False
+                try:
+                    self.screen = pygame.display.set_mode((1280, 720))
+                    self.settings.SCREEN_WIDTH = 1280
+                    self.settings.SCREEN_HEIGHT = 720
+                except pygame.error as fallback_e:
+                    self.logger.critical(f"Failed to set even a fallback display mode: {fallback_e}")
+                    # If even the fallback fails, we have a critical problem.
+                    self.quit_game()
+                    return # Exit the method
+                # After a display mode change, font surfaces can become invalid.
+                # We re-initialize the font module and clear our custom font cache.
+                self.logger.debug("Before pygame.font.init()") # Added log
+                pygame.font.init()
+                clear_font_cache()
+                self.logger.info("Pygame font module initialized and font cache cleared.")
+                self.logger.debug("After pygame.font.init()") # Added log
+
+                # Reinitialize fonts for UI elements.
+                self.logger.debug("Before self.reinitialize_ui_fonts()")
+                self.reinitialize_ui_fonts()
+                self.logger.debug("After self.reinitialize_ui_fonts()")
+                pygame.display.set_caption(self.settings.CAPTION)
+                return # Exit the method after fallback
+            # Fallback to a known safe mode if the desired mode fails
+            try:
+                self.screen = pygame.display.set_mode((1280, 720))
+                self.settings.SCREEN_WIDTH = 1280
+                self.settings.SCREEN_HEIGHT = 720
+                self.settings.FULLSCREEN = False
+                self.settings.BORDERLESS = False
+            except pygame.error as fallback_e:
+                self.logger.critical(f"Failed to set even a fallback display mode: {fallback_e}")
+                # If even the fallback fails, we have a critical problem.
+                self.quit_game()
+                return # Exit the method
+
+        # After a display mode change, font surfaces can become invalid.
+        # We re-initialize the font module and clear our custom font cache.
+        pygame.font.init()
+        clear_font_cache()
+        self.logger.info("Pygame font module initialized and font cache cleared.")
+
+        # Reinitialize fonts for UI elements.
+        self.reinitialize_ui_fonts()
 
         pygame.display.set_caption(self.settings.CAPTION)
 
+        # Record the time of this display change to prevent reentrant calls
+        self._display_change_time = pygame.time.get_ticks()
+        self.logger.info(f"Display change timestamp set to {self._display_change_time}")
+
+        self._applying_display_settings = False  # Re-enable drawing
+        self.logger.info("apply_display_settings: Completed successfully")
+
+        # Reset cursor mode for windowed, enable system cursor for fullscreen
+        if self.settings.FULLSCREEN:
+            self.logger.info("Fullscreen mode - using system cursor to prevent freeze")
+            self._use_system_cursor = True
+            pygame.mouse.set_visible(True)
+        else:
+            self.logger.info("Windowed mode - using custom cursor")
+            self._use_system_cursor = False
+            # Only reinitialize custom cursor in windowed mode (can freeze in fullscreen)
+            try:
+                self.custom_cursor_image = pygame.image.load('graphics/gui/cursor.png').convert_alpha()
+                pygame.mouse.set_visible(False)  # Hide system cursor in windowed mode
+                self.logger.info("Custom cursor reinitialized after display change")
+            except Exception as e:
+                self.logger.error(f"Failed to reinitialize custom cursor: {e}")
+                self._use_system_cursor = True
+                pygame.mouse.set_visible(True)  # Fall back to system cursor
+
     def reinitialize_ui_fonts(self):
-        """Reinitializes fonts for UI elements in all loaded scenes."""
-        self.logger.info("Reinitializing UI fonts for all scenes.")
-        for scene_name, scene_obj in self.scene_manager.scenes.items():
-            if hasattr(scene_obj, 'reinitialize_fonts'):
-                self.logger.info(f"Reinitializing fonts for scene: {scene_name}")
-                scene_obj.reinitialize_fonts()
+        """
+        Reinitializes fonts for UI elements.
+
+        Previously, this method iterated through all scenes, causing a freeze
+        when applying settings due to the high number of scenes and UI elements.
+
+        Now, it's designed to be more performant by re-initializing fonts only
+        for the currently active scene. This assumes that scenes will correctly
+        initialize their own fonts when they become active.
+        """
+        self.logger.info("Reinitializing UI fonts for the current scene.")
+        current_scene = self.scene_manager.current_scene
+        if current_scene and hasattr(current_scene, 'reinitialize_fonts'):
+            self.logger.info(f"Reinitializing fonts for active scene: {self.scene_manager.current_scene_name}")
+            try:
+                current_scene.reinitialize_fonts()
+            except Exception as e:
+                self.logger.error(f"Could not reinitialize fonts for scene {self.scene_manager.current_scene_name}: {e}")
+        else:
+            if current_scene:
+                self.logger.warning(f"Current scene '{self.scene_manager.current_scene_name}' has no reinitialize_fonts method.")
+            else:
+                self.logger.warning("No current scene found to reinitialize fonts for.")
 
     def run(self):
         """Runs the main game loop."""
@@ -189,74 +330,79 @@ class GameEngine:
                     self.input_handler.handle_event(event)
                     self.scene_manager.handle_event(event)
 
-                # Check if display is still valid before operations
-                if not pygame.display.get_active():
-                    self.logger.warning("Display surface is not active, reinitializing...")
+                # Apply pending display settings changes at a safe point
+                if self._pending_display_settings:
                     self.apply_display_settings()
+                    # Don't skip the frame - let the new scene draw
+                    # Just clear the screen to black first
+                    self.screen.fill((0, 0, 0))
+                    pygame.display.flip()
+
+                # Check if display is still valid before operations
+                # Only reinitialize if not in grace period after manual display change
+                if not pygame.display.get_active():
+                    time_since_display_change = pygame.time.get_ticks() - self._display_change_time
+                    if time_since_display_change > self._display_grace_period:
+                        self.logger.warning("Display surface is not active, reinitializing...")
+                        self.logger.info(f"Time since display change: {time_since_display_change}ms > grace period: {self._display_grace_period}ms")
+                        self.apply_display_settings()
+                    else:
+                        self.logger.debug(f"Skipping display reinitialize - in grace period ({time_since_display_change}ms < {self._display_grace_period}ms)")
 
                 self.scene_manager.update(dt)
+                # Check if the settings menu needs UI recreation
+                # DISABLED: UI recreation after fullscreen toggle causes freeze on Windows
+                # The UI will naturally update when the user exits and re-enters the settings menu
+                # time_since_change = pygame.time.get_ticks() - self._display_change_time
+                # if self.scene_manager.current_scene_name == "settings_menu" and hasattr(self.scene_manager.current_scene, '_needs_ui_recreation') and self.scene_manager.current_scene._needs_ui_recreation:
+                #     if time_since_change > 1000:  # Wait at least 1 second after display change
+                #         self.logger.info("SettingsMenu needs UI recreation, calling recreate_ui().")
+                #         self.scene_manager.current_scene.recreate_ui()
+                #         self.scene_manager.current_scene._needs_ui_recreation = False
+                #     else:
+                #         self.logger.debug(f"Waiting for display to settle before UI recreation ({time_since_change}ms < 1000ms)")
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'effects'):
                     self.scene_manager.current_scene.effects.update(dt)
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'projectiles'):
                     self.scene_manager.current_scene.projectiles.update(dt, self.scene_manager.current_scene.player, self.scene_manager.current_scene.tile_map, self.scene_manager.current_scene.tile_size)
 
                 # --- Rendering starts here ---
-                
-                # 1. Clear the game surface
-                self.game_surface.fill((0, 0, 0))
-
-                # 2. Draw all game elements to the game_surface
-                self.scene_manager.draw(self.game_surface)
-                if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'effects'):
-                    for sprite in self.scene_manager.current_scene.effects:
-                        self.game_surface.blit(sprite.image, (sprite.rect.x - self.scene_manager.current_scene.camera_x, sprite.rect.y - self.scene_manager.current_scene.camera_y))
-                if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'projectiles'):
-                    for sprite in self.scene_manager.current_scene.projectiles:
-                        sprite.draw(self.game_surface, self.scene_manager.current_scene.camera_x, self.scene_manager.current_scene.camera_y, self.scene_manager.current_scene.zoom_level)
-
-                # Draw the custom cursor, centered on the mouse position
-                mouse_pos = pygame.mouse.get_pos()
-                cursor_x = mouse_pos[0] - self.custom_cursor_image.get_width() // 2
-                cursor_y = mouse_pos[1] - self.custom_cursor_image.get_height() // 2
-                self.game_surface.blit(self.custom_cursor_image, (cursor_x, cursor_y))
-                
-                
-
-                self.input_handler.reset_inputs() # Reset input states for the next frame
-
-                if self.settings.DEBUG_MODE:
-                    debug_y_offset = 10
-                    if self.settings.SHOW_FPS:
-                        fps_text = f"FPS: {int(self.clock.get_fps())}"
-                        draw_text(self.game_surface, fps_text, 18, (255, 255, 0), 10, debug_y_offset)
-                        debug_y_offset += 20
-                    if self.settings.SHOW_SCENE_NAME:
-                        scene_name_text = f"Scene: {self.scene_manager.current_scene_name}"
-                        draw_text(self.game_surface, scene_name_text, 18, (255, 255, 0), 10, debug_y_offset)
-                        debug_y_offset += 20
-                    if self.settings.SHOW_DELTA_TIME:
-                        dt_text = f"DT: {dt:.4f}s"
-                        draw_text(self.game_surface, dt_text, 18, (255, 255, 0), 10, debug_y_offset)
-                        debug_y_offset += 20
-                    if self.settings.SHOW_PLAYER_TILE_COORDS:
-                        if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'player'):
-                            player = self.scene_manager.current_scene.player
-                            tile_x = int(player.rect.x / 32)
-                            tile_y = int(player.rect.y / 32)
-                            player_coords_text = f"Player Tile: ({tile_x}, {tile_y})"
-                            draw_text(self.game_surface, player_coords_text, 18, (255, 255, 0), 10, debug_y_offset)
-                            debug_y_offset += 20
-                
-                # 3. Clear the main screen and draw the scaled game_surface onto it
                 try:
-                    self.screen.fill((0, 0, 0)) # Black bars
-                    # Calculate position to center the game_surface
-                    screen_w, screen_h = self.screen.get_size()
-                    surface_w, surface_h = self.game_surface.get_size()
-                    top_left_x = (screen_w - surface_w) // 2
-                    top_left_y = (screen_h - surface_h) // 2
-                    
-                    self.screen.blit(self.game_surface, (top_left_x, top_left_y))
+                    self.screen.fill((0, 0, 0)) # Clear the screen with black
+
+                    # Draw all game elements directly to the screen
+                    self.scene_manager.draw(self.screen)
+
+                    # Draw effects
+                    if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'effects'):
+                        for sprite in self.scene_manager.current_scene.effects:
+                            self.screen.blit(sprite.image, (sprite.rect.x - self.scene_manager.current_scene.camera_x, sprite.rect.y - self.scene_manager.current_scene.camera_y))
+
+                    # Draw projectiles
+                    if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'projectiles'):
+                        for sprite in self.scene_manager.current_scene.projectiles:
+                            sprite.draw(self.screen, self.scene_manager.current_scene.camera_x, self.scene_manager.current_scene.camera_y, self.scene_manager.current_scene.zoom_level)
+
+                    self.input_handler.reset_inputs() # Reset input states for the next frame
+
+                    # Draw the custom cursor on top of everything
+
+                    # Skip custom cursor if using system cursor (fullscreen workaround)
+                    if not self._use_system_cursor:
+                        # SAFER MOUSE POSITION RETRIEVAL - prevents freeze in fullscreen mode
+                        try:
+                            mouse_pos = pygame.mouse.get_pos()
+                            cursor_x = mouse_pos[0] - self.custom_cursor_image.get_width() // 2
+                            cursor_y = mouse_pos[1] - self.custom_cursor_image.get_height() // 2
+                            self.screen.blit(self.custom_cursor_image, (cursor_x, cursor_y))
+                        except Exception as e:
+                            self.logger.warning(f"Failed to get mouse position for cursor: {e}")
+                            # Switch to system cursor on error (fullscreen workaround)
+                            self._use_system_cursor = True
+                            pygame.mouse.set_visible(True)
+                    else:
+                        pass  # Using system cursor in fullscreen mode
+
                     pygame.display.flip()
                 except pygame.error as e:
                     self.logger.error(f"Failed to fill or flip display: {e}")

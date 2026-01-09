@@ -13,7 +13,7 @@ class MusicManager:
 
     def __init__(self):
         if not self._initialized:
-            pygame.mixer.init()
+            # Note: pygame.mixer.init() is now handled in main.py before GameEngine is created
             self.music_directory = "data/music"
             self.music_files = [f for f in os.listdir(self.music_directory) if f.endswith(".mp3")]
             self.current_track = None

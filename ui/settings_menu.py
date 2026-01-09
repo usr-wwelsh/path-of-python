@@ -13,12 +13,21 @@ class SettingsMenu(BaseScene):
         self.dropdowns = []
         self.volume = self.game.music_manager.get_volume()
         self.dragging_volume_slider = False
+        self._needs_ui_recreation = False
+        self._ui_recreation_scheduled_time = 0  # Time when UI recreation should happen
         self.recreate_ui()
 
     def recreate_ui(self):
         """Clears and recreates all UI elements with current screen dimensions."""
-        self.buttons.clear()
-        self.dropdowns.clear()
+        self.game.logger.info("recreate_ui: Starting")
+
+        # Store old buttons/dropdowns for a moment (in case of race condition)
+        old_buttons = self.buttons
+        old_dropdowns = self.dropdowns
+
+        # Create new lists
+        self.buttons = []
+        self.dropdowns = []
 
         button_width = 250
         button_height = 50
@@ -27,12 +36,13 @@ class SettingsMenu(BaseScene):
         # Calculate total height of UI elements block for dynamic vertical centering
         # The total height is from the top of the first element to the bottom of the last element.
         # There are 8 spacing units between elements and the height of the last button.
-        total_ui_block_height = (8 * spacing) + button_height 
+        total_ui_block_height = (8 * spacing) + button_height
         start_y = (settings.SCREEN_HEIGHT - total_ui_block_height) // 2
 
         # Resolution Dropdown
         resolution_options = [f"{w}x{h}" for w, h in settings.RESOLUTIONS]
         current_resolution = f"{settings.SCREEN_WIDTH}x{settings.SCREEN_HEIGHT}"
+        self.game.logger.info(f"recreate_ui: Creating dropdown for {current_resolution}")
         self.dropdowns.append(Dropdown(
             settings.SCREEN_WIDTH // 2 - button_width // 2, start_y, button_width, button_height,
             resolution_options, self._set_resolution, default_option=current_resolution
@@ -108,26 +118,30 @@ class SettingsMenu(BaseScene):
         width, height = map(int, resolution_str.split('x'))
         self.game.settings.SCREEN_WIDTH = width
         self.game.settings.SCREEN_HEIGHT = height
-        self.game.apply_display_settings()
-        self.recreate_ui()  # Recreate the UI with the new resolution
+        self.schedule_font_reinit()
+        self.game.schedule_display_settings_change()
         self.game.logger.info(f"Resolution set to {width}x{height}")
 
     def _toggle_vsync(self):
         self.game.settings.VSYNC = not self.game.settings.VSYNC
-        self.game.apply_display_settings()
-        self.recreate_ui()
+        self.game.schedule_display_settings_change()
+        # No UI recreation needed - resolution stays the same
         self.game.logger.info(f"VSync: {self.game.settings.VSYNC}")
 
     def _toggle_borderless(self):
         self.game.settings.BORDERLESS = not self.game.settings.BORDERLESS
-        self.game.apply_display_settings()
-        self.recreate_ui()
+        self.game.schedule_display_settings_change()
+        # No UI recreation needed - resolution stays the same
         self.game.logger.info(f"Borderless: {self.game.settings.BORDERLESS}")
 
     def _toggle_fullscreen(self):
+        self.game.logger.info("_toggle_fullscreen: Starting")
         self.game.settings.FULLSCREEN = not self.game.settings.FULLSCREEN
-        self.game.apply_display_settings()
-        self.recreate_ui()
+        self.game.logger.info(f"_toggle_fullscreen: FULLSCREEN set to {self.game.settings.FULLSCREEN}")
+        # Schedule display change - stay on settings menu
+        self.game.schedule_display_settings_change()
+        # Mark that we should recreate UI after a delay
+        self._ui_recreation_scheduled_time = 0  # Will be set after display change
         self.game.logger.info(f"Fullscreen: {self.game.settings.FULLSCREEN}")
 
     def _toggle_mute(self):
@@ -161,10 +175,14 @@ class SettingsMenu(BaseScene):
                 self.volume_handle_rect.x = new_handle_x
 
     def draw(self, screen):
+        # Safety check - don't draw if UI not initialized
+        if not self.buttons:
+            self.game.logger.warning("UI not initialized, skipping draw")
+            return
         screen.fill(settings.UI_BACKGROUND_COLOR)
         # Position the "SETTINGS" title dynamically above the UI elements
         draw_text(screen, "SETTINGS", settings.UI_FONT_SIZE_LARGE, settings.UI_PRIMARY_COLOR, settings.SCREEN_WIDTH // 2, self.buttons[0].rect.y - 80, align="center")
-        
+
         # Draw volume slider
         pygame.draw.rect(screen, settings.UI_SECONDARY_COLOR, self.volume_slider_rect, 2)
         pygame.draw.rect(screen, settings.UI_PRIMARY_COLOR, self.volume_handle_rect)
@@ -181,7 +199,13 @@ class SettingsMenu(BaseScene):
 
     def reinitialize_fonts(self):
         self.game.logger.info("Reinitializing fonts for SettingsMenu.")
-        self.recreate_ui()
+        # Removed self.recreate_ui() from here. It's now called directly in _set_resolution.
+        # self.recreate_ui()
+    def schedule_font_reinit(self):
+        """Schedules UI recreation for the next update cycle."""
+        self.game.logger.info("SettingsMenu: Scheduling UI recreation.")
+        self._needs_ui_recreation = True
+
 
     def enter(self):
         self.game.logger.info("Entering Settings Menu.")
@@ -191,4 +215,16 @@ class SettingsMenu(BaseScene):
         self.game.logger.info("Exiting Settings Menu.")
 
     def update(self, dt):
-        pass
+        # Schedule UI recreation after display change completes
+        if self._ui_recreation_scheduled_time == 0 and not self.game._pending_display_settings and self.game._display_change_time > 0:
+            # Display change just completed, schedule recreation for 500ms from now
+            time_since_change = pygame.time.get_ticks() - self.game._display_change_time
+            if time_since_change < 50:  # Just happened
+                self._ui_recreation_scheduled_time = pygame.time.get_ticks() + 500
+                self.game.logger.info("UI recreation scheduled for 500ms from now")
+
+        # Recreate UI if enough time has passed
+        if self._ui_recreation_scheduled_time > 0 and pygame.time.get_ticks() >= self._ui_recreation_scheduled_time:
+            self.game.logger.info("Recreating UI after display change delay")
+            self.recreate_ui()
+            self._ui_recreation_scheduled_time = 0  # Reset flag

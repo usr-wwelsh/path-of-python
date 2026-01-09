@@ -1,6 +1,7 @@
 import pygame
 from core.utils import draw_text
 from config.settings import UI_PRIMARY_COLOR, UI_SECONDARY_COLOR, UI_BACKGROUND_COLOR, UI_ACCENT_COLOR, UI_FONT, UI_FONT_SIZE_DEFAULT
+from utility.font_cache import get_font
 
 class Dropdown:
     def __init__(self, x, y, width, height, options, callback, default_option=None):
@@ -12,7 +13,7 @@ class Dropdown:
             self.selected_option = default_option
         else:
             self.selected_option = options[0] if options else None
-        self.font = pygame.font.Font(None, UI_FONT_SIZE_DEFAULT)
+        self.font = get_font(None, UI_FONT_SIZE_DEFAULT)  # Use font cache for stability
         self.highlighted_option_index = 0
         self.max_visible_options = 10  # Limit to 10 visible options
         self.scroll_offset = 0 # Index of the first visible option
@@ -70,4 +71,4 @@ class Dropdown:
                 draw_text(screen, str(option), UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, option_rect.centerx, option_rect.centery, align="center")
 
     def reinitialize_font(self):
-        self.font = pygame.font.Font(None, UI_FONT_SIZE_DEFAULT)
+        self.font = get_font(None, UI_FONT_SIZE_DEFAULT)
