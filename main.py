@@ -1,6 +1,26 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+# Set DPI awareness on Windows before importing pygame
+# This prevents Windows from applying its own scaling which causes resolution issues in the exe
+if sys.platform == 'win32':
+    try:
+        import ctypes
+        # Try to set DPI awareness for Windows 8.1 and later
+        try:
+            ctypes.windll.shcore.SetProcessDpiAwareness(2)  # PROCESS_PER_MONITOR_DPI_AWARE
+            print("DPI awareness set: PROCESS_PER_MONITOR_DPI_AWARE")
+        except Exception:
+            # Fallback for Windows Vista through 8.0
+            try:
+                ctypes.windll.user32.SetProcessDPIAware()
+                print("DPI awareness set: SetProcessDPIAware")
+            except Exception:
+                print("Could not set DPI awareness")
+    except Exception as e:
+        print(f"DPI awareness setup failed: {e}")
+
 import pygame
 from core.game_engine import GameEngine
 from utility.resource_path import resource_path
